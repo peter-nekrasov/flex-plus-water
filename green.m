@@ -27,7 +27,7 @@ for i = 1:5
     if angle(rhoj) == 0
         ck0 = ck0 + 4i*besselj(0, rhoj*r); % is this the right factor of J?
     end
-    val = val + ej*rhoj^2*ck0;
+    val = val + pi/2*ej*rhoj^2*ck0;
 end
 
 end
