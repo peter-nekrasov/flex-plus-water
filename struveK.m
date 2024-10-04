@@ -1,4 +1,4 @@
-function [ck0,ck1] = struveK102(z)
+function [ck0,ck1] = struveK(z)
 
     sz = size(z);
     z = z(:);
@@ -15,7 +15,9 @@ function [ck0,ck1] = struveK102(z)
     [ck0(iupp),ck1(iupp)] = struveR(zt(iupp));
     [ck0(ilow),ck1(ilow)] = struveR(zt(ilow));
 
-    [h0,~] = helmdiffgreen(1,0,zt);
+    src = [0; 0];
+    targ = [zt'; 0*zt'];
+    [h0,~] = helmdiffgreen(1,src,targ);
     h1 = besselh(1,zt);
 
     ck0(iupp) = -1i*ck0(iupp)+1i*h0(iupp);
