@@ -12,10 +12,10 @@ function [ck0,ck1] = struveK102(z)
     ck0 = zeros(size(z));
     ck1 = zeros(size(z));
 
-    [ck0(iupp),ck1(iupp)] = struve102(zt(iupp));
-    [ck0(ilow),ck1(ilow)] = struve102(zt(ilow));
+    [ck0(iupp),ck1(iupp)] = struveR(zt(iupp));
+    [ck0(ilow),ck1(ilow)] = struveR(zt(ilow));
 
-    h0 = besselh(0,zt);
+    [h0,~] = helmdiffgreen(1,0,zt);
     h1 = besselh(1,zt);
 
     ck0(iupp) = -1i*ck0(iupp)+1i*h0(iupp);

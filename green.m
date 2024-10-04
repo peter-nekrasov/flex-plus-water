@@ -23,9 +23,9 @@ val = 0;
 for i = 1:5
     rhoj = rts2(i);
     ej = ejs(i);
-    [ck0,~] = struveK102(-rhoj*r);
+    [ck0,~] = struveK(-rhoj*r);
     if angle(rhoj) == 0
-        [cr0,~] = struve102(rhoj*r); 
+        [cr0,~] = struveR(rhoj*r); 
         ck0 = 1i*(cr0 + besselh(0, rhoj*r));  
     end
     val = val + pi/2*ej*rhoj^2*ck0;
