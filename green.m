@@ -5,6 +5,9 @@ function [val] = green(r,beta,gamma)
 %             z^5 - beta*z + gamma = 0
 %
 
+sz = size(r);
+r = r(:).';
+
 d1 = - beta;
 d0 = gamma;
 
@@ -20,16 +23,22 @@ ejs = 1./fp(rts2); % partial fraction coefficients for 1/f
 
 val = 0;
 
+src = [0; 0];
+targ = [r; 0*r];
+
 for i = 1:5
     rhoj = rts2(i);
     ej = ejs(i);
-    [ck0,~] = struveK(-rhoj*r);
+    [ck0,~] = struveK(-rhoj, r);
     if angle(rhoj) == 0
-        [cr0,~] = struveR(rhoj*r); 
-        ck0 = 1i*(cr0 + besselh(0, rhoj*r));  
+       [ck0,~] = struveK(rhoj, r);
+       [h0, ~] = helmdiffgreen(rhoj,src,targ);
+       ck0 = -ck0 + 8*h0.' ; 
     end
     val = val + pi/2*ej*rhoj^2*ck0;
 end
+
+val = reshape(val,sz);
 
 end
 

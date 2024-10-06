@@ -1,33 +1,33 @@
-function [ck0,ck1] = struveK(z)
+function [ck0,ck1] = struveK(rhoj, z)
+    % where rhoj is a complex number and z is an array of real numbers
 
     sz = size(z);
-    z = z(:);
+    z = z(:).';
+    
+    ilow = (imag(rhoj) < 0);
 
-    iupp = find(imag(z) >= 0);
-    ilow = find(imag(z) < 0);
+    if ilow
+        rhoj = conj(rhoj); % flip rhoj up into upper half plane
+    end
 
-    zt = z;
-    zt(ilow) = -z(ilow);
+    zt = z*rhoj;
 
-    ck0 = zeros(size(z));
-    ck1 = zeros(size(z));
+    [cr0,cr1] = struveR(zt);
 
-    [ck0(iupp),ck1(iupp)] = struveR(zt(iupp));
-    [ck0(ilow),ck1(ilow)] = struveR(zt(ilow));
+    src = [0; 0]; targ = [ zt / rhoj ; 0*z];
+    [h0,~] = helmdiffgreen(rhoj,src,targ);
+    h0 = -4i*h0.' ;
+    h1 = besselh(1,zt); % need to use evaluator here for H1
 
-    src = [0; 0];
-    targ = [zt'; 0*zt'];
-    [h0,~] = helmdiffgreen(1,src,targ);
-    h1 = besselh(1,zt);
+    ck0 = -1i*cr0+1i*h0;
+    ck1 = -1i*cr1+1i*h1;
 
-    ck0(iupp) = -1i*ck0(iupp)+1i*h0(iupp);
-    ck1(iupp) = -1i*ck1(iupp)+1i*h1(iupp);
-
-    ck0(ilow) =  1i*ck0(ilow)+1i*h0(ilow);
-    ck1(ilow) = -1i*ck1(ilow)-1i*h1(ilow);
+    if ilow
+        ck0 = conj(ck0);
+        ck1 = conj(ck1);
+    end
 
     ck0 = reshape(ck0,sz);
     ck1 = reshape(ck1,sz);
-
 
 end

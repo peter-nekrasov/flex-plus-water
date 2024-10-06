@@ -1,4 +1,4 @@
-function [ch0,ch1] = struve102(z)
+function [ch0,ch1] = struveR(z)
 %%%%%%%%%
 %
 %    this function returns J_0(z)+i*\bf{H}_0(z) and
