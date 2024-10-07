@@ -1,9 +1,9 @@
 % Plotting green's function
 %
 
-beta = 5;
+beta = 0;
 gamma = -0.5;
-xs = 0:0.01:50*beta^(-1/4);
+xs = 0:0.01:50;
 val = green(xs,beta,gamma);
 
 figure(8)
