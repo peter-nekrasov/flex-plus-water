@@ -1,4 +1,4 @@
-% Plotting green's function
+% Plotting green's function in 1d
 %
 
 beta = 5;

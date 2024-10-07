@@ -6,6 +6,7 @@ function [val] = green(r,beta,gamma)
 %
 
 sz = size(r);
+r = abs(r);
 r = r(:).';
 
 d1 = - beta;
