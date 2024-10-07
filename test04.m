@@ -7,7 +7,7 @@ beta = 5;
 gamma = -2;
 R = sqrt(X.^2 + Y.^2);
 gval = green(R,beta,gamma);
-gsurfval = green(R,beta,gamma,true);
+gsurfval = green(R,beta,gamma,true); % kernel of on surface evaluation
 
 % finite difference stencils
 d1 = zeros(9,1);
@@ -43,4 +43,4 @@ sz = size(gval);
 m = round(sz(1)/3);
 n = round(2*sz(1)/3);
 subf = gval(m-4:m+4,n-4:n+4);
-err = abs(sum(bilap .* subf,'all') - beta*gval(m,n) ) / abs(gval(m,n))
+err = abs(sum(bilap .* subf,'all') - beta*gval(m,n) + gamma*gsurfval(m,n) ) / abs(gval(m,n))
