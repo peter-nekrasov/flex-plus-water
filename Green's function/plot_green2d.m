@@ -7,7 +7,7 @@ xs = -10:h:10;
 gamma = -1; % fails if zero
 beta = 10;
 R = sqrt(X.^2 + Y.^2);
-gval = green(R,beta,gamma,false);
+gval = green(R,beta,gamma,true);
 
 t = tiledlayout(1,3);
 title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
