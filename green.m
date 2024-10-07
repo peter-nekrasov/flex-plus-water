@@ -31,7 +31,9 @@ for i = 1:5
     rhoj = rts2(i);
     ej = ejs(i);
     [ck0,~] = struveK(-rhoj, r);
-    if angle(rhoj) == 0
+    if rhoj == 0
+        ck0 = 0;
+    elseif angle(rhoj) == 0
        [ck0,~] = struveK(rhoj, r);
        [h0, ~] = helmdiffgreen(rhoj,src,targ);
        ck0 = -ck0 + 8*h0.' ; 

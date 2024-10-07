@@ -2,7 +2,7 @@
 %
 
 beta = 5;
-gamma = -2;
+gamma = 0;
 xs = 0:0.01:50;
 val = green(xs,beta,gamma);
 

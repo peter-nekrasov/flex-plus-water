@@ -4,7 +4,7 @@
 h = 0.1;
 xs = -10:h:10;
 [X,Y] = meshgrid(xs);
-gamma = -2;
+gamma = 0; % fails if zero
 beta = 5;
 R = sqrt(X.^2 + Y.^2);
 gval = green(R,beta,gamma);

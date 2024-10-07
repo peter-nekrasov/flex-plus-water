@@ -1,28 +1,14 @@
-h = 0.1;
+% Finite difference test for gamma = 0
+% zeroing gamma kills the nonlocal term
+% making the equation easier to apply
+
+h = 0.05;
 xs = -10:h:10;
 [X,Y] = meshgrid(xs);
-gamma = -2;
+gamma = 0;
 beta = 5;
 R = sqrt(X.^2 + Y.^2);
 gval = green(R,beta,gamma);
-
-tiledlayout(1,3)
-nexttile
-h = pcolor(X,Y,real(gval));
-h.EdgeColor = 'none';
-colorbar
-
-nexttile
-h = pcolor(X,Y,imag(gval));
-h.EdgeColor = 'none';
-colorbar
-
-nexttile
-h = pcolor(X,Y,abs(gval));
-h.EdgeColor = 'none';
-colorbar
-
-return
 
 % finite difference stencils
 d1 = zeros(9,1);
@@ -54,10 +40,8 @@ bilap(:,5) = d1;
 bilap(5,:) = bilap(5,:) + d1.';
 bilap = bilap + 2*(d2*d2.');
 
-fo = X.^3 + Y.^3;
-
-sz = size(fo);
+sz = size(gval);
 m = round(sz(1)/3);
 n = round(2*sz(1)/3);
-subf = fo(m-4:m+4,n-4:n+4);
-err = sum(bilap .* subf,'all')
+subf = gval(m-4:m+4,n-4:n+4);
+err = abs(sum(bilap .* subf,'all') - beta*gval(m,n) ) / abs(gval(m,n))
