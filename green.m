@@ -1,9 +1,25 @@
-function [val] = green(r,beta,gamma)
+function [val] = green(r,beta,gamma,surfeval)
 %
-% computing the green's function for  our pde
+% computes the green's function for the integro-differential equation
 % whose solutions occur at the roots of the polynomial:
 %             z^5 - beta*z + gamma = 0
 %
+% input:
+%
+% r - array of distances
+% beta - coefficient beta in the equation
+% gamma - coefficient gamma in the equation
+%
+% optional input:
+%
+% surfeval - boolean, default: false. If true, gives the kernel of the
+%   Laplace single layer operator composed with the green's function needed
+%   to evaluate the velocity potential phi on surface
+%
+
+if nargin < 4
+    surfeval = false;
+end
 
 sz = size(r);
 r = abs(r);
@@ -21,6 +37,10 @@ rts1 = eig(C);
 rts2 = bring_refine_rts(rts1,d1,d0);
 
 ejs = 1./fp(rts2); % partial fraction coefficients for 1/f
+
+if surfeval
+    ejs = ejs./rts2;
+end
 
 val = 0;
 
