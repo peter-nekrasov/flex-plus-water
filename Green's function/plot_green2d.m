@@ -4,10 +4,10 @@
 h = 0.1;
 xs = -10:h:10;
 [X,Y] = meshgrid(xs);
-gamma = 0; % fails if zero
+gamma = -2; % fails if zero
 beta = 5;
 R = sqrt(X.^2 + Y.^2);
-gval = green(R,beta,gamma);
+gval = green(R,beta,gamma,true);
 
 tiledlayout(1,3)
 nexttile
