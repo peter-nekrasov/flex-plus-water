@@ -16,6 +16,7 @@ function [ck0,ck1] = struveK(rhoj, z)
 
     src = [0; 0]; targ = [ zt / rhoj ; 0*z];
     [h0,~] = helmdiffgreen(rhoj,src,targ);
+    h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
     h0 = -4i*h0.' ;
     h1 = besselh(1,zt); % need to use evaluator here for H1
 

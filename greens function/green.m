@@ -45,6 +45,7 @@ for i = 1:5
     elseif angle(rhoj) == 0
        [ck0,~] = struveK(rhoj, r);
        [h0, ~] = helmdiffgreen(rhoj,src,targ);
+       h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
        ck0 = -ck0 + 8*h0.' ; 
     end
     val = val + pi/2*ej*rhoj^2*ck0;
