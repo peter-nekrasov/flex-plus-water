@@ -1,6 +1,6 @@
 %%%%%
 %
-% Continuous scattering with variable beta 
+% Continuous scattering with variable beta and gamma
 %
 %%%%%
 
@@ -12,41 +12,45 @@ xs = -50:h:50;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
 beta0 = 5;
-gamma = -1;
+gamma0 = -1;
 
 % Finding positive real roots
-[rts,~] = find_roots(beta0,gamma);
+[rts,~] = find_roots(beta0,gamma0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
 % Perturbing coefficients
-betabar = 1*X.*exp(-(X.^2 + Y.^2)/25); 
+betabar = (X ).*exp(-(X.^2 + Y.^2)/25); 
 beta = beta0 + betabar;
 
+gammabar = 0.3*( X).*exp(-(X.^2 + Y.^2)/25); 
+gamma = gamma0 + gammabar;
+
 % Constructing integral operator
-Gs = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, false);
+Gs = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma0, false);
 Gs(1,1) = 0; % fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
 Gs_aug_hat = fft2(Gs_aug)*h*h;
 
+Gc = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma0, true);
+Gc(1,1) = 0; % fill in diagonal correction 
+Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
+    flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
+Gc_aug_hat = fft2(Gc_aug)*h*h;
+
 % RHS (Incident field)
 phiinc = exp(1i*k*X);
-rhs = k*betabar.*phiinc;
+rhs = (k*betabar - gammabar).*phiinc;
 rhs_vec = rhs(:);
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) lhs(mu,betabar,Gs_aug_hat),rhs_vec,[],1e-12,200);
+mu = gmres(@(mu) lhs(mu,betabar,gammabar,Gs_aug_hat,Gc_aug_hat),rhs_vec,[],1e-12,200);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
 
 % Evaluation and plotting
-Gc = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, true);
-Gc(1,1) = 0; % fill in diagonal correction 
-Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
-    flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
-Gc_aug_hat = fft2(Gc_aug)*h*h;
 mu_aug = [mu, zeros(n,n-1); zeros(n-1,n), zeros(n-1)];
 mu_aug_hat = fft2(mu_aug);
 phi_aug = ifft2(Gc_aug_hat.*mu_aug_hat);
@@ -57,11 +61,17 @@ phi_n = phi_n_aug(1:n,1:n);
 phi_tot = phiinc+phi;
 phi_n_tot = phi_n + k*phiinc;
 
-tiledlayout(1,5)
+tiledlayout(2,3)
 nexttile
 pc = pcolor(X,Y,beta);
 pc.EdgeColor = 'none';
 title('\beta')
+colorbar
+
+nexttile
+pc = pcolor(X,Y,gamma);
+pc.EdgeColor = 'none';
+title('\gamma')
 colorbar
 
 nexttile
@@ -131,7 +141,7 @@ bilap = bilap / h^4;
 phi_n_tot_sub = phi_n_tot(ii-4:ii+4,jj-4:jj+4);
 first = sum(bilap.*phi_n_tot_sub,'all') ;
 second = -beta(ii,jj)*phi_n_tot(ii,jj);
-third = gamma*phi_tot(ii,jj);
+third = gamma(ii,jj)*phi_tot(ii,jj);
 err = abs(first + second + third) / max(abs(phi_n(:)))
 
 %phiinc_sub = phiinc(ii-4:ii+4,jj-4:jj+4);
@@ -140,7 +150,7 @@ err = abs(first + second + third) / max(abs(phi_n(:)))
 %third = gamma*phiinc(ii,jj);
 %err = first + second + third
 
-function v = lhs(mu,betabar,Gs_aug_hat)
+function v = lhs(mu,betabar,gammabar,Gs_aug_hat,Gc_aug_hat)
     N = sqrt(size(mu));
     N = N(1);
     mu = reshape(mu, [N N]);
@@ -148,6 +158,8 @@ function v = lhs(mu,betabar,Gs_aug_hat)
     mu_aug_hat = fft2(mu_aug);
     Gs_mu_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
     Gs_mu = Gs_mu_aug(1:N, 1:N);
-    v = mu - betabar.*Gs_mu;
+    Gc_mu_aug = ifft2(Gc_aug_hat.*mu_aug_hat);
+    Gc_mu = Gc_mu_aug(1:N, 1:N);
+    v = mu - betabar.*Gs_mu + gammabar.*Gc_mu;
     v = v(:);
 end
