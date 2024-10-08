@@ -7,7 +7,7 @@
 addpath('../greens function/')
 
 % Parameters
-h = 0.25;
+h = 0.5;
 xs = -50:h:50;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
@@ -24,7 +24,7 @@ beta = beta0 + betabar;
 
 % Constructing integral operator
 Gs = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, false);
-Gs(1,1) = 0;% 0.0193227557153812 + 0.321236633444681i; % fill in diagonal correction 
+% fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
 Gs_aug_hat = fft2(Gs_aug)*h*h;
@@ -43,7 +43,7 @@ fprintf('%5.2e s : time to solve\n',t1)
 
 % Evaluation and plotting
 Gc = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, true);
-Gc(1,1) = 0; %-0.158703327790727 + 0.208371733224076i; % fill in diagonal correction 
+% fill in diagonal correction 
 Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
     flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
 Gc_aug_hat = fft2(Gc_aug)*h*h;
@@ -98,6 +98,7 @@ rmpath('../greens function/')
 
 ind = intersect(find(X == 16), find(Y == 0));
 [ii, jj] = ind2sub(size(X),ind);
+% disp(phi(ii,jj))
 
 % finite difference stencils
 d1 = zeros(9,1);
