@@ -1,4 +1,10 @@
-addpath('greens function/')
+%%%%%
+%
+% Continuous scattering code with variable beta 
+%
+%%%%%
+
+addpath('../greens function/')
 
 % Parameters
 h = 0.5;
@@ -84,11 +90,18 @@ clim([0 1.5]*k)
 title('|\phi_n|')
 colorbar
 
+rmpath('../greens function/')
+
+%% Checking error
 
 ind = intersect(find(X == 16), find(Y == 0));
-disp(phi(ind))
+[ii, jj] = ind2sub(size(X),ind);
 
-rmpath('greens function/')
+
+
+
+
+
 
 function v = lhs(mu,betabar,Gs_aug_hat)
     N = sqrt(size(mu));
