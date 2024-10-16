@@ -1,12 +1,24 @@
-function [val] = green(r,beta,gamma,surfeval)
+function [val,grad,hess,third] = green(x,y,beta,gamma,surfeval)
 %
-% computes the green's function for the integro-differential equation
-% whose solutions occur at the roots of the polynomial:
+% computes the green's function centered at (x,y) = 0 for the 
+% integro-differential equation determined by the roots of the polynomial:
 %             z^5 - beta*z + gamma = 0
+%
+% 
+% output : (note the convention is not the same as helmdiffgreen.m)
+% - val has the value of the Green's function centered at zero and
+%   evaluated at (x,y)
+% - grad(:,:,1) has G_{x}, grad(:,:,2) has G_{y}
+% - hess(:,:,1) has G_{xx}, hess(:,:,2) has G_{xy}, 
+%   hess(:,:,3) has G_{yy}
+% - third is the gradient of the Laplacian, namely 
+%   third(:,:,1) has G_{xxx} + G_{xyy}, third(:,:,2) has G_{yxx} + G_{yyy}
+% 
 %
 % input:
 %
-% r - array of distances
+% x - x-coordinates array
+% y - y-coordinates array
 % beta - coefficient beta in the equation
 % gamma - coefficient gamma in the equation
 %
@@ -17,10 +29,11 @@ function [val] = green(r,beta,gamma,surfeval)
 %   to evaluate the velocity potential phi on surface
 %
 
-if nargin < 4
+if nargin < 5
     surfeval = false;
 end
 
+r = sqrt(x.^2 + y.^2);
 sz = size(r);
 r = abs(r);
 r = r(:).';

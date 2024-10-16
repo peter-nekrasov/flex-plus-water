@@ -57,19 +57,19 @@ phi_n = phi_n_aug(1:n,1:n);
 phi_tot = phiinc+phi;
 phi_n_tot = phi_n + k*phiinc;
 
-tiledlayout(1,5)
+tiledlayout(1,3)
 nexttile
 pc = pcolor(X,Y,beta);
 pc.EdgeColor = 'none';
 title('\beta')
 colorbar
 
-nexttile
-pc = pcolor(X,Y,real(phi_tot));
-pc.EdgeColor = 'none';
-%clim([-1.5 1.5])
-title('Re(\phi)')
-colorbar
+% nexttile
+% pc = pcolor(X,Y,real(phi_tot));
+% pc.EdgeColor = 'none';
+% %clim([-1.5 1.5])
+% title('Re(\phi)')
+% colorbar
 
 nexttile
 pc = pcolor(X,Y,abs(phi_tot));
@@ -78,12 +78,12 @@ pc.EdgeColor = 'none';
 title('|\phi|')
 colorbar
 
-nexttile
-pc = pcolor(X,Y,real(phi_n_tot));
-pc.EdgeColor = 'none';
-%clim([-1.5 1.5]*k)
-title('real(\phi_n)')
-colorbar
+% nexttile
+% pc = pcolor(X,Y,real(phi_n_tot));
+% pc.EdgeColor = 'none';
+% %clim([-1.5 1.5]*k)
+% title('real(\phi_n)')
+% colorbar
 
 nexttile
 pc = pcolor(X,Y,abs(phi_n_tot));
