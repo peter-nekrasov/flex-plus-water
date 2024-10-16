@@ -6,7 +6,7 @@ xs = -10:h:10;
 [X,Y] = meshgrid(xs);
 gamma = -1; % fails if zero
 beta = 10;
-gval = green(X,Y,beta,gamma,true);
+gval = green(X,Y,beta,gamma,false);
 
 t = tiledlayout(1,3);
 title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);

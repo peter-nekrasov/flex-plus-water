@@ -4,7 +4,7 @@
 beta = 2;
 gamma = -0.5;
 xs = 0:0.1:20;
-val = green(xs,beta,gamma,false);
+val = green(xs,0,beta,gamma,false);
 
 figure(8)
 plot(xs,real(val),xs, imag(val))

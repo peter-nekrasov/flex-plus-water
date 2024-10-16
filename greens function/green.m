@@ -46,22 +46,28 @@ end
 
 val = 0;
 
+grad = zeros([sz 2]);
+
 src = [0; 0];
 targ = [r; 0*r];
 
 for i = 1:5
     rhoj = rts2(i);
     ej = ejs(i);
-    [ck0,~] = struveK(-rhoj, r);
     if rhoj == 0
-        ck0 = 0;
+       % do nothing
     elseif angle(rhoj) == 0
        [ck0,~] = struveK(rhoj, r);
        [h0, ~] = helmdiffgreen(rhoj,src,targ);
        h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
        ck0 = -ck0 + 8*h0.' ; 
+       val = val + pi/2*ej*rhoj^2*ck0;
+    else
+       [ck0,ck1] = struveK(-rhoj, r);
+       val = val + pi/2*ej*rhoj^2*ck0;
     end
-    val = val + pi/2*ej*rhoj^2*ck0;
+    grad(:,:,1) = grad(:,:,1) + 0;
+    grad(:,:,2) = grad(:,:,2) + 0;    
 end
 
 val = reshape(val,sz);
