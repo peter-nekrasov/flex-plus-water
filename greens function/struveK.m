@@ -15,12 +15,12 @@ function [ck0,ck1] = struveK(rhoj, z)
 
     [cr0,cr1] = struveR(zt);
 
-    src = [0; 0]; targ = [ zt / rhoj ; 0*z];
+    src = [0; 0]; targ = [ z ; 0*z];
     [h0,h1] = helmdiffgreen(rhoj,src,targ);
     h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
     h0 = -4i*h0.' ;
-    h1 = -rhoj*h1(:,:,1).'; % needs to be checked
-    % h1 = besselh(1,zt); 
+    h1 = 4i*h1(:,:,1).' ./ rhoj; 
+    h1(zt == 0) = 0; 
 
     ck0 = -1i*cr0+1i*h0;
     ck1 = -1i*cr1+1i*h1;
