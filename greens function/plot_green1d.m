@@ -3,16 +3,19 @@
 
 beta = 2;
 gamma = -0.5;
-xs = -20:0.01:20;
+h = 0.01;
+xs = -20:h:20;
 [val, grad] = green(xs,0*xs,beta,gamma,false);
 
+grad = grad(:,:,1);
+
 figure(8)
-plot(xs,real(val),xs, imag(val))
+plot(xs,real(grad),xs, imag(grad))
 legend('real','imaginary')
 title(['greens function, \beta = ', num2str(beta),', \gamma = ', num2str(gamma)])
 
-disp(val(10))
+val = gradient(val, h);
 
 figure(9)
-plot(xs,real(grad(:,:,1)),xs, imag(grad(:,:,1)))
+plot(xs,real(val),xs, imag(val))
 

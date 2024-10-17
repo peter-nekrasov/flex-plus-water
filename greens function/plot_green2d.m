@@ -5,7 +5,7 @@ clf
 clear
 close all
 
-h = 0.1;
+h = 0.05;
 xs = -10:h:10;
 [X,Y] = meshgrid(xs);
 gamma = -1; % fails if zero
@@ -107,9 +107,9 @@ colorbar
 title('abs')
 
 
-% %% Second derivatives
-% 
-% 
+%% Second derivatives
+
+
 % figure(5);
 % t = tiledlayout(1,3);
 % title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
@@ -117,6 +117,7 @@ title('abs')
 % nexttile
 % surf = pcolor(X,Y,real(hess(:,:,1)));
 % surf.EdgeColor = 'none';
+% clim([-1.2 0.3])
 % colorbar
 % title('real')
 % 
@@ -177,9 +178,9 @@ title('abs')
 % colorbar
 % title('abs')
 % 
-% %% Calculating second derivatives numerically 
+% % Calculating second derivatives numerically 
 % 
-% [FXX,FXY] = gradient(FX,h);
+% [FXX,FXY] = gradient(grad(:,:,1),h);
 % 
 % figure(8);
 % t = tiledlayout(1,3);
@@ -188,6 +189,7 @@ title('abs')
 % nexttile
 % surf = pcolor(X,Y,real(FXX));
 % surf.EdgeColor = 'none';
+% clim([-1.2 0.3])
 % colorbar
 % title('real')
 % 

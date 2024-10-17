@@ -1,4 +1,4 @@
-function [val,grad] = green(x,y,beta,gamma,surfeval)
+function [val,grad,hess] = green(x,y,beta,gamma,surfeval)
 %
 % computes the green's function centered at (x,y) = 0 for the 
 % integro-differential equation determined by the roots of the polynomial:
@@ -37,6 +37,8 @@ r = sqrt(x.^2 + y.^2);
 sz = size(r);
 r = abs(r);
 r = r(:).';
+X = x; % for debugging purposes
+Y = y; % for debugging purposes
 x = x(:).';
 y = y(:).';
 
@@ -49,6 +51,9 @@ end
 val = 0;
 gradx = 0;
 grady = 0;
+hessxx = 0;
+hessxy = 0;
+hessyy = 0;
 
 src = [0; 0];
 targ = [x; y];
@@ -60,27 +65,63 @@ for i = 1:5
 
     if angle(rhoj) == 0
 
-       [ck0,ck1] = struveK(rhoj, r);
-       [h0,gradh0] = helmdiffgreen(rhoj,src,targ);
+       [sk0,gradsk0] = struveK2(rhoj,src,targ);
+       [h0,gradh0,hessh0] = helmdiffgreen(rhoj,src,targ);
        h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
-       h0 = -4i*h0.';
+       h0 = -4i*h0;
        gradh0 = -4i*gradh0;
-       h0x = gradh0(:,:,1).';
-       h0y = gradh0(:,:,2).';
+       hessh0 = -4i*hessh0;
+       h0x = gradh0(:,:,1);
+       h0y = gradh0(:,:,2);
+       h0x(r == 0) = 0;
+       h0y(r == 0) = 0;
+       h0xx = hessh0(:,:,1).';
+       h0xy = hessh0(:,:,2).';
+       h0yy = hessh0(:,:,3).';
+       sk0x = gradsk0(:,:,1);
+       sk0y = gradsk0(:,:,2);
 
-       val = val + ej*rhoj^2*(-ck0 + 2i*h0);
+       % figure(1);
+       % h = abs(y(1) - y(2));
+       % ck1x = reshape(ck1,sz);
+       % [ck1x,~] = gradient(ck1x,h);
+       % s = pcolor(X,Y,real(ck1x));
+       % s.EdgeColor = 'None';
+       % colorbar
+       % 
+       % figure(2);
+       % Test2 = reshape((ck0-1./x.*ck1),sz);
+       % s = pcolor(X,Y,real(Test2));
+       % s.EdgeColor = 'None';
+       % colorbar
 
-       gradx = gradx + ej*rhoj^3*x./r.*ck1 + ej*rhoj^2*(2i*h0x);
-       grady = grady + ej*rhoj^3*y./r.*ck1 + ej*rhoj^2*(2i*h0y);
+       val = val + ej*rhoj^2*(-sk0 + 2i*h0);
+       gradx = gradx + ej*rhoj^2*(-sk0x + 2i*h0x);
+       grady = grady + ej*rhoj^2*(-sk0y + 2i*h0y);
+       
+       % 
+       % hessxx = hessxx + ej*rhoj^3.*(rhoj.*x.^2./r.^2.*ck0 ...
+       %     - (x.^2 - y.^2)./r.^3.*ck1) + ej*rhoj^2*(2i*h0xx);
+       % hessxy = hessxy + ej*rhoj^3*x.*y.*(rhoj./r.^2.*ck0 - 2./r.^3.*ck1) ...
+       %     + ej*rhoj^2*(2i*h0xy);
+       % hessyy = hessyy + ej*rhoj^3.*(rhoj.*y.^2./r.^2.*ck0 ...
+       %     + (x.^2 - y.^2)./r.^3.*ck1) + ej*rhoj^2*(2i*h0yy);
 
     elseif rhoj ~= 0
 
-       [ck0,ck1] = struveK(-rhoj, r);
-       
-       val = val + ej*rhoj^2*ck0;
+       [sk0,gradsk0] = struveK2(-rhoj,src,targ);
 
-       gradx = gradx + ej*rhoj^3*x./r.*ck1;
-       grady = grady + ej*rhoj^3*y./r.*ck1;
+       sk0x = gradsk0(:,:,1);
+       sk0y = gradsk0(:,:,2);
+
+       val = val + ej*rhoj^2*sk0;
+
+       gradx = gradx + ej*rhoj^2*sk0x;
+       grady = grady + ej*rhoj^2*sk0y;
+       
+       % hessxx = hessxx - ej*rhoj^3.*(rhoj.*x.^2./r.^2.*ck0 + (x.^2 - y.^2)./r.^3.*ck1);
+       % hessxy = hessxy - ej*rhoj^3*x.*y.*(rhoj./r.^2.*ck0 + 2./r.^3.*ck1);
+       % hessyy = hessyy - ej*rhoj^3.*(rhoj.*y.^2./r.^2.*ck0 - (x.^2 - y.^2)./r.^3.*ck1);
 
     end
 
@@ -89,10 +130,18 @@ end
 val = pi/2*val;
 gradx = pi/2*gradx;
 grady = pi/2*grady;
+hessxx = pi/2*hessxx;
+hessxy = pi/2*hessxy;
+hessyy = pi/2*hessyy;
 
 val = reshape(val,sz);
 gradx = reshape(gradx,sz);
 grady = reshape(grady,sz);
+% hessxx = reshape(hessxx,sz);
+% hessxy = reshape(hessxy,sz);
+% hessyy = reshape(hessyy,sz);
+% 
 grad = cat(3,gradx,grady);
+% hess = cat(3,hessxx,hessxy,hessyy);
 
 end
