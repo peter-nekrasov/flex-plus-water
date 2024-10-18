@@ -1,4 +1,4 @@
-function [val,grad] = struveK2(rhoj,src,targ)
+function [val,grad,hess] = struveK2(rhoj,src,targ)
     % where rhoj is a complex number and z is an array of real numbers
     % the hankel part of this function has log subtracted
 
@@ -19,6 +19,7 @@ function [val,grad] = struveK2(rhoj,src,targ)
 
     r2 = dx2 + dy2;
     r = sqrt(r2);
+    r3 = r.^3;
     
     ilow = (imag(rhoj) < 0);
 
@@ -29,27 +30,40 @@ function [val,grad] = struveK2(rhoj,src,targ)
     zt = r*rhoj;
     [cr0,cr1] = struveR(zt);
 
-    [h0,gradh0] = helmdiffgreen(rhoj,src,targ);
+    [h0,gradh0,hessh0] = helmdiffgreen(rhoj,src,targ);
+    
     h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
     h0 = -4i*h0;
-    gradh0 = -4i*gradh0;
-    gradh0x = gradh0(:,:,1);
-    gradh0y = gradh0(:,:,2);
 
+    h0x = -4i*gradh0(:,:,1);
+    h0y = -4i*gradh0(:,:,2);
+
+    h0xx = -4i*hessh0(:,:,1);
+    h0xy = -4i*hessh0(:,:,2);
+    h0yy = -4i*hessh0(:,:,3);
 
     val = -1i*cr0+1i*h0;
-    gradx = 1i*rhoj*cr1.*xt./r+1i*gradh0x;
-    grady = 1i*rhoj*cr1.*yt./r+1i*gradh0y;
+    gradx = 1i*rhoj*cr1.*xt./r+1i*h0x;
+    grady = 1i*rhoj*cr1.*yt./r+1i*h0y;
+    hessxx = 1i*rhoj^2*xt.^2./r2.*cr0-1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0xx; 
+    hessxy = 1i*rhoj^2*xt.*yt./r2.*cr0-2i*rhoj*xt.*yt./r3.*cr1+1i*h0xy; 
+    hessyy = 1i*rhoj^2*yt.^2./r2.*cr0+1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0yy; 
 
     gradx(r == 0) = 0;
     grady(r == 0) = 0;
+
+    % add corrections to second derivatives
 
     if ilow
         val = conj(val);
         gradx = conj(gradx);
         grady = conj(grady);
+        hessxx = conj(hessxx);
+        hessxy = conj(hessxy);
+        hessyy = conj(hessyy);
     end
 
     grad = cat(3,gradx,grady);
+    hess = cat(3,hessxx,hessxy,hessyy);
 
 end
