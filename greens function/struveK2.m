@@ -32,15 +32,23 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
 
     [h0,gradh0,hessh0] = helmdiffgreen(rhoj,src,targ);
     
+    h0x = gradh0(:,:,1);
+    h0y = gradh0(:,:,2);
+
+    h0xx = hessh0(:,:,1);
+    h0xy = hessh0(:,:,2);
+    h0yy = hessh0(:,:,3);
+
     h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
+
     h0 = -4i*h0;
 
-    h0x = -4i*gradh0(:,:,1);
-    h0y = -4i*gradh0(:,:,2);
+    h0x = -4i*h0x;
+    h0y = -4i*h0y;
 
-    h0xx = -4i*hessh0(:,:,1);
-    h0xy = -4i*hessh0(:,:,2);
-    h0yy = -4i*hessh0(:,:,3);
+    h0xx = -4i*h0xx;
+    h0xy = -4i*h0xy;
+    h0yy = -4i*h0yy;
 
     val = -1i*cr0+1i*h0;
     gradx = 1i*rhoj*cr1.*xt./r+1i*h0x;
@@ -51,6 +59,11 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
 
     gradx(r == 0) = 0;
     grady(r == 0) = 0;
+
+    hessxx(r == 0) = 1i*rhoj^2*cr0(r == 0) -4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+    hessxy(r == 0) = 0;
+    hessyy(r == 0) = 1i*rhoj^2*cr0(r == 0) -4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+
 
     % add corrections to second derivatives
 

@@ -81,6 +81,10 @@ for i = 1:5
        h0xx = hessh0(:,:,1);
        h0xy = hessh0(:,:,2);
        h0yy = hessh0(:,:,3);
+
+       h0xx(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+       h0xy(r == 0) = 0;
+       h0yy(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi+2*eulergamma-1.5-log(2));
        
        sk0x = gradsk0(:,:,1);
        sk0y = gradsk0(:,:,2);
