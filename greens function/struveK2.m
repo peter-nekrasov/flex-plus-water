@@ -1,6 +1,28 @@
-function [val,grad,hess] = struveK2(rhoj,src,targ)
-    % where rhoj is a complex number and z is an array of real numbers
-    % the hankel part of this function has log subtracted
+function [val,grad,hess,gradlap] = struveKdiffgreen(rhoj,src,targ)
+% evaluator for struveK(0,rhoj*x) and its derivatives with singularity
+% subtraction
+%
+% struveK(nu,x) = -i*StruveR(nu,x) + i*HankelK1(nu,x)
+%
+% where the Hankel part has log subtracted off
+% 
+% output : (note the convention is not the same as helmdiffgreen.m)
+%
+% - val has the value of the Green's function centered at zero and
+%   evaluated at (x,y)
+% - grad(:,:,1) has G_{x}, grad(:,:,2) has G_{y}
+% - hess(:,:,1) has G_{xx}, hess(:,:,2) has G_{xy}, 
+%   hess(:,:,3) has G_{yy}
+% - gradlap is the gradient of the Laplacian, namely 
+%   gradlap(:,:,1) has G_{xxx} + G_{xyy}, gradlap(:,:,2) has G_{yxx} + G_{yyy}
+%
+% input: 
+%
+% rhoj - complex number
+% src - [2,n] array of source locations
+% targ - [2,n] array of target locations
+%
+% Note: this code has only been tested for src = [0,0]
 
     [~,ns] = size(src);
     [~,nt] = size(targ);
@@ -30,7 +52,7 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
     zt = r*rhoj;
     [cr0,cr1] = struveR(zt);
 
-    [h0,gradh0,hessh0] = helmdiffgreen(rhoj,src,targ);
+    [h0,gradh0,hessh0,thirdh0] = helmdiffgreen(rhoj,src,targ);
     
     h0x = gradh0(:,:,1);
     h0y = gradh0(:,:,2);
@@ -39,8 +61,12 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
     h0xy = hessh0(:,:,2);
     h0yy = hessh0(:,:,3);
 
-    h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
+    h0xxx = thirdh0(:,:,1);
+    h0yxx = thirdh0(:,:,2);
+    h0xyy = thirdh0(:,:,3);
+    h0yyy = thirdh0(:,:,4);
 
+    h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
     h0 = -4i*h0;
 
     h0x = -4i*h0x;
@@ -56,16 +82,18 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
     hessxx = 1i*rhoj^2*xt.^2./r2.*cr0-1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0xx; 
     hessxy = 1i*rhoj^2*xt.*yt./r2.*cr0-2i*rhoj*xt.*yt./r3.*cr1+1i*h0xy; 
     hessyy = 1i*rhoj^2*yt.^2./r2.*cr0+1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0yy; 
+    gradlapx = rhoj^3*xt./r.*(-2/pi-1i*cr1) + 1i*(h0xxx+h0xyy);
+    gradlapy = rhoj^3*yt./r.*(-2/pi-1i*cr1) + 1i*(h0yxx+h0yyy);
 
     gradx(r == 0) = 0;
     grady(r == 0) = 0;
 
-    hessxx(r == 0) = 1i*rhoj^2*cr0(r == 0) -4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+    hessxx(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
     hessxy(r == 0) = 0;
-    hessyy(r == 0) = 1i*rhoj^2*cr0(r == 0) -4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+    hessyy(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
 
-
-    % add corrections to second derivatives
+    gradlapx(r == 0) = 0;
+    gradlapy(r == 0) = 0;
 
     if ilow
         val = conj(val);
@@ -74,9 +102,12 @@ function [val,grad,hess] = struveK2(rhoj,src,targ)
         hessxx = conj(hessxx);
         hessxy = conj(hessxy);
         hessyy = conj(hessyy);
+        gradlapx = conj(gradlapx);
+        gradlapy = conj(gradlapy);
     end
 
     grad = cat(3,gradx,grady);
     hess = cat(3,hessxx,hessxy,hessyy);
+    gradlap = cat(3,gradlapx,gradlapy);
 
 end
