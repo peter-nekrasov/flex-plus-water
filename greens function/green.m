@@ -66,7 +66,7 @@ for i = 1:5
 
     if angle(rhoj) == 0
 
-       [sk0,gradsk0,hesssk0,gradlapsk0] = struveK2(rhoj,src,targ);
+       [sk0,gradsk0,hesssk0,gradlapsk0] = struveKdiffgreen(rhoj,src,targ);
        [h0,gradh0,hessh0,thirdh0] = helmdiffgreen(rhoj,src,targ);
 
        h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
@@ -132,7 +132,7 @@ for i = 1:5
 
     elseif rhoj ~= 0
 
-       [sk0,gradsk0,hesssk0,gradlapsk0] = struveK2(-rhoj,src,targ);
+       [sk0,gradsk0,hesssk0,gradlapsk0] = struveKdiffgreen(-rhoj,src,targ);
 
        sk0x = gradsk0(:,:,1);
        sk0y = gradsk0(:,:,2);

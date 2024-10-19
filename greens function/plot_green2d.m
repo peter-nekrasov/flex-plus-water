@@ -11,32 +11,32 @@ xs = -10:h:10;
 gamma = -1; % fails if zero
 beta = 10;
 
-% [gval,grad] = green(X,Y,beta,gamma,false);
-% 
-% figure(1);
-% t = tiledlayout(1,3);
-% title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-% 
-% nexttile
-% surf = pcolor(X,Y,real(gval));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('real')
-% 
-% nexttile
-% surf = pcolor(X,Y,imag(gval));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('imag')
-% 
-% nexttile
-% surf = pcolor(X,Y,abs(gval));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('abs')
-% 
-% %% First derivatives
-% 
+[gval,grad] = green(X,Y,beta,gamma,false);
+
+figure(1);
+t = tiledlayout(1,3);
+title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+
+nexttile
+surf = pcolor(X,Y,real(gval));
+surf.EdgeColor = 'none';
+colorbar
+title('real')
+
+nexttile
+surf = pcolor(X,Y,imag(gval));
+surf.EdgeColor = 'none';
+colorbar
+title('imag')
+
+nexttile
+surf = pcolor(X,Y,abs(gval));
+surf.EdgeColor = 'none';
+colorbar
+title('abs')
+
+%% First derivatives
+
 % figure(2);
 % t = tiledlayout(1,3);
 % title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
@@ -106,11 +106,11 @@ beta = 10;
 % surf.EdgeColor = 'none';
 % colorbar
 % title('abs')
-
-
-% Second derivatives
-
-
+% 
+% 
+% %% Second derivatives
+% 
+% 
 % [gval,grad,hess] = green(X,Y,beta,gamma,false);
 % 
 % 
@@ -282,127 +282,127 @@ beta = 10;
 % surf.EdgeColor = 'none';
 % colorbar
 % title('abs')
-
-%% Third derivatives 
-
-[~,~,hess,gradlap] = green(X,Y,beta,gamma,false);
-
-lapx = gradlap(:,:,1);
-lapy = gradlap(:,:,2);
-
-lap = hess(:,:,1) + hess(:,:,3);
-
-figure(11);
-t = tiledlayout(1,3);
-title(t, '\Delta G');
-
-nexttile
-surf = pcolor(X,Y,real(lap));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(lap));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(lap));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-
-figure(12);
-t = tiledlayout(1,3);
-title(t, '\partial_x \Delta G');
-
-nexttile
-surf = pcolor(X,Y,real(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-
-figure(13);
-t = tiledlayout(1,3);
-title(t, '\partial_y \Delta G');
-
-nexttile
-surf = pcolor(X,Y,real(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-[lapx,lapy] = gradient(lap,h);
-
-figure(14);
-t = tiledlayout(1,3);
-title(t, 'numerical \partial_x \Delta G');
-
-nexttile
-surf = pcolor(X,Y,real(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(lapx));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-
-figure(15);
-t = tiledlayout(1,3);
-title(t, 'numerical \partial_y \Delta G');
-
-nexttile
-surf = pcolor(X,Y,real(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(lapy));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
+% 
+% %% Third derivatives 
+% 
+% [~,~,hess,gradlap] = green(X,Y,beta,gamma,false);
+% 
+% lapx = gradlap(:,:,1);
+% lapy = gradlap(:,:,2);
+% 
+% lap = hess(:,:,1) + hess(:,:,3);
+% 
+% figure(11);
+% t = tiledlayout(1,3);
+% title(t, '\Delta G');
+% 
+% nexttile
+% surf = pcolor(X,Y,real(lap));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(lap));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(lap));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% 
+% figure(12);
+% t = tiledlayout(1,3);
+% title(t, '\partial_x \Delta G');
+% 
+% nexttile
+% surf = pcolor(X,Y,real(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% 
+% figure(13);
+% t = tiledlayout(1,3);
+% title(t, '\partial_y \Delta G');
+% 
+% nexttile
+% surf = pcolor(X,Y,real(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% [lapx,lapy] = gradient(lap,h);
+% 
+% figure(14);
+% t = tiledlayout(1,3);
+% title(t, 'numerical \partial_x \Delta G');
+% 
+% nexttile
+% surf = pcolor(X,Y,real(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(lapx));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% 
+% figure(15);
+% t = tiledlayout(1,3);
+% title(t, 'numerical \partial_y \Delta G');
+% 
+% nexttile
+% surf = pcolor(X,Y,real(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(lapy));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
