@@ -7,7 +7,7 @@
 addpath('../greens function/')
 
 % Parameters
-h = 0.5;
+h = 0.25;
 xs = -50:h:50;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
@@ -19,11 +19,11 @@ gamma = -1;
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
 % Perturbing coefficients
-betabar = 1*X.*exp(-(X.^2 + Y.^2)/25); 
+betabar = X.*exp(-(X.^2 + Y.^2)/25); 
 beta = beta0 + betabar;
 
 % Constructing integral operator
-Gs = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, false);
+Gs = green(X - min(xs), Y - min(xs), beta0, gamma, false);
 % fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
@@ -42,7 +42,7 @@ t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
 
 % Evaluation and plotting
-Gc = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma, true);
+Gc = green(X - min(xs), Y - min(xs), beta0, gamma, true);
 % fill in diagonal correction 
 Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
     flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
@@ -135,11 +135,11 @@ second = -beta(ii,jj)*phi_n_tot(ii,jj);
 third = gamma*phi_tot(ii,jj);
 err = abs(first + second + third) / max(abs(phi_n(:)))
 
-%phiinc_sub = phiinc(ii-4:ii+4,jj-4:jj+4);
-%first = k*sum(bilap.*phiinc_sub,'all') / h^4;
-%second = -beta0*k*phiinc(ii,jj);
-%third = gamma*phiinc(ii,jj);
-%err = first + second + third
+% phiinc_sub = phiinc(ii-4:ii+4,jj-4:jj+4);
+% first = k*sum(bilap.*phiinc_sub,'all') / h^4;
+% second = -beta0*k*phiinc(ii,jj);
+% third = gamma*phiinc(ii,jj);
+% err = first + second + third
 
 function v = lhs(mu,betabar,Gs_aug_hat)
     N = sqrt(size(mu));

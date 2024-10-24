@@ -26,13 +26,14 @@ gammabar = 0.3*( X).*exp(-(X.^2 + Y.^2)/25);
 gamma = gamma0 + gammabar;
 
 % Constructing integral operator
-Gs = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma0, false);
+[Gs,~] = green(X - min(xs),Y - min(xs), beta0, gamma0, false);
+
 % fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
 Gs_aug_hat = fft2(Gs_aug)*h*h;
 
-Gc = green(sqrt((X - min(xs)).^2 + (Y- min(xs)).^2), beta0, gamma0, true);
+Gc = green(X - min(xs),Y - min(xs), beta0, gamma0, true);
 % fill in diagonal correction 
 Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
     flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];

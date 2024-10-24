@@ -1,4 +1,4 @@
-function [val,grad,hess] = gaussian(X,Y)
+function out = gaussian(X,Y)
 
     width = 5;
 
@@ -11,7 +11,8 @@ function [val,grad,hess] = gaussian(X,Y)
     hessxy = - X.*grady/width^2;
     hessyy = - val/width^2 - Y.*grady/width^2;
 
-    grad = cat(3,gradx,grady);
-    hess = cat(3,hessxx,hessxy,hessyy);
+    lap = hessxx+hessyy;
+
+    out = {val,gradx,grady,hessxx,hessxy,hessyy,lap};
 
 end
