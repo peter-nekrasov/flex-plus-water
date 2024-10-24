@@ -1,15 +1,14 @@
 %%%%%
 %
-% Continuous scattering with variable beta and gamma
+% Solving the Adjointed-Lippman Schwinger equation
 %
 %%%%%
 
 addpath('../greens function/')
 addpath('geometry/')
 
-
 % Parameters
-h = 0.1;
+h = 0.5;
 xs = -50:h:50;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
@@ -85,69 +84,28 @@ colorbar
 title('\partial_{yy} \alpha')
 
 nexttile
-s = pcolor(X,Y,alpha{7});
+s = pcolor(X,Y,alpha{4}+alpha{6});
 s.EdgeColor = 'None';
 colorbar
 title('\Delta \alpha')
 drawnow
  
-return 
-
 % Finding positive real roots
 [rts,~] = find_roots(beta0,gamma0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
+% Finding diagonal entry and shifting kernels
+ind = find((X == 0) & (Y==0));
+[zi,zj] = ind2sub(size(X),ind);
+
+Xshift = circshift(X,[zi,zj]);
+Yshift = circshift(Y,[zi,zj]);
+
 % Constructing integral operators
-[Gs,~,hessGs,gradlapGs] = green(X,Y, beta0, gamma0, false);
-% fill in diagonal corrections
-
-Gsxx = hessGs(:,:,1);
-Gsxy = hessGs(:,:,2);
-Gsyy = hessGs(:,:,3);
-Gslap = Gsxx + Gsyy;
-Gslapx = gradlapGs(:,:,1);
-Gslapy = gradlapGs(:,:,2);
-
-
-% write function pass in function and corrections and returns fft
-
-Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
-    flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
-Gs_aug_hat = fft2(Gs_aug)*h*h;
-
-Gsxx_aug = [Gsxx, flip(Gsxx(1:end,2:end),2); ...
-    flip(Gsxx(2:end,1:end)), flip(flip(Gsxx(2:end,2:end)),2)];
-Gsxx_aug_hat = fft2(Gsxx_aug)*h*h;
-
-Gsxy_aug = [Gsxy, flip(Gsxy(1:end,2:end),2); ...
-    flip(Gsxy(2:end,1:end)), flip(flip(Gsxy(2:end,2:end)),2)];
-Gsxy_aug_hat = fft2(Gsxy_aug)*h*h;
-
-Gsyy_aug = [Gsyy, flip(Gsyy(1:end,2:end),2); ...
-    flip(Gsyy(2:end,1:end)), flip(flip(Gsyy(2:end,2:end)),2)];
-Gsyy_aug_hat = fft2(Gsyy_aug)*h*h;
-
-Gslap_aug = [Gslap, flip(Gslap(1:end,2:end),2); ...
-    flip(Gslap(2:end,1:end)), flip(flip(Gslap(2:end,2:end)),2)];
-Gslap_aug_hat = fft2(Gslap_aug)*h*h;
-
-Gslapx_aug = [Gslapx, flip(Gslapx(1:end,2:end),2); ...
-    flip(Gslapx(2:end,1:end)), flip(flip(Gslapx(2:end,2:end)),2)];
-Gslapx_aug_hat = fft2(Gslapx_aug)*h*h;
-
-Gslapy_aug = [Gslapy, flip(Gslapy(1:end,2:end),2); ...
-    flip(Gslapy(2:end,1:end)), flip(flip(Gslapy(2:end,2:end)),2)];
-Gslapy_aug_hat = fft2(Gslapy_aug)*h*h;
-
-% kernel for phi
-Gc = green(X,Y, beta0, gamma0, true);
-% fill in diagonal correction 
-Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
-    flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
-Gc_aug_hat = fft2(Gc_aug)*h*h;
-
-ops = {Gs_aug_hat,Gsxx_aug_hat,Gsxy_aug_hat,Gsyy_aug_hat, ...
-    Gslap_aug_hat,Gslapx_aug_hat,Gslapy_aug_hat,Gc_aug_hat};
+Gs = green(Xshift,Yshift, beta0, gamma0, false);
+Gc = green(Xshift,Yshift, beta0, gamma0, true);
+kerns = [Gs, Gc{1}];
+kerns = proc_kern(kerns,h);
 
 % RHS (Incident field)
 phiinc = exp(1i*k*X);

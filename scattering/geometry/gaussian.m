@@ -11,8 +11,6 @@ function out = gaussian(X,Y)
     hessxy = - X.*grady/width^2;
     hessyy = - val/width^2 - Y.*grady/width^2;
 
-    lap = hessxx+hessyy;
-
-    out = {val,gradx,grady,hessxx,hessxy,hessyy,lap};
+    out = {val,gradx,grady,hessxx,hessxy,hessyy};
 
 end

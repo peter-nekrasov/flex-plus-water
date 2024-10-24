@@ -1,19 +1,18 @@
-function [val,grad,hess,gradlap] = green(x,y,beta,gamma,opt)
+function out = green(x,y,beta,gamma,opt)
 %
 % computes the green's function centered at (x,y) = 0 for the 
 % integro-differential equation determined by the roots of the polynomial:
 %             z^5 - beta*z + gamma = 0
 %
-% 
-% output : (note the convention is not the same as helmdiffgreen.m)
-% - val has the value of the Green's function centered at zero and
+% output is a cell array with all the kernels needed to solve the adjointed
+% Lippman Schwinger equation: {val,hessxx,hessxy,hessyy,gradlapx,gradlapy}
+% where:
+% - val is the value of the Green's function centered at zero and
 %   evaluated at (x,y)
-% - grad(:,:,1) has G_{x}, grad(:,:,2) has G_{y}
-% - hess(:,:,1) has G_{xx}, hess(:,:,2) has G_{xy}, 
-%   hess(:,:,3) has G_{yy}
+% - hessxx is G_{xx}, hessxy is G_{xy}, 
+%   hessyy is G_{yy}
 % - gradlap is the gradient of the Laplacian, namely 
-%   gradlap(:,:,1) has G_{xxx} + G_{xyy}, gradlap(:,:,2) has G_{yxx} + G_{yyy}
-% 
+%   gradlapx is G_{xxx} + G_{xyy}, gradlapy is G_{yxx} + G_{yyy}
 %
 % input:
 %
@@ -24,14 +23,14 @@ function [val,grad,hess,gradlap] = green(x,y,beta,gamma,opt)
 %
 % optional input:
 %
-% opt - string, default: 'green'. 
+% opt - bool, default: false. 
 %         Possible options are:
-%         opt = 'green' => Green's function (and derivatives)
-%         opt = 'phi' => kernel used to evaluate phi on surface
+%         opt = false => Green's function (and derivatives)
+%         opt = true => kernel used to evaluate phi on surface
 %
 
 if nargin < 5
-    opt = 'green';
+    opt = false;
 end
 
 r = sqrt(x.^2 + y.^2);
@@ -43,7 +42,7 @@ y = y(:).';
 
 [rts2, ejs] = find_roots(beta,gamma);
 
-if strcmpi(opt,'phi')
+if opt
     ejs = ejs./rts2;
 end
 
@@ -178,8 +177,6 @@ hessyy = reshape(hessyy,sz);
 gradlapx = reshape(gradlapx,sz);
 gradlapy = reshape(gradlapy,sz);
 
-grad = cat(3,gradx,grady);
-hess = cat(3,hessxx,hessxy,hessyy);
-gradlap = cat(3,gradlapx,gradlapy);
+out = {val,hessxx,hessxy,hessyy,gradlapx,gradlapy};
 
 end
