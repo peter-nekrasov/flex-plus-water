@@ -7,23 +7,29 @@
 addpath('../greens function/')
 
 % Parameters
-h = 0.25;
-xs = -50:h:50;
+h = 50;
+xs = -5000:h:5000;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
-beta0 = 5;
-gamma = -1;
+H0 = 20;
+w = 1;
+a0 = 6.41026E8*H0^3;
+b0 = (917*H0*w^2 - 9800) / a0;
+g0 = - 1000*w^2 / a0;
 
 % Finding positive real roots
-[rts,~] = find_roots(beta0,gamma);
+[rts,~] = find_roots(b0,g0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
 % Perturbing coefficients
-betabar = X.*exp(-(X.^2 + Y.^2)/25); 
-beta = beta0 + betabar;
+geo = gaussian(X,Y,H0,5/k);
+H = geo{1};
+beta = (917*H*w^2 - 9800) ./ geo{2};
+gamma = -1000*w^2 ./ geo{2};
 
 % Constructing integral operator
-Gs = green(X - min(xs), Y - min(xs), beta0, gamma, false);
+gf = green(X - min(xs), Y - min(xs), beta0, gamma, false);
+Gs = gf{1};
 % fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
@@ -42,7 +48,8 @@ t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
 
 % Evaluation and plotting
-Gc = green(X - min(xs), Y - min(xs), beta0, gamma, true);
+gf = green(X - min(xs), Y - min(xs), beta0, gamma, true);
+Gc = gf{1};
 % fill in diagonal correction 
 Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
     flip(Gc(2:end,1:end)), flip(flip(Gc(2:end,2:end)),2)];
@@ -57,19 +64,19 @@ phi_n = phi_n_aug(1:n,1:n);
 phi_tot = phiinc+phi;
 phi_n_tot = phi_n + k*phiinc;
 
-tiledlayout(1,3)
+tiledlayout(1,5)
 nexttile
 pc = pcolor(X,Y,beta);
 pc.EdgeColor = 'none';
 title('\beta')
 colorbar
 
-% nexttile
-% pc = pcolor(X,Y,real(phi_tot));
-% pc.EdgeColor = 'none';
-% %clim([-1.5 1.5])
-% title('Re(\phi)')
-% colorbar
+nexttile
+pc = pcolor(X,Y,real(phi_tot));
+pc.EdgeColor = 'none';
+%clim([-1.5 1.5])
+title('Re(\phi)')
+colorbar
 
 nexttile
 pc = pcolor(X,Y,abs(phi_tot));
@@ -78,12 +85,12 @@ pc.EdgeColor = 'none';
 title('|\phi|')
 colorbar
 
-% nexttile
-% pc = pcolor(X,Y,real(phi_n_tot));
-% pc.EdgeColor = 'none';
-% %clim([-1.5 1.5]*k)
-% title('real(\phi_n)')
-% colorbar
+nexttile
+pc = pcolor(X,Y,real(phi_n_tot));
+pc.EdgeColor = 'none';
+%clim([-1.5 1.5]*k)
+title('real(\phi_n)')
+colorbar
 
 nexttile
 pc = pcolor(X,Y,abs(phi_n_tot));
@@ -133,7 +140,7 @@ phi_n_tot_sub = phi_n_tot(ii-4:ii+4,jj-4:jj+4);
 first = sum(bilap.*phi_n_tot_sub,'all') ;
 second = -beta(ii,jj)*phi_n_tot(ii,jj);
 third = gamma*phi_tot(ii,jj);
-err = abs(first + second + third) / max(abs(phi_n(:)))
+err = abs(first + second + third) / (abs(phi_n(ii,jj)))
 
 % phiinc_sub = phiinc(ii-4:ii+4,jj-4:jj+4);
 % first = k*sum(bilap.*phiinc_sub,'all') / h^4;
