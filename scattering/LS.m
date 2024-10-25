@@ -105,10 +105,13 @@ Yshift = circshift(Y,[zi,zj]);
 Gs = green(Xshift,Yshift, beta0, gamma0, false);
 Gc = green(Xshift,Yshift, beta0, gamma0, true);
 kerns = [Gs, Gc{1}];
-kerns = proc_kern(kerns,h);
+kerns = proc_kern(kerns,h); % the singularity has to be at (1,1)
 
 % RHS (Incident field)
 phiinc = exp(1i*k*X);
+alphalap = alpha{4} + alpha{6};
+alphax = alpha{2};
+alphayy = alpha{6};
 rhs = (-k*(k^2*alphalap+2*k^3*alphax+(1-nu)*(-k^2*alphayy)) + k*betabar - gammabar).*phiinc;
 rhs_vec = rhs(:);
 
@@ -121,7 +124,7 @@ drawnow
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) lhs(mu,coefs,ops),rhs_vec,[],1e-12,200);
+mu = gmres(@(mu) lhs(mu,kerns,coefs),rhs_vec,[],1e-12,200);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -129,8 +132,8 @@ fprintf('%5.2e s : time to solve\n',t1)
 % Evaluation and plotting
 mu_aug = [mu, zeros(n,n-1); zeros(n-1,n), zeros(n-1)];
 mu_aug_hat = fft2(mu_aug);
-phi_aug = ifft2(Gc_aug_hat.*mu_aug_hat);
-phi_n_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
+phi_aug = ifft2(kerns{7}.*mu_aug_hat);
+phi_n_aug = ifft2(kerns{1}.*mu_aug_hat);
 phi = phi_aug(1:n,1:n);
 phi_n = phi_n_aug(1:n,1:n);
 
@@ -138,18 +141,7 @@ phi_tot = phiinc+phi;
 phi_n_tot = phi_n + k*phiinc;
 
 figure(4)
-tiledlayout(2,3)
-nexttile
-pc = pcolor(X,Y,beta);
-pc.EdgeColor = 'none';
-title('\beta')
-colorbar
-
-nexttile
-pc = pcolor(X,Y,gamma);
-pc.EdgeColor = 'none';
-title('\gamma')
-colorbar
+tiledlayout(1,4)
 
 nexttile
 pc = pcolor(X,Y,real(phi_tot));

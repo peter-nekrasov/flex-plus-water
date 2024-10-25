@@ -11,107 +11,104 @@ xs = -10:h:10;
 gamma = -1; % fails if zero
 beta = 10;
 
-[gval,grad] = green(X,Y,beta,gamma,false);
+gf = green(X,Y,beta,gamma,false);
 
 figure(1);
 t = tiledlayout(1,3);
 title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
 
 nexttile
-surf = pcolor(X,Y,real(gval));
+surf = pcolor(X,Y,real(gf{1}));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(gval));
+surf = pcolor(X,Y,imag(gf{1}));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(gval));
+surf = pcolor(X,Y,abs(gf{1}));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
 
 % First derivatives
 
-figure(2);
-t = tiledlayout(1,3);
-title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-
-nexttile
-surf = pcolor(X,Y,real(grad(:,:,1)));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(grad(:,:,1)));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(grad(:,:,1)));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-figure(3);
-t = tiledlayout(1,3);
-title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-
-nexttile
-surf = pcolor(X,Y,real(grad(:,:,2)));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(grad(:,:,2)));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(grad(:,:,2)));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
-
-%% Checking against numerical gradient
-
-[FX,FY] = gradient(gval,h);
-
-figure(4);
-t = tiledlayout(1,3);
-title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-
-nexttile
-surf = pcolor(X,Y,real(FX));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-nexttile
-surf = pcolor(X,Y,imag(FX));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
-surf = pcolor(X,Y,abs(FX));
-surf.EdgeColor = 'none';
-colorbar
-title('abs')
+% figure(2);
+% t = tiledlayout(1,3);
+% title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+% 
+% nexttile
+% surf = pcolor(X,Y,real(grad(:,:,1)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(grad(:,:,1)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(grad(:,:,1)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% figure(3);
+% t = tiledlayout(1,3);
+% title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+% 
+% nexttile
+% surf = pcolor(X,Y,real(grad(:,:,2)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(grad(:,:,2)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(grad(:,:,2)));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
+% 
+% %% Checking against numerical gradient
+% 
+% [FX,FY] = gradient(gval,h);
+% 
+% figure(4);
+% t = tiledlayout(1,3);
+% title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+% 
+% nexttile
+% surf = pcolor(X,Y,real(FX));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('real')
+% 
+% nexttile
+% surf = pcolor(X,Y,imag(FX));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('imag')
+% 
+% nexttile
+% surf = pcolor(X,Y,abs(FX));
+% surf.EdgeColor = 'none';
+% colorbar
+% title('abs')
 
 
 %% Second derivatives
-
-
-[gval,grad,hess] = green(X,Y,beta,gamma,false);
 
 
 figure(5);
@@ -119,20 +116,20 @@ t = tiledlayout(1,3);
 title(t, 'G_{xx}');
 
 nexttile
-surf = pcolor(X,Y,real(hess(:,:,1)));
+surf = pcolor(X,Y,real(gf{2}));
 surf.EdgeColor = 'none';
 clim([-1.2 0.3])
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(hess(:,:,1)));
+surf = pcolor(X,Y,imag(gf{2}));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(hess(:,:,1)));
+surf = pcolor(X,Y,abs(gf{2}));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
@@ -143,19 +140,19 @@ t = tiledlayout(1,3);
 title(t, 'G_{xy}');
 
 nexttile
-surf = pcolor(X,Y,real(hess(:,:,2)));
+surf = pcolor(X,Y,real(gf{3}));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(hess(:,:,2)));
+surf = pcolor(X,Y,imag(gf{3}));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(hess(:,:,2)));
+surf = pcolor(X,Y,abs(gf{3}));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
@@ -165,22 +162,25 @@ t = tiledlayout(1,3);
 title(t, 'G_{yy}');
 
 nexttile
-surf = pcolor(X,Y,real(hess(:,:,3)));
+surf = pcolor(X,Y,real(gf{4}));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(hess(:,:,3)));
+surf = pcolor(X,Y,imag(gf{4}));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(hess(:,:,3)));
+surf = pcolor(X,Y,abs(gf{4}));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
+
+return 
+
 
 % Calculating second derivatives numerically 
 

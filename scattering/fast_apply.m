@@ -15,10 +15,11 @@ function v = fast_apply(mu,kern_struct,V)
     Gsxx_aug_hat = kern_struct{2};
     Gsxy_aug_hat = kern_struct{3};
     Gsyy_aug_hat = kern_struct{4};
-    Gslap_aug_hat = kern_struct{5};
-    Gslapx_aug_hat = kern_struct{6};
-    Gslapy_aug_hat = kern_struct{7};
-    Gc_aug_hat = kern_struct{8};
+    Gslapx_aug_hat = kern_struct{5};
+    Gslapy_aug_hat = kern_struct{6};
+    Gc_aug_hat = kern_struct{7};
+
+    Gslap_aug_hat = Gsxx_aug_hat + Gsyy_aug_hat;
 
     N = sqrt(size(mu));
     N = N(1);
