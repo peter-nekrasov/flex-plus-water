@@ -16,13 +16,13 @@ xs = -50:h:50; %-5000:h:5000;
 % w = 2;
 a0 = 1; %6.410256410256411e+08*H0^3;
 b0 = 3; %(917*H0*w^2 - 9800) ;
-g0 = 0; %- 1000*w^2 ;
+g0 = -1; %- 1000*w^2 ;
 
 % Finding positive real roots
 [rts,~] = find_roots(b0 / a0, g0 / a0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
-bbar = -2.*X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
+bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
 beta = b0 + bbar;
 
 
@@ -82,7 +82,7 @@ Gs_aug_hat = fft2(Gs_aug)*h*h;
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) lhs(mu,a0,bbar,Gs_aug_hat),rhs_vec,[],1e-13,200);
+mu = gmres(@(mu) lhs(mu,a0,bbar,Gs_aug_hat),rhs_vec,[],1e-12,200);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
