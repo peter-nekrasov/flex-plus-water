@@ -1,15 +1,16 @@
 function v = fast_apply(mu,kern_struct,V)
 
     alpha = V{1};
-    alphax = V{2};
-    alphay = V{3};
-    alphaxx = V{4};
-    alphaxy = V{5};
-    alphayy = V{6};
-    betabar = V{7};
-    gammabar = V{8};
-    nu = V{9};
-    alphalap = alphaxx+alphayy;
+    betabar = V{2};
+    % alphax = V{2};
+    % alphay = V{3};
+    % alphaxx = V{4};
+    % alphaxy = V{5};
+    % alphayy = V{6};
+    % betabar = V{7};
+    % gammabar = V{8};
+    % nu = V{9};
+    %alphalap = alphaxx+alphayy;
 
     Gs_aug_hat = kern_struct{1};
     Gsxx_aug_hat = kern_struct{2};
@@ -54,9 +55,12 @@ function v = fast_apply(mu,kern_struct,V)
 
     % write function to apply integral operators above
 
-    v = alpha.*mu + alphalap.*Gslap_mu + 2*alphax.*Gslapx_mu + ...
-        + 2*alphay.*Gslapy_mu + (1-nu)*(2*alphaxy.*Gsxy_mu - ...
-        alphaxx.*Gsyy_mu - alphayy.*Gsxx_mu) - betabar.*Gs_mu + gammabar.*Gc_mu;
+    % v = alpha.*mu + alphalap.*Gslap_mu + 2*alphax.*Gslapx_mu + ...
+    %     + 2*alphay.*Gslapy_mu + (1-nu)*(2*alphaxy.*Gsxy_mu - ...
+    %     alphaxx.*Gsyy_mu - alphayy.*Gsxx_mu) - betabar.*Gs_mu + gammabar.*Gc_mu;
+    % v = v(:);
+
+    v = alpha.*mu - betabar.*Gs_mu ;
     v = v(:);
 
 end
