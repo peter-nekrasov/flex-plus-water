@@ -1,11 +1,11 @@
-function out = gaussian(X,Y,H0,width)
+function out = gaussian(X,Y,amp,H0,width)
 
     E = 7E9; % Young's modulus (Pa)
     nu = 0.3; % Poisson ratio
 
-    H = H0 + exp(-(X.^2 + Y.^2)/(2*width^2));
+    H = H0 + amp*exp(-(X.^2 + Y.^2)/(2*width^2));
 
-    D = E*H^3/(12*(1-nu^2));
+    D = E*H.^3/(12*(1-nu^2));
 
     Dx = - 3*X.*D/width^2;
     Dy = - 3*Y.*D/width^2;

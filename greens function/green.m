@@ -63,7 +63,7 @@ for i = 1:5
     rhoj = rts2(i);
     ej = ejs(i);
 
-    if angle(rhoj) == 0
+    if (angle(rhoj) == 0) && (rhoj ~= 0)
 
        [sk0,gradsk0,hesssk0,gradlapsk0] = struveKdiffgreen(rhoj,src,targ);
        [h0,gradh0,hessh0,thirdh0] = helmdiffgreen(rhoj,src,targ);
@@ -118,8 +118,8 @@ for i = 1:5
 
        val = val + ej*rhoj^2*(-sk0 + 2i*h0);
 
-       gradx = gradx + ej*rhoj^2*(-sk0x + 2i*h0x);
-       grady = grady + ej*rhoj^2*(-sk0y + 2i*h0y);
+       %gradx = gradx + ej*rhoj^2*(-sk0x + 2i*h0x);
+       %grady = grady + ej*rhoj^2*(-sk0y + 2i*h0y);
        
        hessxx = hessxx + ej*rhoj^2*(-sk0xx + 2i*h0xx);
        hessxy = hessxy + ej*rhoj^2*(-sk0xy + 2i*h0xy);
@@ -145,8 +145,8 @@ for i = 1:5
 
        val = val + ej*rhoj^2*sk0;
 
-       gradx = gradx + ej*rhoj^2*sk0x;
-       grady = grady + ej*rhoj^2*sk0y;
+       %gradx = gradx + ej*rhoj^2*sk0x;
+       %grady = grady + ej*rhoj^2*sk0y;
 
        hessxx = hessxx + ej*rhoj^2*sk0xx;
        hessxy = hessxy + ej*rhoj^2*sk0xy;
@@ -159,18 +159,18 @@ for i = 1:5
 
 end
 
-val = pi/2*val;
-gradx = pi/2*gradx;
-grady = pi/2*grady;
-hessxx = pi/2*hessxx;
-hessxy = pi/2*hessxy;
-hessyy = pi/2*hessyy;
-gradlapx = pi/2*gradlapx;
-gradlapy = pi/2*gradlapy;
+val = 1/4*val;
+%gradx = 1/2*gradx;
+%grady = pi/2*grady;
+hessxx = 1/4*hessxx;
+hessxy = 1/4*hessxy;
+hessyy = 1/4*hessyy;
+gradlapx = 1/4*gradlapx;
+gradlapy = 1/4*gradlapy;
 
 val = reshape(val,sz);
-gradx = reshape(gradx,sz);
-grady = reshape(grady,sz);
+%gradx = reshape(gradx,sz);
+%grady = reshape(grady,sz);
 hessxx = reshape(hessxx,sz);
 hessxy = reshape(hessxy,sz);
 hessyy = reshape(hessyy,sz);

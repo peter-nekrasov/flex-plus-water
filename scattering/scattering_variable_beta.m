@@ -5,50 +5,100 @@
 %%%%%
 
 addpath('../greens function/')
+addpath('geometry/')
 
 % Parameters
-h = 50;
-xs = -5000:h:5000;
+h = 0.125;
+xs = -50:h:50; %-5000:h:5000;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
-H0 = 20;
-w = 1;
-a0 = 6.41026E8*H0^3;
-b0 = (917*H0*w^2 - 9800) / a0;
-g0 = - 1000*w^2 / a0;
+% H0 = 20;
+% w = 2;
+a0 = 1; %6.410256410256411e+08*H0^3;
+b0 = 3; %(917*H0*w^2 - 9800) ;
+g0 = 0; %- 1000*w^2 ;
 
 % Finding positive real roots
-[rts,~] = find_roots(b0,g0);
+[rts,~] = find_roots(b0 / a0, g0 / a0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
+bbar = -2.*X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
+beta = b0 + bbar;
+
+
 % Perturbing coefficients
-geo = gaussian(X,Y,H0,5/k);
-H = geo{1};
-beta = (917*H*w^2 - 9800) ./ geo{2};
-gamma = -1000*w^2 ./ geo{2};
+% geo = gaussian(X,Y,5,H0,3*pi/k);
+% H = geo{1};
+% alpha = geo{2};
+% beta = (917*H*w^2 - 9800) ;
+% gamma = -1000*w^2 ;
+% abar = alpha - a0;
+% bbar = beta - b0;
+
+% RHS (Incident field)
+phiinc = exp(1i*k*X);
+rhs = k*bbar.*phiinc;
+rhs_vec = rhs(:);
+
+
+figure(1);
+tiledlayout(1,2);
+
+% nexttile
+% s = pcolor(X,Y,H);
+% s.EdgeColor = 'None';
+% colorbar
+% title('H')
+
+% nexttile
+% s = pcolor(X,Y,alpha);
+% s.EdgeColor = 'None';
+% colorbar
+% title('\alpha')
+
+nexttile
+s = pcolor(X,Y,beta);
+s.EdgeColor = 'None';
+colorbar
+title('\beta')
+drawnow
+
+nexttile
+s = pcolor(X,Y,real(rhs));
+s.EdgeColor = 'None';
+colorbar
+title('rhs')
+drawnow
+ 
 
 % Constructing integral operator
-gf = green(X - min(xs), Y - min(xs), beta0, gamma, false);
+gf = green(X - min(xs), Y - min(xs), b0 / a0, g0 / a0, false);
 Gs = gf{1};
 % fill in diagonal correction 
 Gs_aug = [Gs, flip(Gs(1:end,2:end),2); ...
     flip(Gs(2:end,1:end)), flip(flip(Gs(2:end,2:end)),2)];
 Gs_aug_hat = fft2(Gs_aug)*h*h;
 
-% RHS (Incident field)
-phiinc = exp(1i*k*X);
-rhs = k*betabar.*phiinc;
-rhs_vec = rhs(:);
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) lhs(mu,betabar,Gs_aug_hat),rhs_vec,[],1e-12,200);
+mu = gmres(@(mu) lhs(mu,a0,bbar,Gs_aug_hat),rhs_vec,[],1e-13,200);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
 
+N = n;
+mu = reshape(mu, [N N]);
+mu_aug = [mu, zeros(N,N-1); zeros(N-1,N), zeros(N-1)];
+mu_aug_hat = fft2(mu_aug);
+Gs_mu_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
+Gs_mu = Gs_mu_aug(1:N, 1:N);
+
+% err = mu - bbar.*Gs_mu - k*bbar.*phiinc
+ 
+
 % Evaluation and plotting
-gf = green(X - min(xs), Y - min(xs), beta0, gamma, true);
+gf = green(X - min(xs), Y - min(xs), b0 / a0, g0 / a0, true);
 Gc = gf{1};
 % fill in diagonal correction 
 Gc_aug = [Gc, flip(Gc(1:end,2:end),2); ...
@@ -61,14 +111,18 @@ phi_n_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
 phi = phi_aug(1:n,1:n);
 phi_n = phi_n_aug(1:n,1:n);
 
-phi_tot = phiinc+phi;
+phi_tot = phiinc + phi;
 phi_n_tot = phi_n + k*phiinc;
 
+
+figure(2);
 tiledlayout(1,5)
+
 nexttile
-pc = pcolor(X,Y,beta);
+pc = pcolor(X,Y,real(mu));
 pc.EdgeColor = 'none';
-title('\beta')
+%clim([-1.5 1.5])
+title('Re(\mu)')
 colorbar
 
 nexttile
@@ -103,7 +157,7 @@ rmpath('../greens function/')
 
 %% Calculating error
 
-ind = intersect(find(X == 16), find(Y == 0));
+ind = intersect(find(X == 4), find(Y == 4));
 [ii, jj] = ind2sub(size(X),ind);
 % disp(phi(ii,jj))
 
@@ -136,11 +190,27 @@ bilap(5,:) = bilap(5,:) + d1.';
 bilap = bilap + 2*(d2*d2.');
 bilap = bilap / h^4;
 
+% Error of scattered part
+% phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
+% first = a0*sum(bilap.*phi_n_sub,'all') ;
+% second = -beta(ii,jj)*phi_n(ii,jj);
+% third = g0*phi(ii,jj);
+% rhs = k*bbar(ii,jj)*phiinc(ii,jj);
+% err = abs(first + second + third - rhs) / max(abs(phi_n_tot(:)))
+
+% Residual error of total solution 
 phi_n_tot_sub = phi_n_tot(ii-4:ii+4,jj-4:jj+4);
-first = sum(bilap.*phi_n_tot_sub,'all') ;
-second = -beta(ii,jj)*phi_n_tot(ii,jj);
-third = gamma*phi_tot(ii,jj);
-err = abs(first + second + third) / (abs(phi_n(ii,jj)))
+first = a0*sum(bilap.*phi_n_tot_sub,'all') ;
+second = -beta(ii,jj).*phi_n_tot(ii,jj);
+third = g0*phi_tot(ii,jj);
+err = abs(first + second + third) / max(abs(phi_n_tot(:)))
+
+% Error of just the green's functions (?) Not really an error but a check
+% Gs_sub = Gs(ii-4:ii+4,jj-4:jj+4);
+% first = a0*sum(bilap.*Gs_sub,'all') ;
+% second = -b0*Gs(ii,jj);
+% third = g0*Gc(ii,jj);
+% err = abs(first + second + third) 
 
 % phiinc_sub = phiinc(ii-4:ii+4,jj-4:jj+4);
 % first = k*sum(bilap.*phiinc_sub,'all') / h^4;
@@ -148,7 +218,7 @@ err = abs(first + second + third) / (abs(phi_n(ii,jj)))
 % third = gamma*phiinc(ii,jj);
 % err = first + second + third
 
-function v = lhs(mu,betabar,Gs_aug_hat)
+function v = lhs(mu,a0,bbar,Gs_aug_hat)
     N = sqrt(size(mu));
     N = N(1);
     mu = reshape(mu, [N N]);
@@ -156,6 +226,6 @@ function v = lhs(mu,betabar,Gs_aug_hat)
     mu_aug_hat = fft2(mu_aug);
     Gs_mu_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
     Gs_mu = Gs_mu_aug(1:N, 1:N);
-    v = mu - betabar.*Gs_mu;
+    v = a0*mu - bbar.*Gs_mu;
     v = v(:);
 end
