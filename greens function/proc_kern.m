@@ -1,12 +1,5 @@
-function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
+function kern_struct = proc_kern(kern_struct,ind,beta,gamma)
 
-    val = kern_struct{1};
-    hessxx = kern_struct{2};
-    hessxy = kern_struct{3};
-    hessyy = kern_struct{4};
-    gradlapx = kern_struct{5};
-    gradlapy = kern_struct{6};
-    phi = kern_struct{7};
 
     [~,z1] = epstein_zeta(-2+1i*10^-12,1,0,1,1,0,0) ;
     z1 = imag(z1)*1e12;
@@ -15,7 +8,6 @@ function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
     [~,~,z3] = epstein_zeta(-4+1i*10^-12,1,0,1,0,1,0) ;
     z3 = imag(z3)*1e12;
 
-    [rts, ejs] = find_roots(beta,gamma);
 
     %%% PERFORM DIAGONAL CORRECTIONS HERE
     % NEED TO KNOW CONSTANT PART 
@@ -24,7 +16,7 @@ function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
 
     for ii = 1:numel(kern_struct)
         kernmat = kern_struct{ii};
-        if ii == 1
+        if ii == 100
                 A = [1 1 1 1 1;
                     0 1 -1 0 0;
                     0 0 0 1 -1;
@@ -42,7 +34,7 @@ function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
                 kernmat(zi-1,zj) = kernmat(zi-1,zj) + c0*tau(5);
         end
         kernhat = circshift(kernmat,[zi,zj]);
-        kern_struct{ii} = fft2(kernhat)*h*h;
+        kern_struct{ii} = fft2(kernhat);
     end
 
 

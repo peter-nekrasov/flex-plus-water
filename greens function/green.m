@@ -1,4 +1,4 @@
-function out = green(src,targ,rts,ejs,opt)
+function out = green(src,targ,rts,ejs)
 %
 % computes the green's function centered at (x,y) = 0 for the 
 % integro-differential equation determined by the roots of the polynomial:
@@ -49,16 +49,13 @@ r = sqrt(r2);
 
 val = 0;
 phi = 0;
-gradx = 0;
-grady = 0;
+% gradx = 0;
+% grady = 0;
 hessxx = 0;
 hessxy = 0;
 hessyy = 0;
 gradlapx = 0;
 gradlapy = 0;
-
-% src = [0; 0];
-% targ = [x; y];
 
 for i = 1:5
     
@@ -73,13 +70,13 @@ for i = 1:5
        h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
 
        h0 = -4i*h0;
-       gradh0 = -4i*gradh0;
+       % gradh0 = -4i*gradh0;
        
-       h0x = gradh0(:,:,1);
-       h0y = gradh0(:,:,2);
-       
-       h0x(r == 0) = 0;
-       h0y(r == 0) = 0;
+       % h0x = gradh0(:,:,1);
+       % h0y = gradh0(:,:,2);
+       % 
+       % h0x(r == 0) = 0;
+       % h0y(r == 0) = 0;
        
        h0xx = hessh0(:,:,1);
        h0xy = hessh0(:,:,2);
@@ -108,8 +105,8 @@ for i = 1:5
        h0xyy = -4i*h0xyy;
        h0yyy = -4i*h0yyy;
        
-       sk0x = gradsk0(:,:,1);
-       sk0y = gradsk0(:,:,2);
+       % sk0x = gradsk0(:,:,1);
+       % sk0y = gradsk0(:,:,2);
 
        sk0xx = hesssk0(:,:,1);
        sk0xy = hesssk0(:,:,2);
@@ -136,8 +133,8 @@ for i = 1:5
 
        [sk0,gradsk0,hesssk0,gradlapsk0] = struveKdiffgreen(-rhoj,src,targ);
 
-       sk0x = gradsk0(:,:,1);
-       sk0y = gradsk0(:,:,2);
+       % sk0x = gradsk0(:,:,1);
+       % sk0y = gradsk0(:,:,2);
 
        sk0xx = hesssk0(:,:,1);
        sk0xy = hesssk0(:,:,2);
@@ -173,15 +170,9 @@ hessyy = 1/4*hessyy;
 gradlapx = 1/4*gradlapx;
 gradlapy = 1/4*gradlapy;
 
-% val = reshape(val,sz);
-% %gradx = reshape(gradx,sz);
-% %grady = reshape(grady,sz);
-% hessxx = reshape(hessxx,sz);
-% hessxy = reshape(hessxy,sz);
-% hessyy = reshape(hessyy,sz);
-% gradlapx = reshape(gradlapx,sz);
-% gradlapy = reshape(gradlapy,sz);
+hess = cat(3,hessxx,hessxy,hessyy);
+gradlap = cat(3,gradlapx,gradlapy);
 
-out = {val,hessxx,hessxy,hessyy,gradlapx,gradlapy,phi};
+out = {val,hess,gradlap,phi};
 
 end

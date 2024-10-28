@@ -1,7 +1,16 @@
 function v = fast_apply_fft(mu,kern_struct,V)
 
     alpha = V{1};
-    bbar = V{2};
+    betabar = V{2};
+    % alphax = V{2};
+    % alphay = V{3};
+    % alphaxx = V{4};
+    % alphaxy = V{5};
+    % alphayy = V{6};
+    % betabar = V{7};
+    % gammabar = V{8};
+    % nu = V{9};
+    %alphalap = alphaxx+alphayy;
 
     Gs_aug_hat = kern_struct{1};
     % Gsxx_aug_hat = kern_struct{2};
@@ -9,9 +18,9 @@ function v = fast_apply_fft(mu,kern_struct,V)
     % Gsyy_aug_hat = kern_struct{4};
     % Gslapx_aug_hat = kern_struct{5};
     % Gslapy_aug_hat = kern_struct{6};
-    Gc_aug_hat = kern_struct{4};
+    % Gc_aug_hat = kern_struct{4};
 
-    %Gslap_aug_hat = Gsxx_aug_hat + Gsyy_aug_hat;
+    % Gslap_aug_hat = Gsxx_aug_hat + Gsyy_aug_hat;
 
     N = sqrt(size(mu));
     N = N(1);
@@ -40,9 +49,9 @@ function v = fast_apply_fft(mu,kern_struct,V)
     % 
     % Gslapy_mu_aug = ifft2(Gslapy_aug_hat.*mu_aug_hat);
     % Gslapy_mu = Gslapy_mu_aug(1:N, 1:N);
-
-    Gc_mu_aug = ifft2(Gc_aug_hat.*mu_aug_hat);
-    Gc_mu = Gc_mu_aug(1:N, 1:N);
+    % 
+    % Gc_mu_aug = ifft2(Gc_aug_hat.*mu_aug_hat);
+    % Gc_mu = Gc_mu_aug(1:N, 1:N);
 
     % write function to apply integral operators above
 
@@ -51,7 +60,7 @@ function v = fast_apply_fft(mu,kern_struct,V)
     %     alphaxx.*Gsyy_mu - alphayy.*Gsxx_mu) - betabar.*Gs_mu + gammabar.*Gc_mu;
     % v = v(:);
 
-    v = alpha.*mu - bbar.*Gs_mu ;
+    v = alpha.*mu - betabar.*Gs_mu ;
     v = v(:);
 
 end

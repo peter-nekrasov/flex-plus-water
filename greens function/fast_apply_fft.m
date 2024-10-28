@@ -1,4 +1,4 @@
-function v = fast_apply(mu,kern_struct,V)
+function v = fast_apply_fft(mu,kern_struct,V)
 
     alpha = V{1};
     betabar = V{2};
@@ -18,7 +18,7 @@ function v = fast_apply(mu,kern_struct,V)
     % Gsyy_aug_hat = kern_struct{4};
     % Gslapx_aug_hat = kern_struct{5};
     % Gslapy_aug_hat = kern_struct{6};
-    Gc_aug_hat = kern_struct{7};
+    % Gc_aug_hat = kern_struct{4};
 
     % Gslap_aug_hat = Gsxx_aug_hat + Gsyy_aug_hat;
 
