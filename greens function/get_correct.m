@@ -1,4 +1,15 @@
-function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
+function [inds, corrs] = get_correct(rts,ejs,h)
+% Getting corrections for the kernels in the Lippman-Schwinger eq
+%
+% input:
+% - rts: float vector - roots of polynomial
+% - ejs: float vector - coefficients in partial fraction expansion
+% - h: float - grid spacing
+%
+% output: 
+% - inds: cell array - indices of corrections
+% - corrs: cell array - corresponding corrections
+%
 
     val = kern_struct{1};
     hessxx = kern_struct{2};

@@ -177,6 +177,13 @@ hessyy = reshape(hessyy,sz);
 gradlapx = reshape(gradlapx,sz);
 gradlapy = reshape(gradlapy,sz);
 
-out = {val,hessxx,hessxy,hessyy,gradlapx,gradlapy};
+hess = cat(3, hessxx,hessxy,hessyy);
+gradlap = cat(3, gradlapx, gradlapy);
+
+if opts
+    out = {val};
+else
+    out = {val,hess,gradlap};
+end
 
 end

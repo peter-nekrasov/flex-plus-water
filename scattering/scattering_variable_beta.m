@@ -173,5 +173,5 @@ figure(3)
 loglog(hs,errs,'x-');
 
 hold on
-loglog(hs, 0.01*hs.^8, '--')
+loglog(hs, 0.01*hs.^6, '--')
 
