@@ -8,33 +8,73 @@
 h = 0.05;
 xs = -10:h:10;
 [X,Y] = meshgrid(xs);
+targ = [X(:).'; Y(:).'];
+src = [0; 0];
 gamma = -1; % fails if zero
 beta = 10;
 
-gf = green(X,Y,beta,gamma,false);
+
+[rts,ejs] = find_roots(beta,gamma);
+
+gf = green(src,targ,rts,ejs);
+val = gf{1};
+hess = gf{2};
+gradlap = gf{3};
+phi = gf{4};
+
+val = reshape(val,size(X));
+phi = reshape(phi,size(X));
+hessxx = reshape(hess(:,:,1),size(X)); 
+hessxy = reshape(hess(:,:,2),size(X)); 
+hessyy = reshape(hess(:,:,3),size(X)); 
+lapx = reshape(gradlap(:,:,1),size(X)); 
+lapy = reshape(gradlap(:,:,2),size(X)); 
 
 figure(1);
 t = tiledlayout(1,3);
-title(t, ['\beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+title(t, ['Greens function, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
 
 nexttile
-surf = pcolor(X,Y,real(gf{1}));
+surf = pcolor(X,Y,real(val));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(gf{1}));
+surf = pcolor(X,Y,imag(val));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(gf{1}));
+surf = pcolor(X,Y,abs(val));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
 
+figure(2);
+t = tiledlayout(1,3);
+title(t, ['G_\phi, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+
+nexttile
+surf = pcolor(X,Y,real(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('real')
+
+nexttile
+surf = pcolor(X,Y,imag(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('imag')
+
+nexttile
+surf = pcolor(X,Y,abs(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('abs') 
+
+return 
 
 %% Second derivatives
 
@@ -44,20 +84,19 @@ t = tiledlayout(1,3);
 title(t, 'G_{xx}');
 
 nexttile
-surf = pcolor(X,Y,real(gf{2}));
+surf = pcolor(X,Y,real(hessxx));
 surf.EdgeColor = 'none';
-clim([-1.2 0.3])
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(gf{2}));
+surf = pcolor(X,Y,imag(hessxx));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(gf{2}));
+surf = pcolor(X,Y,abs(hessxx));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
@@ -68,19 +107,19 @@ t = tiledlayout(1,3);
 title(t, 'G_{xy}');
 
 nexttile
-surf = pcolor(X,Y,real(gf{3}));
+surf = pcolor(X,Y,real(hessxy));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(gf{3}));
+surf = pcolor(X,Y,imag(hessxy));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(gf{3}));
+surf = pcolor(X,Y,abs(hessxy));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
@@ -90,19 +129,19 @@ t = tiledlayout(1,3);
 title(t, 'G_{yy}');
 
 nexttile
-surf = pcolor(X,Y,real(gf{4}));
+surf = pcolor(X,Y,real(hessyy));
 surf.EdgeColor = 'none';
 colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,imag(gf{4}));
+surf = pcolor(X,Y,imag(hessyy));
 surf.EdgeColor = 'none';
 colorbar
 title('imag')
 
 nexttile
-surf = pcolor(X,Y,abs(gf{4}));
+surf = pcolor(X,Y,abs(hessyy));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
@@ -110,9 +149,7 @@ title('abs')
 
 %% Third derivatives 
 
-lap = gf{2} + gf{4};
-lapx = gf{5};
-lapy = gf{6};
+lap = hessxx + hessyy;
 
 figure(11);
 t = tiledlayout(1,3);

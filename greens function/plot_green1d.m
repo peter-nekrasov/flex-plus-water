@@ -5,24 +5,33 @@ beta = 2;
 gamma = -0.5;
 h = 0.01;
 xs = -20:h:20;
-gf = green(xs,0*xs,beta,gamma);
+
+[rts,ejs] = find_roots(beta,gamma);
+
+gf = green([0; 0],[xs; 0*xs],rts,ejs);
 
 val = gf{1};
 hess = gf{2};
-third = gf{5};
+third = gf{3};
+phi = gf{4};
 
-figure(1)
+tiledlayout(1,4)
+nexttile
 plot(xs,real(val),xs, imag(val))
 legend('real','imaginary')
-title(['greens function, \beta = ', num2str(beta),', \gamma = ', num2str(gamma)])
+title('G')
 
-figure(2)
-plot(xs,real(hess),xs, imag(hess))
+nexttile
+plot(xs,real(hess(:,:,1)),xs, imag(hess(:,:,1)))
 legend('real','imaginary')
 title('\partial_{xx} G')
 
-figure(3)
-plot(xs,real(third),xs, imag(third))
+nexttile
+plot(xs,real(third(:,:,1)),xs, imag(third(:,:,1)))
 legend('real','imaginary')
 title('\partial_{xxx} G')
 
+nexttile
+plot(xs,real(phi),xs, imag(phi))
+legend('real','imaginary')
+title('G_\phi')

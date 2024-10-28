@@ -6,8 +6,9 @@ beta = k^4;
 gamma = 0;
 h = 0.01;
 xs = -20:h:20;
-gf = green(xs,0*xs,beta,gamma);
-val = gf{1} / (2*pi);
+[rts,ejs] = find_roots(beta,gamma);
+val = green([0;0],[xs; 0*xs],rts,ejs);
+val = val{1};
 
 figure(1)
 tiledlayout(1,2)

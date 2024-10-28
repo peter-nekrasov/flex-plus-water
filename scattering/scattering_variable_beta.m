@@ -17,7 +17,7 @@ b0 = 3; %(917*H0*w^2 - 9800) ;
 g0 = -1; %- 1000*w^2 ;
 
 % Finding positive real roots
-[rts,~] = find_roots(b0 / a0, g0 / a0);
+[rts,ejs] = find_roots(b0 / a0, g0 / a0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
 for ii = 1:numel(hs)
@@ -30,6 +30,8 @@ for ii = 1:numel(hs)
     [~,n] = size(xs);
     [X,Y] = meshgrid(xs);
     [XL,YL] = meshgrid(xl);
+    src = [0; 0];
+    targ =  [XL(:).' YL(:).'];
 
     bbar = -2*X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
     beta = b0 + bbar;
@@ -49,7 +51,6 @@ for ii = 1:numel(hs)
     phiinc = exp(1i*k*X);
     rhs = k*bbar.*phiinc;
     rhs_vec = rhs(:);
-    
     
     figure(1);
     tiledlayout(1,2);
@@ -83,11 +84,10 @@ for ii = 1:numel(hs)
     % Finding diagonal entry and shifting kernels
     %[zi,zj] = ind2sub(size(X),ind);
     
-    % Constructing integral operators
-    Gs = green(XL,YL, b0 / a0, g0 / a0, false);
-    Gc = green(XL,YL, b0 / a0, g0 / a0, true);
-    %Gs = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, false);
-    %Gc = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, true);
+    % Evaluating kernels
+    inds = cell(1,4);
+    corrs = cell(1,4);
+    M = eval_kern(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
 
     kerns = [Gs, Gc{1}];
     ind = find((XL == 0) & (YL ==0));
