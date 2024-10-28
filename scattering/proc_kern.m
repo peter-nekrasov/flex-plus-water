@@ -33,7 +33,7 @@ function kern_struct = proc_kern(kern_struct,h,ind,beta,gamma)
                 b = [2*z1; 0; 0; z2/2+z3/8; z2/2+z3/8];
                 b = b*h^4;
                 tau = A \ b;
-                c0 = sum(ejs.*rts.^4)/(8*pi);
+                c0 = 1; %sum(ejs.*rts.^4)/(8*pi);
             
                 kernmat(zi,zj) = kernmat(zi,zj) + c0*tau(1);
                 kernmat(zi,zj+1) = kernmat(zi,zj+1) + c0*tau(2);

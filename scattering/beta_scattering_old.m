@@ -17,7 +17,7 @@ b0 = 3; %(917*H0*w^2 - 9800) ;
 g0 = -1; %- 1000*w^2 ;
 
 % Finding positive real roots
-[rts,~] = find_roots(b0 / a0, g0 / a0);
+[rts,ejs] = find_roots(b0 / a0, g0 / a0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 
 for ii = 1:numel(hs)
@@ -84,22 +84,19 @@ for ii = 1:numel(hs)
     %[zi,zj] = ind2sub(size(X),ind);
     
     % Constructing integral operators
-    kerns = green([0;0], [XL(:).'; YL(:).'], rts,ejs);
+    Gs = green([XL(:).'; YL(:).'], [0; 0], rts,ejs);
     %Gs = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, false);
     %Gc = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, true);
 
-    kerns{1} = reshape(kerns{1},size(XL));
-    kerns{7} = reshape(kerns{7},size(XL));
-
     ind = find((XL == 0) & (YL ==0));
-    kerns = proc_kern(kerns,h,ind,b0/a0,g0/a0);
+    Gs = proc_kern(Gs,h,ind,size(XL),b0/a0,g0/a0);
     
-    Gs_aug_hat = kerns{1};
-    Gc_aug_hat = kerns{7};
+    Gs_aug_hat = Gs{1};
+    Gc_aug_hat = Gs{4};
     
     % Solve with GMRES
     start = tic;
-    mu = gmres(@(mu) lhs(mu,kerns,coefs),rhs_vec,[],1e-12,200);
+    mu = gmres(@(mu) lhs(mu,Gs,coefs),rhs_vec,[],1e-12,200);
     mu = reshape(mu, size(X));
     t1 = toc(start);
     fprintf('%5.2e s : time to solve\n',t1)
@@ -175,4 +172,3 @@ loglog(hs,errs,'x-');
 
 hold on
 loglog(hs, 0.01*hs.^8, '--')
-

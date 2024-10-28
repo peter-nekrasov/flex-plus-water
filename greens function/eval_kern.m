@@ -1,4 +1,4 @@
-function M = eval_kern(src,targ,func,inds,corrs)
+function M = eval_kern(src,targ,func,h,inds,corrs)
 % Evaluates kernels and adds corrections to the source part based on inds
 
     kerns = func(src,targ);
@@ -10,8 +10,10 @@ function M = eval_kern(src,targ,func,inds,corrs)
     M = cell(1,numel(kerns));
 
     for ii = 1:numel(kerns)
-        kern = kerns(ii);
-        kern(inds) = kern(inds) + corrs;
+        kern = kerns{ii};
+        ind = inds{ii};
+        corr = corrs{ii};
+        kern(ind) = kern(ind)*h*h + corr;
         M{ii} = kern;
     end
 

@@ -1,26 +1,33 @@
-function out = green(src,targ,rts,ejs)
+function out = green(src,targ,rts,ejs,opt)
 %
-% computes the green's function for the integro-differential equation 
-% determined by the roots of the polynomial:
+% computes the green's function centered at (x,y) = 0 for the 
+% integro-differential equation determined by the roots of the polynomial:
 %             z^5 - beta*z + gamma = 0
 %
-% output is a cell array with the kernels needed to solve the adjointed
-% Lippman Schwinger equation: {val,hess,gradlap,phi}
+% output is a cell array with all the kernels needed to solve the adjointed
+% Lippman Schwinger equation: {val,hessxx,hessxy,hessyy,gradlapx,gradlapy}
 % where:
-% - val is the value of the Green's function 
-% - hess(:,:,1) is G_{xx}, hess(:,:,2) is G_{xy}, and hess(:,:,3) is G_{yy}
-% - gradlap(:,:,1) is G_{xxx} + G_{xyy}, gradlap(:,:,2) is G_{yxx} + G_{yyy}
-% - phi is the kernel for the evaluation of phi in the integral equation
-%
-% ALL DERIVATIVES ARE WITH RESPECT TO TARGETS
+% - val is the value of the Green's function centered at zero and
+%   evaluated at (x,y)
+% - hessxx is G_{xx}, hessxy is G_{xy}, 
+%   hessyy is G_{yy}
+% - gradlap is the gradient of the Laplacian, namely 
+%   gradlapx is G_{xxx} + G_{xyy}, gradlapy is G_{yxx} + G_{yyy}
 %
 % input:
 %
-% src - (2,ns) array of source locations
-% targ - (2,nt) array of target locations
-% beta - coefficient beta in the constant coef equation
-% gamma - coefficient gamma in the constant coef equation
-
+% x - x-coordinates array
+% y - y-coordinates array
+% beta - coefficient beta in the equation
+% gamma - coefficient gamma in the equation
+%
+% optional input:
+%
+% opt - bool, default: false. 
+%         Possible options are:
+%         opt = false => Green's function (and derivatives)
+%         opt = true => kernel used to evaluate phi on surface
+%
 
 [~,ns] = size(src);
 [~,nt] = size(targ);
@@ -42,13 +49,16 @@ r = sqrt(r2);
 
 val = 0;
 phi = 0;
-% gradx = 0;
-% grady = 0;
+gradx = 0;
+grady = 0;
 hessxx = 0;
 hessxy = 0;
 hessyy = 0;
 gradlapx = 0;
 gradlapy = 0;
+
+% src = [0; 0];
+% targ = [x; y];
 
 for i = 1:5
     
@@ -63,13 +73,13 @@ for i = 1:5
        h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
 
        h0 = -4i*h0;
-       % gradh0 = -4i*gradh0;
+       gradh0 = -4i*gradh0;
        
-       % h0x = gradh0(:,:,1);
-       % h0y = gradh0(:,:,2);
+       h0x = gradh0(:,:,1);
+       h0y = gradh0(:,:,2);
        
-       % h0x(r == 0) = 0;
-       % h0y(r == 0) = 0;
+       h0x(r == 0) = 0;
+       h0y(r == 0) = 0;
        
        h0xx = hessh0(:,:,1);
        h0xy = hessh0(:,:,2);
@@ -98,8 +108,8 @@ for i = 1:5
        h0xyy = -4i*h0xyy;
        h0yyy = -4i*h0yyy;
        
-       % sk0x = gradsk0(:,:,1);
-       % sk0y = gradsk0(:,:,2);
+       sk0x = gradsk0(:,:,1);
+       sk0y = gradsk0(:,:,2);
 
        sk0xx = hesssk0(:,:,1);
        sk0xy = hesssk0(:,:,2);
@@ -126,8 +136,8 @@ for i = 1:5
 
        [sk0,gradsk0,hesssk0,gradlapsk0] = struveKdiffgreen(-rhoj,src,targ);
 
-       % sk0x = gradsk0(:,:,1);
-       % sk0y = gradsk0(:,:,2);
+       sk0x = gradsk0(:,:,1);
+       sk0y = gradsk0(:,:,2);
 
        sk0xx = hesssk0(:,:,1);
        sk0xy = hesssk0(:,:,2);
@@ -172,9 +182,6 @@ gradlapy = 1/4*gradlapy;
 % gradlapx = reshape(gradlapx,sz);
 % gradlapy = reshape(gradlapy,sz);
 
-hess = cat(3, hessxx,hessxy,hessyy);
-gradlap = cat(3, gradlapx, gradlapy);
-
-out = {val,hess,gradlap,phi};
+out = {val,hessxx,hessxy,hessyy,gradlapx,gradlapy,phi};
 
 end
