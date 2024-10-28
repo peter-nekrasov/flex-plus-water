@@ -4,10 +4,10 @@
 %
 %%%%%
 
-addpath('../greens function/')
-addpath('geometry/')
+addpath(genpath('..'))
 
-hs = 5./2.^(0:5);
+L = 50;
+hs = 5./2.^(1:6);
 errs = hs*0;
 
 % H0 = 20;
@@ -25,11 +25,13 @@ for ii = 1:numel(hs)
     % Parameters
     h = hs(ii);
 
-    xs = -50:h:50; %-5000:h:5000;
+    xs = -L:h:L;
+    xl = -2*L:h:2*L;
     [~,n] = size(xs);
     [X,Y] = meshgrid(xs);
-    
-    bbar = sin(X).*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
+    [XL,YL] = meshgrid(xl);
+
+    bbar = -2*X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
     beta = b0 + bbar;
     
     coefs = {a0,bbar};
@@ -49,47 +51,47 @@ for ii = 1:numel(hs)
     rhs_vec = rhs(:);
     
     
-    % figure(1);
-    % tiledlayout(1,2);
-    % 
-    % % nexttile
-    % % s = pcolor(X,Y,H);
-    % % s.EdgeColor = 'None';
-    % % colorbar
-    % % title('H')
-    % 
-    % % nexttile
-    % % s = pcolor(X,Y,alpha);
-    % % s.EdgeColor = 'None';
-    % % colorbar
-    % % title('\alpha')
-    % 
+    figure(1);
+    tiledlayout(1,2);
+
     % nexttile
-    % s = pcolor(X,Y,beta);
+    % s = pcolor(X,Y,H);
     % s.EdgeColor = 'None';
     % colorbar
-    % title('\beta')
-    % drawnow
-    % 
+    % title('H')
+
     % nexttile
-    % s = pcolor(X,Y,real(rhs));
+    % s = pcolor(X,Y,alpha);
     % s.EdgeColor = 'None';
     % colorbar
-    % title('rhs')
-    % drawnow
+    % title('\alpha')
+
+    nexttile
+    s = pcolor(X,Y,beta);
+    s.EdgeColor = 'None';
+    colorbar
+    title('\beta')
+    drawnow
+
+    nexttile
+    s = pcolor(X,Y,real(rhs));
+    s.EdgeColor = 'None';
+    colorbar
+    title('rhs')
+    drawnow
      
     % Finding diagonal entry and shifting kernels
-    ind = find((X == 0) & (Y==0));
-    [zi,zj] = ind2sub(size(X),ind);
-    
-    Xshift = circshift(X,[zi,zj]);
-    Yshift = circshift(Y,[zi,zj]);
+    %[zi,zj] = ind2sub(size(X),ind);
     
     % Constructing integral operators
-    Gs = green(Xshift,Yshift, b0 / a0, g0 / a0, false);
-    Gc = green(Xshift,Yshift, b0 / a0, g0 / a0, true);
+    Gs = green(XL,YL, b0 / a0, g0 / a0, false);
+    Gc = green(XL,YL, b0 / a0, g0 / a0, true);
+    %Gs = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, false);
+    %Gc = green(X - min(xs),Y - min(xs), b0 / a0, g0 / a0, true);
+
     kerns = [Gs, Gc{1}];
-    kerns = proc_kern(kerns,h);
+    ind = find((XL == 0) & (YL ==0));
+    kerns = proc_kern(kerns,h,ind,b0/a0,g0/a0);
     
     Gs_aug_hat = kerns{1};
     Gc_aug_hat = kerns{7};
@@ -122,43 +124,43 @@ for ii = 1:numel(hs)
     phi_n_tot = phi_n + k*phiinc;
     
     
-    % figure(2);
-    % tiledlayout(1,5)
-    % 
-    % nexttile
-    % pc = pcolor(X,Y,real(mu));
-    % pc.EdgeColor = 'none';
-    % %clim([-1.5 1.5])
-    % title('Re(\mu)')
-    % colorbar
-    % 
-    % nexttile
-    % pc = pcolor(X,Y,real(phi_tot));
-    % pc.EdgeColor = 'none';
-    % %clim([-1.5 1.5])
-    % title('Re(\phi)')
-    % colorbar
-    % 
-    % nexttile
-    % pc = pcolor(X,Y,abs(phi_tot));
-    % pc.EdgeColor = 'none';
-    % %clim([0 1.5])
-    % title('|\phi|')
-    % colorbar
-    % 
-    % nexttile
-    % pc = pcolor(X,Y,real(phi_n_tot));
-    % pc.EdgeColor = 'none';
-    % %clim([-1.5 1.5]*k)
-    % title('real(\phi_n)')
-    % colorbar
-    % 
-    % nexttile
-    % pc = pcolor(X,Y,abs(phi_n_tot));
-    % pc.EdgeColor = 'none';
-    % %clim([0 1.5]*k)
-    % title('|\phi_n|')
-    % colorbar
+    figure(2);
+    tiledlayout(1,5)
+
+    nexttile
+    pc = pcolor(X,Y,real(mu));
+    pc.EdgeColor = 'none';
+    %clim([-1.5 1.5])
+    title('Re(\mu)')
+    colorbar
+
+    nexttile
+    pc = pcolor(X,Y,real(phi_tot));
+    pc.EdgeColor = 'none';
+    %clim([-1.5 1.5])
+    title('Re(\phi)')
+    colorbar
+
+    nexttile
+    pc = pcolor(X,Y,abs(phi_tot));
+    pc.EdgeColor = 'none';
+    %clim([0 1.5])
+    title('|\phi|')
+    colorbar
+
+    nexttile
+    pc = pcolor(X,Y,real(phi_n_tot));
+    pc.EdgeColor = 'none';
+    %clim([-1.5 1.5]*k)
+    title('real(\phi_n)')
+    colorbar
+
+    nexttile
+    pc = pcolor(X,Y,abs(phi_n_tot));
+    pc.EdgeColor = 'none';
+    %clim([0 1.5]*k)
+    title('|\phi_n|')
+    colorbar
            
     % Calculate error with finite difference
     errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,a0,beta,g0,h);
@@ -171,5 +173,5 @@ figure(3)
 loglog(hs,errs,'x-');
 
 hold on
-loglog(hs, 0.01*hs.^4, '--')
+loglog(hs, 0.01*hs.^8, '--')
 
