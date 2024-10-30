@@ -112,12 +112,12 @@ beta = 3;
 [rts,ejs] = find_roots(beta,gamma);
 targ = [2; 2];
 
-dens = @(x,y) x.*exp(-(x.^2+y.^2)/(5));
+dens = @(x,y) exp(-(x.^2+y.^2)/(5));
 greenfac = @(x,y) phivalonly(targ,x,y,rts,ejs);
 %truev = -0.062850332948632 + 0.069122770940408i; %  integral2(@(x,y) dens(x,y).*greenfac(x,y),-50,50,-50,50,"AbsTol",0,"RelTol",10E-14);
-truev = -0.186834150038740 - 0.005897287268752i; % integral2(@(x,y) dens(x,y).*greenfac(x,y),-20,20,-20,20,"AbsTol",0,"RelTol",10E-16);
+truev =  integral2(@(x,y) dens(x,y).*greenfac(x,y),-20,20,-20,20,"AbsTol",0,"RelTol",10E-16);
 
-hs = [2 1 0.5 0.25 0.2 0.1 0.05];
+hs = [2 1 0.5 0.25 0.2 0.1];
 errs0 = hs*0;
 errs1 = hs*0;
 
@@ -146,13 +146,13 @@ hold on
 loglog(hs,errs1,'o-')
 hold on
 
-loglog(hs,0.0005*hs.^4,'--')
+loglog(hs,0.0005*hs.^5,'--')
 hold on
 
 loglog(hs,0.0001*hs.^6,'--')
 hold on 
 
-legend('no correction', '5 pt correction', 'h^4', 'h^6') 
+legend('no correction', 'h^5', 'h^6') 
 
 
 function val = greenvalonly(targ,x,y,rts,ejs)

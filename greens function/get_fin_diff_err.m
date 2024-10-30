@@ -49,6 +49,6 @@ function err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,alpha,beta,gamma,h)
     first = alpha*sum(bilap.*phi_n_tot_sub,'all') ;
     second = -beta(ii,jj).*phi_n_tot(ii,jj);
     third = gamma*phi_tot(ii,jj);
-    err = abs(first + second + third) / abs(sum(mu(:)));
+    err = abs(first + second + third); % / abs(sum(h^2*mu(:)));
 
 end

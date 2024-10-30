@@ -19,7 +19,7 @@ function [inds, corrs] = get_correct(rts,ejs,h)
     inds{1} = [0 0; 0 1; 0 -1; 1 0; -1 0];
     inds{4} = [0 0; 0 1; 0 -1; 1 0; -1 0];
     
-    % r^2 log r corrections
+    % c0 r^2 log r + c1 |r|^3 corrections
     
     [~,z1] = epstein_zeta(-2+1i*10^-12,1,0,1,1,0,0) ;
     z1 = imag(z1)*1e12;
@@ -28,16 +28,28 @@ function [inds, corrs] = get_correct(rts,ejs,h)
     [~,~,z3] = epstein_zeta(-4+1i*10^-12,1,0,1,0,1,0) ;
     z3 = imag(z3)*1e12;
     
-    A = [1 1 1 1 1;
+    A5 = [1 1 1 1 1;
         0 1 -1 0 0;
         0 0 0 1 -1;
         0 1 1 0 0;
         0 0 0 1 1];
+
     b = [2*z1; 0; 0; z2/2+z3/8; z2/2+z3/8];
     b = b*h^4;
-    tau = A \ b;
+    tau = A5 \ b;
     c0 = 1/(8*pi);
+
     corrs{1} = c0*tau;
+
+
+    [z0,~] = epstein_zeta_int(-3,1,0,1,0,0,0) ;
+    [~,z1] = epstein_zeta_int(-5,1,0,1,1,0,0) ;
+
+    b = [-z0; 0; 0; -2/5*z1; -2/5*z1];
+    b = b*h^5;
+    tau = A5 \ b;
+    c0 = 1/4/8/gamma(1+3/2)^2; 
+
     corrs{4} = c0*tau;
 
 end

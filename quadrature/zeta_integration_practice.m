@@ -11,6 +11,7 @@
 %       - log|r|
 %       - vec{r} / r^2
 %       - r^2 log(r^2)
+%       - |r|^3
 %
 %%%
 
@@ -1034,6 +1035,81 @@ ylim([0.1*min(errs1) 10*max(errs1)])
 
 legend('1 pt correction','5 pt correction','h^4','h^6','Location','southeast')
 title('zeta correction for r^2 log(|r|)')
+
+
+rmpath('zetafunc/')
+
+%% Now it's time to integrate |r|^3
+
+addpath('zetafunc/')
+
+kern = @(x,y) (x.^2 + y.^2).^(3/2); % kernel function
+dens = @(x,y) cos(y).*sin(x+1).*exp(-25*((x).^2 + (y).^2).^4 ); % test density 
+
+trueint = 0.106280296089827; % integral2(@(x,y) dens(x,y).*kern(x,y),-1,1,-1,1,"AbsTol",0,"RelTol",1e-16);
+
+% Trapezoid rule 
+
+hs = 1./(2.^(0:7));
+errs0 = hs*0;
+errs1 = hs*0;
+errs2 = hs*0;
+errs3 = hs*0;
+[z0,~] = epstein_zeta_int(-3,1,0,1,0,0,0) ;
+[~,z1] = epstein_zeta_int(-5,1,0,1,1,0,0) ;
+
+for ii = 1:numel(hs)
+
+    h = hs(ii);
+
+    [X,Y] = meshgrid(-40:h:40);
+    kernmat = kern(X,Y)*h^2;
+
+    ind = find((X == 0) & (Y==0));
+    [zi,zj] = ind2sub(size(X),ind);
+
+    errs0(ii) = abs(sum(kernmat.*dens(X,Y),'all') - trueint)/abs(trueint);
+
+    kernmat = kern(X,Y)*h^2;
+
+    A = [1 1 1 1 1;
+        0 1 -1 0 0;
+        0 0 0 1 -1;
+        0 1 1 0 0;
+        0 0 0 1 1];
+    b = [-z0; 0; 0; -2/5*z1; -2/5*z1];
+    b = b*h^5;
+    tau = A \ b;
+
+    kernmat(zi,zj) = kernmat(zi,zj) + tau(1);
+    kernmat(zi,zj+1) = kernmat(zi,zj+1) + tau(2);
+    kernmat(zi,zj-1) = kernmat(zi,zj-1) + tau(3);
+    kernmat(zi+1,zj) = kernmat(zi+1,zj) + tau(4);
+    kernmat(zi-1,zj) = kernmat(zi-1,zj) + tau(5);
+    errs1(ii) = abs(sum(kernmat.*dens(X,Y),'all') - trueint)/abs(trueint);
+
+end
+
+figure(2)
+
+loglog(hs,errs0,'-o')
+hold on
+
+loglog(hs,errs1,'-o')
+hold on
+
+loglog(hs,hs.^5,'--')
+hold on
+
+loglog(hs,0.5*hs.^7,'--')
+hold on
+
+
+xlim([min(hs) max(hs)])
+
+
+legend('No correction','5 pt correction','h^5', 'h^7','Location','southeast')
+title('zeta correction for |r|^3 ')
 
 
 rmpath('zetafunc/')
