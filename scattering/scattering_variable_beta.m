@@ -57,18 +57,6 @@ for ii = 1:numel(hs)
     figure(1);
     tiledlayout(1,2);
 
-    % nexttile
-    % s = pcolor(X,Y,H);
-    % s.EdgeColor = 'None';
-    % colorbar
-    % title('H')
-
-    % nexttile
-    % s = pcolor(X,Y,alpha);
-    % s.EdgeColor = 'None';
-    % colorbar
-    % title('\alpha')
-
     nexttile
     s = pcolor(X,Y,beta);
     s.EdgeColor = 'None';
@@ -84,8 +72,7 @@ for ii = 1:numel(hs)
     drawnow
     
     % Constructing integral operators
-    inds = cell(1,4);
-    corrs = cell(1,4);
+    [inds,corrs] = get_correct(rts,ejs,h,2*n);
     kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
 
     ind = find((XL == 0) & (YL ==0));
