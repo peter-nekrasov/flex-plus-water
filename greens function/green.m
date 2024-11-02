@@ -82,9 +82,9 @@ for i = 1:5
        h0xy = hessh0(:,:,2);
        h0yy = hessh0(:,:,3);
 
-       h0xx(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+       h0xx(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
        h0xy(r == 0) = 0;
-       h0yy(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+       h0yy(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
        
        h0xx = -4i*h0xx;
        h0xy = -4i*h0xy;
@@ -160,15 +160,15 @@ for i = 1:5
 
 end
 
-val = 1/4*val;
-phi = 1/4*phi;
+val = 1/2*val;
+phi = 1/2*phi;
 %gradx = 1/2*gradx;
 %grady = pi/2*grady;
-hessxx = 1/4*hessxx;
-hessxy = 1/4*hessxy;
-hessyy = 1/4*hessyy;
-gradlapx = 1/4*gradlapx;
-gradlapy = 1/4*gradlapy;
+hessxx = 1/2*hessxx;
+hessxy = 1/2*hessxy;
+hessyy = 1/2*hessyy;
+gradlapx = 1/2*gradlapx;
+gradlapy = 1/2*gradlapy;
 
 hess = cat(3,hessxx,hessxy,hessyy);
 gradlap = cat(3,gradlapx,gradlapy);

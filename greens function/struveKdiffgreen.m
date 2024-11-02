@@ -77,20 +77,20 @@ h0xy = -4i*h0xy;
 h0yy = -4i*h0yy;
 
 val = -1i*cr0+1i*h0;
-gradx = 1i*rhoj*cr1.*xt./r+1i*h0x;
-grady = 1i*rhoj*cr1.*yt./r+1i*h0y;
-hessxx = 1i*rhoj^2*xt.^2./r2.*cr0-1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0xx; 
-hessxy = 1i*rhoj^2*xt.*yt./r2.*cr0-2i*rhoj*xt.*yt./r3.*cr1+1i*h0xy; 
-hessyy = 1i*rhoj^2*yt.^2./r2.*cr0+1i*rhoj*(xt.^2 - yt.^2)./r3.*cr1+1i*h0yy; 
-gradlapx = rhoj^3*xt./r.*(-2/pi-1i*cr1) + 1i*(h0xxx+h0xyy);
-gradlapy = rhoj^3*yt./r.*(-2/pi-1i*cr1) + 1i*(h0yxx+h0yyy);
+gradx = 1i*rhoj*cr1.*dx./r+1i*h0x;
+grady = 1i*rhoj*cr1.*dy./r+1i*h0y;
+hessxx = 1i*rhoj^2*dx.^2./r2.*cr0-1i*rhoj*(dx.^2 - dy.^2)./r3.*cr1+1i*h0xx; 
+hessxy = 1i*rhoj^2*dx.*dy./r2.*cr0-2i*rhoj*dx.*dy./r3.*cr1+1i*h0xy; 
+hessyy = 1i*rhoj^2*dy.^2./r2.*cr0+1i*rhoj*(dx.^2 - dy.^2)./r3.*cr1+1i*h0yy; 
+gradlapx = rhoj^3*dx./r.*(-2/pi-1i*cr1) + 1i*(h0xxx+h0xyy);
+gradlapy = rhoj^3*dy./r.*(-2/pi-1i*cr1) + 1i*(h0yxx+h0yyy);
 
 gradx(r == 0) = 0;
 grady(r == 0) = 0;
 
-hessxx(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+hessxx(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
 hessxy(r == 0) = 0;
-hessyy(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-1.5-log(2));
+hessyy(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
 
 gradlapx(r == 0) = 0;
 gradlapy(r == 0) = 0;

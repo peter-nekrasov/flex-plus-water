@@ -127,6 +127,6 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,a0,beta,g0,h)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,X*0+a0,beta,g0,h)
 
 

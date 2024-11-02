@@ -15,7 +15,7 @@ hess = gf{2};
 third = gf{3};
 phi = gf{4};
 
-tiledlayout(1,4)
+tiledlayout(1,2)
 nexttile
 plot(xs,real(val),xs, imag(val))
 legend('real','imaginary')
@@ -25,6 +25,10 @@ nexttile
 plot(xs,real(hess(:,:,1)),xs, imag(hess(:,:,1)))
 legend('real','imaginary')
 title('\partial_{xx} G')
+hold on
+
+return
+
 
 nexttile
 plot(xs,real(third(:,:,1)),xs, imag(third(:,:,1)))

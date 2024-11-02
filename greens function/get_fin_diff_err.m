@@ -46,7 +46,7 @@ function err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,alpha,beta,gamma,h)
     
     % Residual error of total solution 
     phi_n_tot_sub = phi_n_tot(ii-4:ii+4,jj-4:jj+4);
-    first = alpha*sum(bilap.*phi_n_tot_sub,'all') ;
+    first = alpha(ii,jj)*sum(bilap.*phi_n_tot_sub,'all') ;
     second = -beta(ii,jj).*phi_n_tot(ii,jj);
     third = gamma*phi_tot(ii,jj);
     err = abs(first + second + third); % / abs(sum(h^2*mu(:)));

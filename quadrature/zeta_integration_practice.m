@@ -10,6 +10,8 @@
 %       - 1/|r| 
 %       - log|r|
 %       - vec{r} / r^2
+%       - x^2 / r^2 
+%       - y^2 / r^2
 %       - r^2 log(r^2)
 %       - |r|^3
 %
@@ -190,7 +192,8 @@ for ii = 1:numel(hs)
         0 0 0 1 -1;
         0 1 1 0 0;
         0 0 0 1 1];
-    b = [h^2*z0 + h^2*log(h); 0; 0; h^2*z1; h^2*z1];
+    b = [z0 + log(h); 0; 0; z1; z1];
+    b = b*h^2;
     tau = A \ b;
 
     kernmat(zi,zj) = kernmat(zi,zj) + tau(1);

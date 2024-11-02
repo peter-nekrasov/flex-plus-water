@@ -119,7 +119,7 @@ for ii = 1:numel(hs)
     colorbar
            
     % Calculate error with finite difference
-    errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,a0,beta,g0,h);
+    errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,X*0+a0,beta,g0,h);
 
 end
 

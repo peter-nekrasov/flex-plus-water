@@ -4,8 +4,9 @@ function M = kernmat(src,targ,func,inds,corrs)
     kerns = func(src,targ);
 
     if nargin < 4
-        inds = cell(size(kerns));
-        corrs = cell(size(kerns));
+        correct = false;
+    else
+        correct = true;
     end
 
     try 
@@ -14,8 +15,10 @@ function M = kernmat(src,targ,func,inds,corrs)
         h = norm(src(:,1) - src(:,2)); % probably a better way to 
     end
 
-    if (numel(kerns) ~= numel(inds)) | (numel(inds) ~= numel(corrs))
-        error('output of func must be the same length as inds and corrs')
+    if correct
+        if (numel(kerns) ~= numel(inds)) | (numel(inds) ~= numel(corrs))
+            error('output of func must be the same length as inds and corrs')
+        end
     end
 
     [~,ns] = size(src);
@@ -41,11 +44,19 @@ function M = kernmat(src,targ,func,inds,corrs)
     for ii = 1:numel(kerns)
         kern = kerns{ii};
         kern = kern*h*h;
-        ind = inds{ii};
-        corr = corrs{ii};
-        for jj = 1:numel(corr)
-            kern((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) = ...
-                kern((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) + corr(jj);
+        if correct
+            ind = inds{ii};
+            corr = corrs{ii};
+            sz3 = size(corr,3);
+            for kk = 1:sz3
+                tmpker = kern(:,:,kk);
+                tmpcor = corr(:,:,kk);
+                for jj = 1:numel(corr(:,:,1))
+                    tmpker((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) = ...
+                        tmpker((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) + tmpcor(jj,1);
+                end
+                kern(:,:,kk) = tmpker;
+            end
         end
         M{ii} = kern;
     end
