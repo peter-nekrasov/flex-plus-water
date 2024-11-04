@@ -76,14 +76,27 @@ h0xx = -4i*h0xx;
 h0xy = -4i*h0xy;
 h0yy = -4i*h0yy;
 
+h0xxx = -4i*h0xxx;
+h0yxx = -4i*h0yxx;
+h0xyy = -4i*h0xyy;
+h0yyy = -4i*h0yyy;
+
 val = -1i*cr0+1i*h0;
 gradx = 1i*rhoj*cr1.*dx./r+1i*h0x;
 grady = 1i*rhoj*cr1.*dy./r+1i*h0y;
 hessxx = 1i*rhoj^2*dx.^2./r2.*cr0-1i*rhoj*(dx.^2 - dy.^2)./r3.*cr1+1i*h0xx; 
 hessxy = 1i*rhoj^2*dx.*dy./r2.*cr0-2i*rhoj*dx.*dy./r3.*cr1+1i*h0xy; 
 hessyy = 1i*rhoj^2*dy.^2./r2.*cr0+1i*rhoj*(dx.^2 - dy.^2)./r3.*cr1+1i*h0yy; 
-gradlapx = rhoj^3*dx./r.*(-2/pi-1i*cr1) + 1i*(h0xxx+h0xyy);
-gradlapy = rhoj^3*dy./r.*(-2/pi-1i*cr1) + 1i*(h0yxx+h0yyy);
+gradlapx = 1i*rhoj^3*dx./r.*(-cr1) + 1i*(h0xxx+h0xyy);
+gradlapy = 1i*rhoj^3*dy./r.*(-cr1) + 1i*(h0yxx+h0yyy);
+
+% tst = gradient(hessxx+hessyy,0.01);
+% tiledlayout(2,1)
+% nexttile
+% plot(xt,real(tst),xt,imag(tst))
+% 
+% nexttile
+% plot(xt,real(gradlapx),xt,imag(gradlapx))
 
 gradx(r == 0) = 0;
 grady(r == 0) = 0;

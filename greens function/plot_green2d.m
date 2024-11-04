@@ -79,7 +79,7 @@ lapy = reshape(gradlap(:,:,2),size(X));
 
 
 figure(5);
-t = tiledlayout(1,5);
+t = tiledlayout(1,3);
 title(t, 'G_{xx}');
 
 nexttile
@@ -89,35 +89,18 @@ colorbar
 title('real')
 
 nexttile
-surf = pcolor(X,Y,real(hessxx - log(sqrt(X.^2 + Y.^2))/(4*pi)  - X.^2./(X.^2 + Y.^2)/(4*pi))); % ;
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-
-tst = hessxx - log(sqrt(X.^2 + Y.^2))/(4*pi)  - X.^2./(X.^2 + Y.^2)/(4*pi);
-tst(isnan(tst)) = hessxx((X == 0) & (Y == 0));
-
-nexttile
-surf = pcolor(X,Y,real(tst));
-surf.EdgeColor = 'none';
-colorbar
-title('real')
-
-
-nexttile
-surf = pcolor(X,Y,imag(tst));
-surf.EdgeColor = 'none';
-colorbar
-title('imag')
-
-nexttile
 surf = pcolor(X,Y,imag(hessxx));
 surf.EdgeColor = 'none';
 colorbar
 title('abs')
 
-return
+nexttile
+surf = pcolor(X,Y,abs(hessxx));
+surf.EdgeColor = 'none';
+colorbar
+title('abs')
+
+
 
 figure(6);
 t = tiledlayout(1,3);

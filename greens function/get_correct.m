@@ -22,6 +22,20 @@ function [inds, corrs] = get_correct(rts,ejs,h)
         0 1 1 0 0;
         0 0 0 1 1];
 
+    % kernmat(zi,zj) = kernmat(zi,zj) + tau(1);
+    % kernmat(zi,zj+1) = kernmat(zi,zj+1) + tau(2);
+    % kernmat(zi,zj-1) = kernmat(zi,zj-1) + tau(3);
+    % kernmat(zi+1,zj) = kernmat(zi+1,zj) + tau(4);
+    % kernmat(zi-1,zj) = kernmat(zi-1,zj) + tau(5);
+    % kernmat(zi,zj+2) = kernmat(zi,zj+2) + tau(6);
+    % kernmat(zi,zj-2) = kernmat(zi,zj-2) + tau(7);
+    % kernmat(zi+2,zj) = kernmat(zi+2,zj) + tau(8);
+    % kernmat(zi-2,zj) = kernmat(zi-2,zj) + tau(9);
+    % kernmat(zi+1,zj+1) = kernmat(zi+1,zj+1) + tau(10);
+    % kernmat(zi+1,zj-1) = kernmat(zi+1,zj-1) + tau(11);
+    % kernmat(zi-1,zj+1) = kernmat(zi-1,zj+1) + tau(12);    
+    % kernmat(zi-1,zj-1) = kernmat(zi-1,zj-1) + tau(13);
+
     A13 = [ones(1,13); ...
         0 1 -1 0 0 2 -2 0 0 1 -1 1 -1; ...
         0 0 0 1 -1 0 0 2 -2 1 1 -1 -1; ...
@@ -103,6 +117,42 @@ function [inds, corrs] = get_correct(rts,ejs,h)
 
     hessxycor = 2*c0*tau;
 
+    % 4 x / r^2
+
+    [~,z1] = epstein_zeta(0+1i*10^-12,1,0,1,1,0,0) ;
+    z1 = imag(z1)*1e12;
+    [~,~,z2] = epstein_zeta(-2+1i*10^-12,1,0,1,0,1,0) ;
+    z2 = imag(z2)*1e12;
+    [~,~,z3] = epstein_zeta(-2+1i*10^-12,1,0,1,1,0,0) ;
+    z3 = imag(z3)*1e12;
+
+    b = [0; 2*z1; 0; 0; 0; 0; 0; 1/2*z2; 2*z3; 0; 0; 0; 0];
+    b = b*h;
+    tau = A13 \ b;
+
+    gradlapxcor = 4*c0*tau;
+
+    % 4 y / r^2
+
+    b = [0; 0; 2*z1; 0; 0; 0; 1/2*z2; 0; 0; 2*z3; 0; 0; 0];
+    b = b*h;
+    tau = A13 \ b;
+
+    gradlapycor = 4*c0*tau;
+
+    A13 = [ones(1,13); ...
+        0 1 -1 0 0 2 -2 0 0 1 -1 1 -1; ...
+        0 0 0 1 -1 0 0 2 -2 1 1 -1 -1; ...
+        0 1 1 0 0 4 4 0 0 1 1 1 1; ...
+        0 0 0 1 1 0 0 4 4 1 1 1 1; ...
+        zeros(1,9) 1 -1 -1 1; ...
+        zeros(1,9) 1 1 -1 -1; ...
+        zeros(1,9) 1 -1 1 -1; ...
+        0 1 -1 0 0 8 -8 0 0 1 -1 1 -1; ...
+        0 0 0 1 -1 0 0 8 -8 1 1 -1 -1; ...
+        0 1 1 0 0 16 16 0 0 1 1 1 1; ...
+        zeros(1,9) ones(1,4); ...
+        0 0 0 1 1 0 0 16 16 1 1 1 1]; 
 
     % |r|^3 correction
 
@@ -118,13 +168,10 @@ function [inds, corrs] = get_correct(rts,ejs,h)
 
     toc
 
-    % gradient of laplacian correction
 
-    gradlapxxcor = hessxxcor*0;
-    gradlapyycor = hessxxcor*0;
 
     hesscor = cat(3,hessxxcor,hessxycor,hessyycor);
-    gradlapcor = cat(3,gradlapxxcor,gradlapyycor);
+    gradlapcor = cat(3,gradlapxcor,gradlapycor);
 
     corrs = {valcor, hesscor, gradlapcor, phicor};
 

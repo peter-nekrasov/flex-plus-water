@@ -153,7 +153,7 @@ hold on
 loglog(hs,0.0005*hs.^6,'--')
 hold on
 
-legend('no correction', '13 pt correction', 'h^2', 'h^6','Location','northwest') 
+legend('no correction', '13 pt correction', 'h^4', 'h^6','Location','northwest') 
 
 %% Checking corrections for G_{yy} 
 
@@ -209,6 +209,113 @@ loglog(hs,0.0005*hs.^6,'--')
 hold on
 
 legend('no correction', '5 pt correction', 'h^2', 'h^6','Location','northwest') 
+
+%% Checking corrections for \partial_x (\Delta G) 
+
+addpath(genpath('..'))
+
+gamma = -1;
+beta = 3;
+[rts,ejs] = find_roots(beta,gamma);
+targ = [2; 2];
+
+dens = @(x,y) x.*exp(-(x.^2+y.^2)/(10));
+%truev =   0.057816396686963 - 0.015079981170599i;
+truev =  -0.089213311677999 + 0.116604914243712i; % integral2(@(x,y) dens(x,y).*gradlapxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-12)
+
+hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+errs0 = hs*0;
+errs1 = hs*0; 
+
+for ii = 1:numel(hs)
+
+    h = hs(ii);
+    [X,Y] = meshgrid(-15:h:15);
+    src = [X(:).'; Y(:).'];
+    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs));
+    val = kern{3};
+    val = val(:,:,1);
+    d1 = dens(X,Y);
+    dint = sum(val(:).*d1(:),'all');
+    errs0(ii) = abs(dint - truev);
+
+    [inds, corrs] = get_correct(rts,ejs,h);
+    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
+    val = kern{3};
+    val = val(:,:,1);
+    d1 = dens(X,Y);
+    dint = sum(val(:).*d1(:),'all');
+    errs1(ii) = abs(dint - truev);
+
+end
+
+
+loglog(hs,errs0,'o-')
+hold on
+
+loglog(hs,errs1,'o-')
+% hold on
+
+loglog(hs,0.02*hs.^2,'--')
+hold on
+
+loglog(hs,0.0005*hs.^6,'--')
+hold on
+
+legend('no correction', '13 pt correction', 'h^2', 'h^6','Location','northwest') 
+
+%% Checking corrections for \partial_y (\Delta G) 
+
+addpath(genpath('..'))
+
+gamma = -1;
+beta = 3;
+[rts,ejs] = find_roots(beta,gamma);
+targ = [2; 2];
+
+dens = @(x,y) y.*exp(-(x.^2+y.^2)/(10));
+truev =  -0.089213311677999 + 0.116604914243712i; % integral2(@(x,y) dens(x,y).*gradlapxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-12)
+
+hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+errs0 = hs*0;
+errs1 = hs*0; 
+
+for ii = 1:numel(hs)
+
+    h = hs(ii);
+    [X,Y] = meshgrid(-15:h:15);
+    src = [X(:).'; Y(:).'];
+    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs));
+    val = kern{3};
+    val = val(:,:,2);
+    d1 = dens(X,Y);
+    dint = sum(val(:).*d1(:),'all');
+    errs0(ii) = abs(dint - truev);
+
+    [inds, corrs] = get_correct(rts,ejs,h);
+    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
+    val = kern{3};
+    val = val(:,:,2);
+    d1 = dens(X,Y);
+    dint = sum(val(:).*d1(:),'all');
+    errs1(ii) = abs(dint - truev);
+
+end
+
+
+loglog(hs,errs0,'o-')
+hold on
+
+loglog(hs,errs1,'o-')
+% hold on
+
+loglog(hs,0.02*hs.^2,'--')
+hold on
+
+loglog(hs,0.0005*hs.^6,'--')
+hold on
+
+legend('no correction', '13 pt correction', 'h^2', 'h^6','Location','northwest') 
 
 %%  Checking corrections for phi 
 
@@ -286,6 +393,17 @@ function val = hessxxonly(targ,x,y,rts,ejs)
     src = [x(:).'; y(:).'];
     gf = green(src,targ,rts,ejs);
     gf = gf{2};
+    val = gf(:,:,1);
+    val = reshape(val,size(x));
+
+end
+
+
+function val = gradlapxonly(targ,x,y,rts,ejs)
+
+    src = [x(:).'; y(:).'];
+    gf = green(src,targ,rts,ejs);
+    gf = gf{3};
     val = gf(:,:,1);
     val = reshape(val,size(x));
 
