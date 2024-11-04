@@ -12,5 +12,8 @@ function [phi, phi_n] = sol_eval_fft(mu,evalkerns)
     phi_n_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
     phi = phi_aug(1:n,1:n);
     phi_n = phi_n_aug(1:n,1:n);
-    
+
+    phi = phi/2;
+    phi_n = phi_n/2;
+
 end

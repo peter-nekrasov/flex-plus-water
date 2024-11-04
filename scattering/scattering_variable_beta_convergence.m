@@ -7,17 +7,18 @@
 addpath(genpath('..'))
 
 L = 50;
-hs = 5./2.^(2:6); % (1:7)
+hs = 5./2.^(2:5); % (1:7)
 errs = hs*0;
 
 % Constant coefficients
-a0 = 1;
-b0 = 3; 
+a0 = 3;
+b0 = 5; 
 g0 = -1;
 
 % Finding positive real roots
 [rts,ejs] = find_roots(b0 / a0, g0 / a0);
 k = rts((imag(rts) == 0) & (real(rts) > 0));
+ejs = ejs/a0;
 
 for ii = 1:numel(hs)
 
@@ -30,14 +31,14 @@ for ii = 1:numel(hs)
     [X,Y] = meshgrid(xs);
     [XL,YL] = meshgrid(xl);
 
-    src = [0;0];
-    targ = [XL(:).'; YL(:).'];
+    targ = [0;0];
+    src = [XL(:).'; YL(:).'];
 
     % Perturbation to beta
-    bbar = -0.5*X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
+    bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
     beta = b0 + bbar;
     
-    coefs = {a0,bbar};
+    coefs = {a0+zeros(n),abar+zeros(n),b0+X*0,bbar,g0 + zeros(n),zeros(n)};
     
     % RHS (Incident field)
     phiinc = exp(1i*k*X);
@@ -62,7 +63,7 @@ for ii = 1:numel(hs)
     drawnow
     
     % Constructing integral operators
-    [inds,corrs] = get_correct(rts,ejs,h);
+    [inds,corrs] = get_correct(rts,ejs,h,a0);
     kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
 
     ind = find((XL == 0) & (YL ==0));
@@ -119,17 +120,21 @@ for ii = 1:numel(hs)
     colorbar
            
     % Calculate error with finite difference
-    errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,X*0+a0,beta,g0,h);
+    errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs);
 
 end
 
 %% Plotting errors 
 
 figure(3)
-loglog(hs,errs,'x-');
+loglog(100./hs,errs,'o-');
 
 hold on
-loglog(hs, 0.05*hs.^6, '--')
+loglog(100./hs, 0.00005*hs.^6, '--')
+ylim([0.1*min(errs) 10*max(errs)])
+xlim([0.8*min(100./hs) 1.2*max(100./hs)])
 
-legend('error','h^6')
+legend('error','N^6')
 
+xlabel('N')
+ylabel('relative error')

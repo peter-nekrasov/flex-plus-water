@@ -1,14 +1,17 @@
 function kerns = gen_fft_kerns(kerns,sz,ind)
         
-    kerns{1} = reshape(kerns{1},sz);
-    kerns{4} = reshape(kerns{4},sz);
+    GS = reshape(kerns{1},sz);
+    Gphi = reshape(kerns{4},sz);
+
+    hessGS = kerns{2};
+    gradlapGS = kerns{3};
 
     [zi,zj] = ind2sub(sz,ind);
 
-    kernhat = circshift(kerns{1},[zi,zj]);
-    kerns{1} = fft2(kernhat);
+    GS = circshift(GS,[zi,zj]);
+    kerns{1} = fft2(GS);
 
-    kernhat = circshift(kerns{4},[zi,zj]);
-    kerns{4} = fft2(kernhat);
+    Gphi = circshift(Gphi,[zi,zj]);
+    kerns{4} = fft2(Gphi);
 
 end

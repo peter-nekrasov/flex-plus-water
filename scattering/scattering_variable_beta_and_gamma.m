@@ -1,6 +1,6 @@
 %%%%%
 %
-% Continuous scattering with variable beta 
+% Continuous scattering with variable beta and variable gamma
 %
 %%%%%
 
@@ -37,7 +37,10 @@ bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
 % bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
 beta = b0 + bbar;
 
-coefs = {a0+zeros(n),abar+zeros(n),b0+X*0,bbar,g0 + zeros(n),zeros(n)};
+gbar = 0.2*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
+gamma = g0 + gbar;
+
+coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar};
 
 % Perturbing coefficients
 % geo = gaussian(X,Y,5,H0,3*pi/k);
@@ -50,12 +53,12 @@ coefs = {a0+zeros(n),abar+zeros(n),b0+X*0,bbar,g0 + zeros(n),zeros(n)};
 
 % RHS (Incident field)
 phiinc = exp(1i*k*X);
-rhs = k*bbar.*phiinc;
+rhs = k*bbar.*phiinc - gbar.*phiinc;
 rhs_vec = rhs(:);
 
 
 figure(1);
-tiledlayout(1,2);
+tiledlayout(1,3);
 
 nexttile
 s = pcolor(X,Y,beta);
@@ -65,11 +68,19 @@ title('\beta')
 drawnow
 
 nexttile
+s = pcolor(X,Y,gamma);
+s.EdgeColor = 'None';
+colorbar
+title('\gamma')
+drawnow
+
+nexttile
 s = pcolor(X,Y,real(rhs));
 s.EdgeColor = 'None';
 colorbar
 title('rhs')
 drawnow
+
 
 % Constructing integral operators
 [inds,corrs] = get_correct(rts,ejs,h,a0);

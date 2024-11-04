@@ -1,4 +1,4 @@
-function err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,alpha,beta,gamma,h)
+function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
 
 
     ind = intersect(find(X == 5), find(Y == 5));
@@ -38,17 +38,21 @@ function err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,alpha,beta,gamma,h)
     
     % Error of scattered part
     % phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
-    % first = a0*sum(bilap.*phi_n_sub,'all') ;
+    % first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
     % second = -beta(ii,jj)*phi_n(ii,jj);
-    % third = g0*phi(ii,jj);
+    % third = gamma*phi(ii,jj);
     % rhs = k*bbar(ii,jj)*phiinc(ii,jj);
-    % err = abs(first + second + third - rhs) / max(abs(phi_n_tot(:)))
+    % err = abs(first + second + third - rhs) 
+
+    alpha = coefs{1} + coefs{2};
+    beta = coefs{3} + coefs{4};
+    gamma = coefs{5} + coefs{6};
     
     % Residual error of total solution 
-    phi_n_tot_sub = phi_n_tot(ii-4:ii+4,jj-4:jj+4);
-    first = alpha(ii,jj)*sum(bilap.*phi_n_tot_sub,'all') ;
-    second = -beta(ii,jj).*phi_n_tot(ii,jj);
-    third = gamma*phi_tot(ii,jj);
-    err = abs(first + second + third); % / abs(sum(h^2*mu(:)));
+    phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
+    first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
+    second = -beta(ii,jj).*phi_n(ii,jj);
+    third = gamma(ii,jj).*phi(ii,jj);
+    err = abs(first + second + third) / (sum(h^2*abs(mu(:))));
 
 end
