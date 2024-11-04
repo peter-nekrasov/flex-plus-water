@@ -37,7 +37,7 @@ bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2));
 % bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
 beta = b0 + bbar;
 
-gbar = 0.2*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
+gbar = 0.2*exp(-(X.^2 + (Y-1).^2)/(2*(4*k)^2)); 
 gamma = g0 + gbar;
 
 coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar};
@@ -52,7 +52,9 @@ coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar};
 % bbar = beta - b0;
 
 % RHS (Incident field)
-phiinc = exp(1i*k*X);
+k1 = 2*sqrt(2)*k/3;
+k2 = k/3;
+phiinc = exp(1i*k1*X+1i*k2*Y);
 rhs = k*bbar.*phiinc - gbar.*phiinc;
 rhs_vec = rhs(:);
 

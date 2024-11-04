@@ -6,14 +6,14 @@ function v = fast_apply_fft(mu,kern_struct,V)
     bbar = V{4};
     g0 = V{5};
     gbar = V{6};
-    % alphax = V{2};
-    % alphay = V{3};
-    % alphaxx = V{4};
-    % alphaxy = V{5};
-    % alphayy = V{6};
-    % betabar = V{7};
-    % gammabar = V{8};
-    % nu = V{9};
+
+    % alphax = V{7};
+    % alphay = V{8};
+    % alphaxx = V{9};
+    % alphaxy = V{10};
+    % alphayy = V{11};
+    % nu = V{12};
+    
     %alphalap = alphaxx+alphayy;
 
     Gs_aug_hat = kern_struct{1};
