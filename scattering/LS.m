@@ -7,8 +7,7 @@
 addpath(genpath('..'))
 
 L = 50;
-h = 0.25;
-errs = hs*0;
+h = 0.5;
 
 % H0 = 20;
 % w = 2;
@@ -28,19 +27,21 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-targ = [0;0];
-src = [XL(:).'; YL(:).'];
+src = [0;0];
+targ = [XL(:).'; YL(:).'];
 
 abar = 0;
 % bbar = -3*cos(-X/3+Y).*exp(-(X.^2 + Y.^2)/(2*(6*k)^2)); 
 bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
 % bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
 beta = b0 + bbar;
+ax = 0.1*exp(-((X+1).^2 + (Y-1).^2)/(2*(4*k)^2));
+ay = -0.1*exp(-((X+1).^2 + (Y+1).^2)/(2*(4*k)^2));
 
 gbar = 0.2*exp(-(X.^2 + (Y-1).^2)/(2*(4*k)^2)); 
 gamma = g0 + gbar;
 
-coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar};
+coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay};
 
 % Perturbing coefficients
 % geo = gaussian(X,Y,5,H0,3*pi/k);
@@ -55,7 +56,7 @@ coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar};
 k1 = 2*sqrt(2)*k/3;
 k2 = k/3;
 phiinc = exp(1i*k1*X+1i*k2*Y);
-rhs = k*bbar.*phiinc - gbar.*phiinc;
+rhs = 2i*k^3*k1*ax.*phiinc + 2i*k^3*k2*ay.*phiinc + k*bbar.*phiinc - gbar.*phiinc;
 rhs_vec = rhs(:);
 
 

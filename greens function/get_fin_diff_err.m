@@ -6,19 +6,19 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     % disp(phi(ii,jj))
     
     % finite difference stencils 
-    % d1 - partial_{xxxx} (6th order) % improve order?
-    d1 = zeros(9,1);
-    d1(1) = 7/240;	
-    d1(2) = -2/5;
-    d1(3) = 169/60;
-    d1(4) = -122/15;
-    d1(5) = 91/8;
-    d1(6) = -122/15;
-    d1(7) = 169/60;
-    d1(8) = -2/5;
-    d1(9) = 7/240;
+    % d4 - partial_{xxxx} (6th order) % improve order?
+    d4 = zeros(9,1);
+    d4(1) = 7/240;	
+    d4(2) = -2/5;
+    d4(3) = 169/60;
+    d4(4) = -122/15;
+    d4(5) = 91/8;
+    d4(6) = -122/15;
+    d4(7) = 169/60;
+    d4(8) = -2/5;
+    d4(9) = 7/240;
     
-    % d2 - partial_{xxyy} (8th order)
+    % d2 - partial_{xx} (8th order)
     d2 = zeros(9, 1);
     d2(1) = -1/560;
     d2(2) = 8/315;
@@ -29,13 +29,26 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     d2(7) = -1/5;
     d2(8) = 8/315;
     d2(9) = -1/560;
+
+    % d3 - partial_{xxx} (6th order)
+	d3 = [-7/240; 3/10; -169/120; 61/30; 0; -61/30; 169/120; -3/10; 7/240];	
+
+    % d1 - partial_{x} (8th order)
+    d1 = [1/280; -4/105; 1/5; -4/5; 0; 4/5; -1/5; 4/105; -1/280];
     
-    bilap = zeros(9,9);
-    bilap(:,5) = d1;
-    bilap(5,:) = bilap(5,:) + d1.';
+    bilap = zeros(9);
+    bilap(:,5) = d4;
+    bilap(5,:) = bilap(5,:) + d4.';
     bilap = bilap + 2*(d2*d2.');
     bilap = bilap / h^4;
+
+    gradlapx = zeros(9);
+    gradlapx(5,:) = d3.';
+    gradlapx = gradlapx + d2*d1.';
+    gradlapx = gradlapx / h^3;
     
+    gradlapy = gradlapx.';
+
     % Error of scattered part
     % phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
     % first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
@@ -47,12 +60,16 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     alpha = coefs{1} + coefs{2};
     beta = coefs{3} + coefs{4};
     gamma = coefs{5} + coefs{6};
+    alphax = coefs{7};
+    alphay = coefs{8};
     
     % Residual error of total solution 
     phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
     first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
-    second = -beta(ii,jj).*phi_n(ii,jj);
-    third = gamma(ii,jj).*phi(ii,jj);
-    err = abs(first + second + third) / (sum(h^2*abs(mu(:))));
+    second = 2*alphax(ii,jj).*sum(gradlapx.*phi_n_sub,'all');
+    third = 2*alphay(ii,jj).*sum(gradlapy.*phi_n_sub,'all');
+    bterm = -beta(ii,jj).*phi_n(ii,jj);
+    gterm = gamma(ii,jj).*phi(ii,jj);
+    err = abs(first + second + third + bterm + gterm) / (sum(h^2*abs(mu(:))));
 
 end
