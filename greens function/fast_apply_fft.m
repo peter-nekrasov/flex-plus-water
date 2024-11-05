@@ -8,6 +8,7 @@ function v = fast_apply_fft(mu,kern_struct,V)
     gbar = V{6};
     alphax = V{7};
     alphay = V{8};
+    alphalap = V{9};
 
     % alphaxx = V{9};
     % alphaxy = V{10};
@@ -52,8 +53,8 @@ function v = fast_apply_fft(mu,kern_struct,V)
     % Gsyy_mu_aug = ifft2(Gsyy_aug_hat.*mu_aug_hat);
     % Gsyy_mu = Gsyy_mu_aug(1:N, 1:N);
     % 
-    % Gslap_mu_aug = ifft2(Gslap_aug_hat.*mu_aug_hat);
-    % Gslap_mu = Gslap_mu_aug(1:N, 1:N);
+    Gslap_mu_aug = ifft2(Gslap_aug_hat.*mu_aug_hat);
+    Gslap_mu = Gslap_mu_aug(1:N, 1:N);
 
     Gslapx_mu_aug = ifft2(Gslapx_aug_hat.*mu_aug_hat);
     Gslapx_mu = Gslapx_mu_aug(1:N, 1:N);
@@ -71,7 +72,7 @@ function v = fast_apply_fft(mu,kern_struct,V)
     % v = v(:);
 
     v = (a0 + abar)./a0.*mu + alphax.*Gslapx_mu + ...
-        + alphay.*Gslapy_mu - 0.5*bbar.*Gs_mu + 0.5*gbar.*Gphi_mu ;
+        + alphay.*Gslapy_mu + 0.5.*alphalap.*Gslap_mu - 0.5*bbar.*Gs_mu + 0.5*gbar.*Gphi_mu ;
     v = v(:);
 
 end

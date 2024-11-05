@@ -35,6 +35,11 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
 
     % d1 - partial_{x} (8th order)
     d1 = [1/280; -4/105; 1/5; -4/5; 0; 4/5; -1/5; 4/105; -1/280];
+
+    lap = zeros(9);
+    lap(5,:) = d2.';
+    lap(:,5) = lap(:,5) + d2;
+    lap = lap / h^2;
     
     bilap = zeros(9);
     bilap(:,5) = d4;
@@ -62,14 +67,16 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     gamma = coefs{5} + coefs{6};
     alphax = coefs{7};
     alphay = coefs{8};
+    alphalap = coefs{9};
     
     % Residual error of total solution 
     phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
     first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
     second = 2*alphax(ii,jj).*sum(gradlapx.*phi_n_sub,'all');
     third = 2*alphay(ii,jj).*sum(gradlapy.*phi_n_sub,'all');
+    fourth = alphalap(ii,jj).*sum(lap.*phi_n_sub,'all');
     bterm = -beta(ii,jj).*phi_n(ii,jj);
     gterm = gamma(ii,jj).*phi(ii,jj);
-    err = abs(first + second + third + bterm + gterm) / (sum(h^2*abs(mu(:))));
+    err = abs(first + second + third + fourth + bterm + gterm) / (sum(h^2*abs(mu(:))));
 
 end
