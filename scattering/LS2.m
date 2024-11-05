@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bump2(X,Y,10,150); % remove gbar from coefs vector
+[coefs, H] = bump2(X,Y,10,100); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
