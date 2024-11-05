@@ -7,7 +7,7 @@
 addpath(genpath('..'))
 
 L = 50;
-h = 0.125;
+h = 0.125/2;
 
 % H0 = 20;
 % w = 2;
@@ -42,11 +42,12 @@ ax = 0.1*exp(-((X+1).^2 + (Y-1).^2)/(2*(4*k)^2));
 ay = -0.1*exp(-((X-1).^2 + (Y-1).^2)/(2*(4*k)^2));
 axx = 0.5*cos(X).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
 ayy = 0.5*sin(Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
+axy = 0.7*sin(X+Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
 
 gbar = 0.2*exp(-(X.^2 + (Y-1).^2)/(2*(4*k)^2)); 
 gamma = g0 + gbar;
 
-coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay,axx+ayy,axx,ayy,nu};
+coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu};
 
 % Perturbing coefficients
 % geo = gaussian(X,Y,5,H0,3*pi/k);
@@ -61,7 +62,7 @@ coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay,axx+ayy,axx,ayy,nu};
 k1 = 2*sqrt(2)*k/3;
 k2 = k/3;
 phiinc = exp(1i*k1*X+1i*k2*Y);
-rhs = (2i*k^3*k1*ax + 2i*k^3*k2*ay + k^3*(axx+ayy)+ (1-nu)*k*(-axx*k2^2 - ayy*k1^2) + k*bbar - gbar).*phiinc;
+rhs = (2i*k^3*k1*ax + 2i*k^3*k2*ay + k^3*(axx+ayy)+ (1-nu)*k*(2*axy*k1*k2-axx*k2^2 - ayy*k1^2) + k*bbar - gbar).*phiinc;
 rhs_vec = rhs(:);
 
 
