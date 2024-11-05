@@ -72,7 +72,7 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
 
     alpha = coefs{1} + coefs{2};
     beta = coefs{3} + coefs{4};
-    gamma = coefs{5} + coefs{6};
+    g0 = coefs{5};
     alphax = coefs{7};
     alphay = coefs{8};
     alphaxx = coefs{9};
@@ -91,7 +91,7 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     sixth = -(1-nu)*alphaxx(ii,jj).*sum(hessyy.*phi_n_sub,'all');
     seventh = 2*(1-nu)*alphaxy(ii,jj).*sum(hessxy.*phi_n_sub,'all');
     bterm = -beta(ii,jj).*phi_n(ii,jj);
-    gterm = gamma(ii,jj).*phi(ii,jj);
+    gterm = g0.*phi(ii,jj);
     err = abs(first + second + third + fourth + fifth + sixth + seventh + bterm + gterm) / (sum(h^2*abs(mu(:))));
 
 end

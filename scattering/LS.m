@@ -7,7 +7,7 @@
 addpath(genpath('..'))
 
 L = 50;
-h = 0.125/2;
+h = 0.125;
 
 % H0 = 20;
 % w = 2;
@@ -30,7 +30,9 @@ xl = -2*L:h:2*L;
 src = [0;0];
 targ = [XL(:).'; YL(:).'];
 
-abar = 0;
+abar = 0.4*exp(-((X-1).^2 + (Y+1).^2)/(2*(4*k)^2));
+alpha = a0+abar;
+
 % bbar = -3*cos(-X/3+Y).*exp(-(X.^2 + Y.^2)/(2*(6*k)^2)); 
 bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
 % bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
@@ -44,10 +46,9 @@ axx = 0.5*cos(X).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
 ayy = 0.5*sin(Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
 axy = 0.7*sin(X+Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
 
-gbar = 0.2*exp(-(X.^2 + (Y-1).^2)/(2*(4*k)^2)); 
-gamma = g0 + gbar;
+gbar = 0;
 
-coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu};
+coefs = {a0,abar,b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu};
 
 % Perturbing coefficients
 % geo = gaussian(X,Y,5,H0,3*pi/k);
@@ -62,7 +63,7 @@ coefs = {a0+zeros(n),abar+zeros(n),b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu};
 k1 = 2*sqrt(2)*k/3;
 k2 = k/3;
 phiinc = exp(1i*k1*X+1i*k2*Y);
-rhs = (2i*k^3*k1*ax + 2i*k^3*k2*ay + k^3*(axx+ayy)+ (1-nu)*k*(2*axy*k1*k2-axx*k2^2 - ayy*k1^2) + k*bbar - gbar).*phiinc;
+rhs = (-abar*k^5 + 2i*k^3*k1*ax + 2i*k^3*k2*ay + k^3*(axx+ayy)+ (1-nu)*k*(2*axy*k1*k2-axx*k2^2 - ayy*k1^2) + k*bbar - gbar).*phiinc;
 rhs_vec = rhs(:);
 
 
@@ -70,17 +71,17 @@ figure(1);
 tiledlayout(1,3);
 
 nexttile
+s = pcolor(X,Y,alpha);
+s.EdgeColor = 'None';
+colorbar
+title('\alpha')
+drawnow
+
+nexttile
 s = pcolor(X,Y,beta);
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
-drawnow
-
-nexttile
-s = pcolor(X,Y,gamma);
-s.EdgeColor = 'None';
-colorbar
-title('\gamma')
 drawnow
 
 nexttile
