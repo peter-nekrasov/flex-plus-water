@@ -10,8 +10,8 @@ clear
 close all
 addpath(genpath('..'))
 
-L = 50;
-h = 0.5;
+L = 5000;
+h = 50;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -19,7 +19,8 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-coefs = bump(X,Y,4,6); % remove gbar from coefs vector
+[coefs, H] = dipole(X,Y,0.04,500); % remove gbar from coefs vector
+E = 7E9;
 
 a0 = coefs{1}; 
 b0 = coefs{3}; 
@@ -34,35 +35,41 @@ src = [0;0];
 targ = [XL(:).'; YL(:).'];
 
 % RHS (Incident field)
-k1 = 2*sqrt(2)*k/3;
-k2 = k/3;
+k1 = k;
+k2 = 0;
 phiinc = exp(1i*k1*X+1i*k2*Y);
 [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
 
 figure(1);
-tiledlayout(1,3);
+tiledlayout(2,2);
 
 nexttile
-s = pcolor(X,Y,coefs{1} + coefs{2});
+s = pcolor(X,Y,H);
+s.EdgeColor = 'None';
+colorbar
+title('H')
+drawnow
+
+nexttile
+s = pcolor(X,Y,E*(coefs{1} + coefs{2}));
 s.EdgeColor = 'None';
 colorbar
 title('\alpha')
 drawnow
 
 nexttile
-s = pcolor(X,Y,coefs{2} + coefs{3});
+s = pcolor(X,Y,E*(coefs{2} + coefs{3}));
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
 drawnow
 
 nexttile
-s = pcolor(X,Y,real(rhs));
+s = pcolor(X,Y,real(E*rhs));
 s.EdgeColor = 'None';
 colorbar
 title('rhs')
 drawnow
-
 
 
 
@@ -89,9 +96,10 @@ fprintf('%5.2e s : time to solve\n',t1)
 phi_tot = phi + phiinc;
 phi_n_tot = phi_n + k*phiinc;
 
+%%
 
 figure(2);
-tiledlayout(1,5)
+tiledlayout(2,3)
 
 nexttile
 pc = pcolor(X,Y,real(mu));
