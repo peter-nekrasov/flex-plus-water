@@ -1,84 +1,56 @@
 %%%%%
 %
-% Continuous scattering with variable beta and variable gamma
+% Solving the adjointed Lippman-Schwinger equation for plane wave 
+% scattering of flexural-gravity waves
+%
 %
 %%%%%
 
+clear 
+close all
 addpath(genpath('..'))
 
 L = 50;
-h = 0.125;
+h = 0.5;
 
-% H0 = 20;
-% w = 2;
-a0 = 3; %6.410256410256411e+08*H0^3;
-b0 = 5; %(917*H0*w^2 - 9800) ;
-g0 = -1; %- 1000*w^2 ;
-
-% Finding positive real roots
-[rts,ejs] = find_roots(b0 / a0, g0 / a0);
-k = rts((imag(rts) == 0) & (real(rts) > 0));
-ejs = ejs/a0;
-
-% Parameters
 xs = -L:h:L;
 xl = -2*L:h:2*L;
 [~,n] = size(xs);
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
+coefs = bump(X,Y,4,6); % remove gbar from coefs vector
+
+a0 = coefs{1}; 
+b0 = coefs{3}; 
+g0 = coefs{5}; 
+
+% Finding positive real roots
+[rts,ejs] = find_roots(b0 / a0, g0 / a0);
+k = rts((imag(rts) == 0) & (real(rts) > 0));
+ejs = ejs/a0;
+
 src = [0;0];
 targ = [XL(:).'; YL(:).'];
-
-abar = 0.4*exp(-((X-1).^2 + (Y+1).^2)/(2*(4*k)^2));
-alpha = a0+abar;
-
-% bbar = -3*cos(-X/3+Y).*exp(-(X.^2 + Y.^2)/(2*(6*k)^2)); 
-bbar = -3*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
-% bbar = -X.*exp(-(X.^2 + Y.^2)/(2*(4*k)^2)); 
-beta = b0 + bbar;
-
-nu = 0.33;
-
-ax = 0.1*exp(-((X+1).^2 + (Y-1).^2)/(2*(4*k)^2));
-ay = -0.1*exp(-((X-1).^2 + (Y-1).^2)/(2*(4*k)^2));
-axx = 0.5*cos(X).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
-ayy = 0.5*sin(Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
-axy = 0.7*sin(X+Y).*exp(-((X).^2 + (Y).^2)/(2*(4*k)^2));
-
-gbar = 0;
-
-coefs = {a0,abar,b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu};
-
-% Perturbing coefficients
-% geo = gaussian(X,Y,5,H0,3*pi/k);
-% H = geo{1};
-% alpha = geo{2};
-% beta = (917*H*w^2 - 9800) ;
-% gamma = -1000*w^2 ;
-% abar = alpha - a0;
-% bbar = beta - b0;
 
 % RHS (Incident field)
 k1 = 2*sqrt(2)*k/3;
 k2 = k/3;
 phiinc = exp(1i*k1*X+1i*k2*Y);
-rhs = (-abar*k^5 + 2i*k^3*k1*ax + 2i*k^3*k2*ay + k^3*(axx+ayy)+ (1-nu)*k*(2*axy*k1*k2-axx*k2^2 - ayy*k1^2) + k*bbar - gbar).*phiinc;
-rhs_vec = rhs(:);
-
+[rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
 
 figure(1);
 tiledlayout(1,3);
 
 nexttile
-s = pcolor(X,Y,alpha);
+s = pcolor(X,Y,coefs{1} + coefs{2});
 s.EdgeColor = 'None';
 colorbar
 title('\alpha')
 drawnow
 
 nexttile
-s = pcolor(X,Y,beta);
+s = pcolor(X,Y,coefs{2} + coefs{3});
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
