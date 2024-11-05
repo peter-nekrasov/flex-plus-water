@@ -54,6 +54,12 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     
     gradlapy = gradlapx.';
 
+    hessxx = zeros(9);
+    hessxx(5,:) = d2.' / h^2;
+
+    hessyy = zeros(9);
+    hessyy(:,5) = d2 / h^2;
+
     % Error of scattered part
     % phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
     % first = alpha(ii,jj)*sum(bilap.*phi_n_sub,'all') ;
@@ -68,6 +74,9 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     alphax = coefs{7};
     alphay = coefs{8};
     alphalap = coefs{9};
+    alphaxx = coefs{10};
+    alphayy = coefs{11};
+    nu = coefs{end};
     
     % Residual error of total solution 
     phi_n_sub = phi_n(ii-4:ii+4,jj-4:jj+4);
@@ -75,8 +84,10 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
     second = 2*alphax(ii,jj).*sum(gradlapx.*phi_n_sub,'all');
     third = 2*alphay(ii,jj).*sum(gradlapy.*phi_n_sub,'all');
     fourth = alphalap(ii,jj).*sum(lap.*phi_n_sub,'all');
+    fifth = -(1-nu)*alphayy(ii,jj).*sum(hessxx.*phi_n_sub,'all');
+    sixth = -(1-nu)*alphaxx(ii,jj).*sum(hessyy.*phi_n_sub,'all');
     bterm = -beta(ii,jj).*phi_n(ii,jj);
     gterm = gamma(ii,jj).*phi(ii,jj);
-    err = abs(first + second + third + fourth + bterm + gterm) / (sum(h^2*abs(mu(:))));
+    err = abs(first + second + third + fourth + fifth + sixth + bterm + gterm) / (sum(h^2*abs(mu(:))));
 
 end
