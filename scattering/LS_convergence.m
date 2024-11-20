@@ -10,7 +10,7 @@ close all
 addpath(genpath('..'))
 
 L = 50;
-hs = [5 2.5 1 0.5 0.25 0.2 0.125 0.1];
+hs = [5 2.5 1 0.5 0.25 0.2 0.125 0.1 0.125/2];
 errs = hs*0;
 
 for ii = 1:numel(hs)

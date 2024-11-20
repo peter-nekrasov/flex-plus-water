@@ -74,7 +74,7 @@ function [inds, corrs] = get_correct(rts,ejs,h,a0)
 
     valcor = c0*tau;
 
-    % 2*log(|r|) + 2 x^2 / r^2 + 1 
+    % log(|r|^2) + 2 x^2 / r^2 + 1 
     
     [z0] = epstein_zeta(0+1i*10^-12,1,0,1) ;
     z0 = imag(z0)*1e12 ;
