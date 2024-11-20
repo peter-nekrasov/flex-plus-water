@@ -26,7 +26,7 @@ for ii = 1:numel(hs)
     dint = sum(val.'.*d1(:));
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{1};
     dint = sum(val.*d1(:).');
@@ -77,7 +77,7 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{2};
     val = val(:,:,1);
@@ -131,7 +131,7 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{2};
     val = val(:,:,2);
@@ -185,7 +185,7 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{2};
     val = val(:,:,3);
@@ -239,7 +239,7 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{3};
     val = val(:,:,1);
@@ -292,7 +292,7 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{3};
     val = val(:,:,2);
@@ -346,7 +346,7 @@ for ii = 1:numel(hs)
     dint = sum(val.'.*d1(:));
     errs0(ii) = abs(dint - truev);
 
-    [inds, corrs] = get_correct(rts,ejs,h);
+    [inds, corrs] = get_correct(h,1);
     kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),inds,corrs);
     val = kern{4};
     dint = sum(val.'.*d1(:));

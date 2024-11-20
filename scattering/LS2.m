@@ -74,7 +74,7 @@ drawnow
 
 
 % Constructing integral operators
-[inds,corrs] = get_correct(rts,ejs,h,a0);
+[inds,corrs] = get_correct(h,a0);
 kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));

@@ -9,7 +9,7 @@ h = 0.2;
 xs = -15:h:15;
 [X,Y] = meshgrid(xs);
 targ = [X(:).'; Y(:).'];
-src = [0; 0];
+src = [5i; 5i];
 gamma = -1; % fails if zero
 beta = 3;
 
@@ -30,50 +30,51 @@ hessyy = reshape(hess(:,:,3),size(X));
 lapx = reshape(gradlap(:,:,1),size(X)); 
 lapy = reshape(gradlap(:,:,2),size(X)); 
 
-% figure(1);
-% t = tiledlayout(1,3);
-% title(t, ['Greens function, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-% 
-% nexttile
-% surf = pcolor(X,Y,real(val));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('real')
-% 
-% nexttile
-% surf = pcolor(X,Y,imag(val));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('imag')
-% 
-% nexttile
-% surf = pcolor(X,Y,abs(val));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('abs')
-% 
-% figure(2);
-% t = tiledlayout(1,3);
-% title(t, ['G_\phi, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
-% 
-% nexttile
-% surf = pcolor(X,Y,real(phi));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('real')
-% 
-% nexttile
-% surf = pcolor(X,Y,imag(phi));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('imag')
-% 
-% nexttile
-% surf = pcolor(X,Y,abs(phi));
-% surf.EdgeColor = 'none';
-% colorbar
-% title('abs') 
+figure(1);
+t = tiledlayout(1,3);
+title(t, ['Greens function, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
 
+nexttile
+surf = pcolor(X,Y,real(val));
+surf.EdgeColor = 'none';
+colorbar
+title('real')
+
+nexttile
+surf = pcolor(X,Y,imag(val));
+surf.EdgeColor = 'none';
+colorbar
+title('imag')
+
+nexttile
+surf = pcolor(X,Y,abs(val));
+surf.EdgeColor = 'none';
+colorbar
+title('abs')
+
+figure(2);
+t = tiledlayout(1,3);
+title(t, ['G_\phi, \beta = ',num2str(beta), ', \gamma = ',num2str(gamma)]);
+
+nexttile
+surf = pcolor(X,Y,real(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('real')
+
+nexttile
+surf = pcolor(X,Y,imag(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('imag')
+
+nexttile
+surf = pcolor(X,Y,abs(phi));
+surf.EdgeColor = 'none';
+colorbar
+title('abs') 
+
+return
 
 %% Second derivatives
 

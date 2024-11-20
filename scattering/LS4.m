@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 10000;
-h = 50;
+h = 25;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -73,7 +73,7 @@ drawnow
 
 
 % Constructing integral operators
-[inds,corrs] = get_correct(rts,ejs,h,a0);
+[inds,corrs] = get_correct(h,a0);
 kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));
@@ -155,5 +155,12 @@ colorbar
 figure(6)
 pc = pcolor(X,Y,abs(mu));
 pc.EdgeColor = 'none';
-title('Abs(\rho)')
+title('|\rho|')
 colorbar
+
+figure(7)
+pc = pcolor(X,Y,real(phi_n_tot));
+pc.EdgeColor = 'none';
+title('Real(\phi_n)')
+colorbar
+clim([-0.06 0.06])

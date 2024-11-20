@@ -1,4 +1,4 @@
-function [inds, corrs] = get_correct(rts,ejs,h,a0)
+function [inds, corrs] = get_correct(h,a0)
 % Getting corrections for the kernels in the Lippman-Schwinger eq
 %
 % input:
@@ -162,7 +162,7 @@ function [inds, corrs] = get_correct(rts,ejs,h,a0)
     b = [-z0; 0; 0; -2/5*z1; -2/5*z1];
     b = b*h^5;
     tau = A5 \ b;
-    c0 = 1/4/4/gamma(1+3/2)^2; 
+    c0 = 1/4/4/gamma(1+3/2)^2/a0; 
 
     phicor = c0*tau;
 
