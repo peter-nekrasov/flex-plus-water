@@ -27,7 +27,7 @@ gradlapy = gradlap(:,:,2);
 
 rhs = -(2*ax.*gradlapx + 2*ay.*gradlapy + (axx+ayy).*(hessxx+hessyy)+...
     (1-nu)*(2*axy.*hessxy - axx.*hessyy - ayy.*hessxx) + (abar/a0*b0-bbar).*val ) + ...
-    - (gbar - 2*g0*abar/a0).*phi;
+    - (gbar - g0*abar/a0).*phi;
 rhs_vec = rhs(:);
 
 

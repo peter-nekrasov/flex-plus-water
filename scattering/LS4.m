@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 10000;
-h = 25;
+h = 50;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-8000,8000,1.5,250); % remove gbar from coefs vector
+[coefs, H] = bumps(X,Y,-8000,8000,1.2,100); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 

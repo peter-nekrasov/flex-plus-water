@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-8000,8000,1.2,250); % remove gbar from coefs vector
+[coefs, H] = bumps(X,Y,-L,L,2,200); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -31,7 +31,7 @@ g0 = coefs{5};
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 ejs = ejs/a0;
 
-src = [-L;0]+1000*[1i;0];
+src = [-4000;-4000]+0*[1i;0];
 targ = [X(:).'; Y(:).'];
 
 % RHS (Incident field)

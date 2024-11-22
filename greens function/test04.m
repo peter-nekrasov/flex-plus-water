@@ -5,9 +5,15 @@ xs = -10:h:10;
 [X,Y] = meshgrid(xs);
 beta = 5;
 gamma = -2;
-R = sqrt(X.^2 + Y.^2);
-gval = green(R,beta,gamma);
-gsurfval = green(R,beta,gamma,true); % kernel of on surface evaluation
+src = [0;0];
+targ = [X(:).'; Y(:).'];
+[rts,ejs] = find_roots(beta,gamma);
+kerns = green(src,targ,rts,ejs);
+gval = kerns{1};
+gsurfval = kerns{4}; % kernel of on surface evaluation
+
+gval = reshape(gval, size(X));
+gsurfval = reshape(gsurfval, size(X));
 
 % finite difference stencils
 d1 = zeros(9,1);

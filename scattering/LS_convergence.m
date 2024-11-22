@@ -10,8 +10,8 @@ close all
 addpath(genpath('..'))
 
 L = 50;
-hs = [5 2.5 1 0.5 0.25 0.2 0.125 0.1 0.125/2];
-errs = hs*0;
+hs = [0.125/5];
+errs2 = hs*0;
 
 for ii = 1:numel(hs)
 
@@ -69,7 +69,7 @@ phiinc = exp(1i*k1*X+1i*k2*Y);
 
 
 % Constructing integral operators
-[inds,corrs] = get_correct(rts,ejs,h,a0);
+[inds,corrs] = get_correct(h,a0);
 kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));
@@ -81,7 +81,7 @@ evalkerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-12,200);
+mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,200,1e-14,500);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -126,7 +126,7 @@ phi_n_tot = phi_n + k*phiinc;
 % colorbar
        
 % Calculate error with finite difference
-errs(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
+errs2(ii) = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
 
 end
 
