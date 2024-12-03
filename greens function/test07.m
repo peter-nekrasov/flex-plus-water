@@ -2,7 +2,7 @@ h = 0.1;
 alpha = 2;
 beta = 4;
 gamma = -1;
-[rts,ejs] = find_roots(beta / alpha, 2*gamma / alpha);
+[rts,ejs] = find_roots(beta / alpha, gamma / alpha);
 [X,Y] = meshgrid(-10:h:10);
 src = [0; 0];
 targ = [X(:).' ; Y(:).'];
@@ -58,7 +58,7 @@ bilap = bilap / h^4;
 
 % Residual error of total solution 
 GSsub = GS(ii-4:ii+4,jj-4:jj+4);
-first = 1/2*alpha*sum(bilap.*GSsub,'all') ;
-second = -1/2*beta.*GS(ii,jj);
+first = alpha*sum(bilap.*GSsub,'all') ;
+second = -beta.*GS(ii,jj);
 third = gamma*Gphi(ii,jj);
 err = abs(first + second + third)

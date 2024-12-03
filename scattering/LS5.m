@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 10000;
-h = 50;
+h = 20;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;

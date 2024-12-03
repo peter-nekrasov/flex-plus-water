@@ -40,4 +40,53 @@ Wave Motion in Hydrodynamics (1887) by Greenhill\
 Elastic Waves in Arctic Pack Ice (1954) by Oliver AP Crary and R Cotell\
 - Old school paper looking at the dispersion of flexural waves in Arctic pack ice in the field by shots of TNT. Pretty cool stuff. \
 \
+Sound Radiation by a simply supported unbaffled plate (1998) by B. Laulagnet\
+- They are looking at a simply supported plate. Helmholtz equation for the pressure. There is some condition on the jump in pressure on both sides of the plate. \
+- They have a Green\'92s function for this problem (in terms of some integral). Then they use Green\'92s formula to solve for the pressure at a given point, which is equal to some integral over the plate surface. \
+- The vibrational modes for a supported plate are known. So they can just find the solution in terms of these modes. \
+\
+Platonic Scattering Cancellation for Bending Waves in a Thin Plate (2014) by Farhat et al. \
+- They show that it is possible to cloak an object from flexural waves by altering the thickness profile in some suitable way. \
+\
+\
+Wave propagation in themarginal ice zone: connectionsand feedback mechanismswithin the air\'96ice\'96oceansystem by Jim Thomson\
+- Talks about the MIZ and a simple model for wave attenuation that looks like E(f,x) = E(f,0) exp(\uc0\u8722 \u945 (f)x), where E is the wave energy for frequency f and \u945 (f) is the attenuation rate. \
+- Interesting discussion of whether these waves are dissipated (imaginary wavenumber) or simply scattered by the MIZ. Author makes a strong case for dissipation rather than scattering. \
+- MIZ is defined as region where wave forcing exceeds local wind forcing. \
+\
+Storm-induced sea-ice breakup and the implications for ice extent (2014) by Kohout, Williams, Dean and Meylan\
+- Another observational study where they deployed buoys in Antarctic sea ice to observe wave attenuation\
+- They found that small waves decay exponentially into the sea ice pack while large waves (>3 m) decay linearly, allowing them to persist much longer. The authors say this is probably due to some nonlinear effect. \
+\
+On modeling an iceberg embedded in shore-fast sea ice by Vernon Squire and Tony Dixon (1999). \
+- They derive the Green\'92s function for the infinite depth case in 2D and discuss the roots of the quintic polynomial.\
+- They use this Green\'92s function to solve an integral equation (Green\'92s theorem) for the potential phi at some point. \
+- The crack basically acts as a low-pass filter, allowing long periods to pass with almost perfect transmission and making short periods reflect with almost perfect reflection. \
+\
+How a region of cracked sea ice affects ice-coupled wave propagation by Vernon Squire and Tony Dixon (2001).\
+- Basically an extension of the paper above but they look at the effects of multiple cracks. \
+- If the cracks are perfectly spaced, you can get cool resonance combs where even at short wavelengths there are a ton of frequencies for which the transmission coefficient is 1. \
+- However if cracks are a little bit random then it is unlikely to get resonance combs \'97 the aggregate behavior is the low-pass filtering. \
+\
+Oblique scattering of plane flexural-gravity waves by heterogeneities in sea-ice (2004) by Timothy Williams and Vernon Squire.\
+- These guys examine scattering of oblique FG waves by a uniform ridge. \
+- They discuss/derive the finite depth Green\'92s function using the Fourier transform, which has infinitely many poles on the imaginary axis. They add some small dissipation to perform contour integration. \
+- They use Green\'92s identity to derive a Fredholm integral equation for the velocity potential, where the integral is confined to some narrow region. \
+- They calculate reflection and transmission coefficients for a wide range of incident angles, ridge heights, and spacing between multiple ridges. \
+- In section 3b and 3c there is extensive discussion of how to deal with discontinuities in the flexural rigidity. In general, each discontinuity adds an additional forcing term to the integral equation. This can be written as an additional set of constraint(s) which I believe can be solved in tandem with solving the integral equation. \
+\
+Approximations to wave scattering by an ice sheet of variable thickness over undulating bed topography (2004) by Porter and Porter\
+- First they outline the governing equations for an ice sheet of variable thickness. They take into account the draft of the ice sheet, so the surface equation is on z = -d(x,y) and has some grad d grad phi terms. \
+- Then they derive a variational principle for the coupled ice sheet water system. Out of this come the natural boundary conditions of a free ice sheet, namely zero bending moment, zero shear stress, and continuity of the horizontal fluid velocity. They say that this variational problem can be solved using the Rayleigh-Ritz method. Come back to this if a clear derivation of the BCs for the coupled system are ever needed.\
+- They then take this formulation and make a \'91mild-slope approximation\'92, which basically assumes that the vertical component of the fluid motion can be approximated by the constant thickness/constant depth eigenfunction given the thickness and depth at that point. Sort of like the shallow water approximation. This significantly reduces the computation needed. \
+\
+Ocean wave scattering by natural sea ice transects (2008) by Vaughan and Squire\
+- Notable for using real transects from NSIDC to calculate reflection coefficients. \
+- Also has some variational stuff that might be useful. \
+\
+SCATTERING OF A FLEXURAL WAVE BY A FINITE STRAIGHT CRACK IN AN ELASTIC PLATE (1995) by I.V. Andronov and B.P. Belinskii. \
+- Look at the problem of flexural wave deflection around a crack of finite length. \
+- They impose free conditions on the inside of the crack, as well as some condition on the crack tip. \
+- Fourier integral representation of the solution. Use this representation to prove existence and uniqueness of solutions. \
+- They end up solving some singular integral equation, for some reason. \
 }
