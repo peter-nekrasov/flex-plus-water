@@ -10,7 +10,7 @@ clear
 close all
 addpath(genpath('..'))
 
-L = 10000;
+L = 5000;
 h = 20;
 
 xs = -L:h:L;
@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-L,L,2,200); % remove gbar from coefs vector
+[coefs, H] = bumps(X,Y,-L,L,0.5,75); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -31,7 +31,7 @@ g0 = coefs{5};
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 ejs = ejs/a0;
 
-src = [-4000;-4000]+0*[1i;0];
+src = [0;0]+0*[1i;0];
 targ = [X(:).'; Y(:).'];
 
 % RHS (Incident field)
@@ -88,7 +88,7 @@ src = [0; 0];
 targ = [XL(:).'; YL(:).'];
 
 [inds,corrs] = get_correct(h,a0);
-kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
+kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), h, inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));
 sz = size(XL);
@@ -152,30 +152,62 @@ err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
 
 %% Figure generation for Jeremy
 
-figure(4)
-s = pcolor(X,Y,H);
+figure(4);
+
+t = tiledlayout('flow','TileSpacing','tight'); 
+
+X1 = X / 1000 + 5;
+Y1 = Y / 1000 + 5;
+
+ax1 = nexttile
+s = pcolor(X1,Y1,H*0+3);
 s.EdgeColor = 'None';
+colormap(ax1,gray)
+clim([min(H(:)) max(H(:))])
 colorbar
 title('H')
-drawnow
 
 
-figure(5) 
-pc = pcolor(X,Y,abs(phi_n_tot));
+nexttile
+pc = pcolor(X1,Y1,H*0);
+clim([0 max(abs(mu(:)))/3])
 pc.EdgeColor = 'none';
-title('|\phi_n|')
 colorbar
-
-
-figure(6)
-pc = pcolor(X,Y,abs(mu));
-pc.EdgeColor = 'none';
 title('|\rho|')
-colorbar
 
-figure(7)
-pc = pcolor(X,Y,abs(real(phi_n_tot)));
+nexttile([2 2]);
+pc = pcolor(X1,Y1,H*0);
+clim([0 max(abs(phi_n_tot(:)))*0.75])
 pc.EdgeColor = 'none';
-title('|Re(\phi_n)|')
 colorbar
+title('|\phi_n|')
+
+
+%% 
+
+figure(5);
+s = pcolor(X,Y,H);
+s.EdgeColor = 'None';
+colormap(gray)
+%title('H')
+axis off
+
+
+%% 
+
+figure(6);
+pc = pcolor(X,Y,abs(mu));
+clim([0 max(abs(mu(:)))/3])
+pc.EdgeColor = 'none';
+%title('|\rho|')
+axis off
+
+%% 
+
+figure(7);
+pc = pcolor(X,Y,abs(phi_n_tot));
+clim([0 max(abs(phi_n_tot(:)))*0.75])
+pc.EdgeColor = 'none';
+%title('|\phi_n|')
+axis off
 
