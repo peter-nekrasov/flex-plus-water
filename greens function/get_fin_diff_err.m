@@ -1,7 +1,7 @@
-function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs)
+function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs,xloc,yloc)
 
 
-    ind = intersect(find(X == 800), find(Y == 800));
+    ind = intersect(find(X == xloc), find(Y == yloc));
     [ii, jj] = ind2sub(size(X),ind);
     % disp(phi(ii,jj))
     

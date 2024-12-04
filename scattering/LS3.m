@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 5000;
-h = 50;
+h = 25;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -75,7 +75,7 @@ drawnow
 
 % Constructing integral operators
 [inds,corrs] = get_correct(h,a0);
-kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
+kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h, inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));
 sz = size(XL);
@@ -132,6 +132,6 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,200,200)
 
 

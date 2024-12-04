@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-8000,8000,1.2,100); % remove gbar from coefs vector
+[coefs, H] = bumps(X,Y,-8000,8000,0.4,100); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -74,7 +74,7 @@ drawnow
 
 % Constructing integral operators
 [inds,corrs] = get_correct(h,a0);
-kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), inds,corrs);
+kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs), h,inds,corrs);
 
 ind = find((XL == 0) & (YL ==0));
 sz = size(XL);
@@ -133,9 +133,8 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,200,200)
 
-return
 %% Figure generation for Jeremy
 
 figure(4)

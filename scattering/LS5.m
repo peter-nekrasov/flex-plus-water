@@ -43,6 +43,8 @@ phiinc = reshape(kerns{4},size(X));
 [rhs_vec] = get_rhs_vec2(coefs,kerns);
 rhsp = reshape(rhs_vec,size(X));
 
+return 
+
 figure(1);
 tiledlayout(1,5);
 
@@ -149,6 +151,8 @@ colorbar
 % Calculate error with finite difference
 err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
 
+
+return
 
 %% Figure generation for Jeremy
 
