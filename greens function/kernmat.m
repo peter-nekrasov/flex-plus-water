@@ -1,18 +1,12 @@
-function M = kernmat(src,targ,func,inds,corrs)
+function M = kernmat(src,targ,func,h,inds,corrs)
 % Evaluates kernels and adds corrections to the source part based on inds
 
     kerns = func(src,targ);
 
-    if nargin < 4
+    if nargin < 5
         correct = false;
     else
         correct = true;
-    end
-
-    try 
-        h = norm(targ(:,1) - targ(:,2)); % probably a better way to 
-    catch
-        h = norm(src(:,1) - src(:,2)); % probably a better way to 
     end
 
     if correct
@@ -53,7 +47,7 @@ function M = kernmat(src,targ,func,inds,corrs)
                 tmpcor = corr(:,:,kk);
                 for jj = 1:numel(corr(:,:,1))
                     tmpker((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) = ...
-                        tmpker((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) + tmpcor(jj,1);
+                        tmpker((round(dx/h) == ind(jj,1)) & (round(dy/h) == ind(jj,2))) + h*h*tmpcor(jj,1);
                 end
                 kern(:,:,kk) = tmpker;
             end

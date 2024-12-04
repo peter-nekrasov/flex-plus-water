@@ -45,8 +45,8 @@ function C = get_sparse_corr(sz,inds,corrs)
             tmpcor = repmat(tmpcor.',nx*ny,1);
             tmpcor = tmpcor(:);
 
-            k1s = k1t(:) + ind(:,1).'; % check 
-            k2s = k2t(:) + ind(:,2).';
+            k1s = k1t(:) - ind(:,1).'; % check 
+            k2s = k2t(:) - ind(:,2).';
 
             k1s = k1s(:);
             k2s = k2s(:);

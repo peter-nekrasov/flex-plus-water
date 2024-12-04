@@ -11,7 +11,7 @@ dens = @(x,y) x.*exp(-(x.^2+y.^2)/(5));
 greenfac = @(x,y) greenvalonly(targ,x,y,rts,ejs);
 truev = -0.305656416766226 - 0.016380210577180i; % integral2(@(x,y) dens(x,y).*greenfac(x,y),-20,20,-20,20,"AbsTol",0,"RelTol",10E-16);
 
-hs = [2 1 0.5 0.25 0.2 0.1 0.05];
+hs = [2 1 0.5 0.25 0.125];
 errs0 = hs*0;
 errs1 = hs*0;
 
@@ -26,10 +26,12 @@ for ii = 1:numel(hs)
     dint = sum(val.'.*d1(:));
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{1};
-    dint = sum(val.*d1(:).');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{1};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -61,7 +63,7 @@ dens = @(x,y) exp(-(x.^2+y.^2)/(10));
 truev = -0.002078708423374 + 0.012091284743428i;
 %integral2(@(x,y) dens(x,y).*hessxxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-14)
 
-hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+hs = [1 0.5 0.2 0.1 0.05];
 errs0 = hs*0;
 errs1 = hs*0; 
 
@@ -77,12 +79,13 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{2};
-    val = val(:,:,1);
-    d1 = dens(X,Y);
-    dint = sum(val(:).*d1(:),'all');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{2};
+    val = val{1};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -115,7 +118,7 @@ targ = [2; 2];
 dens = @(x,y) sin(x+y).*exp(-(x.^2+y.^2)/(10));
 truev = 0.275566788162816 + 0.239570256490271i; %integral2(@(x,y) dens(x,y).*hessxyonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-14)
 
-hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+hs = [1 0.5 0.2 0.1 0.05];
 errs0 = hs*0;
 errs1 = hs*0; 
 
@@ -131,12 +134,13 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{2};
-    val = val(:,:,2);
-    d1 = dens(X,Y);
-    dint = sum(val(:).*d1(:),'all');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{2};
+    val = val{2};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -169,7 +173,7 @@ dens = @(x,y) exp(-(x.^2+y.^2)/(10));
 truev = -0.002078708423374 + 0.012091284743428i;
 %integral2(@(x,y) dens(x,y).*hessxxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-14)
 
-hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+hs = [1 0.5 0.2 0.1 0.05];
 errs0 = hs*0;
 errs1 = hs*0; 
 
@@ -185,12 +189,13 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{2};
-    val = val(:,:,3);
-    d1 = dens(X,Y);
-    dint = sum(val(:).*d1(:),'all');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{2};
+    val = val{3};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -223,7 +228,7 @@ dens = @(x,y) x.*exp(-(x.^2+y.^2)/(10));
 %truev =   0.057816396686963 - 0.015079981170599i;
 truev =  -0.089213311677999 + 0.116604914243712i; % integral2(@(x,y) dens(x,y).*gradlapxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-12)
 
-hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+hs = [1 0.5 0.2 0.1 0.05];
 errs0 = hs*0;
 errs1 = hs*0; 
 
@@ -239,12 +244,13 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{3};
-    val = val(:,:,1);
-    d1 = dens(X,Y);
-    dint = sum(val(:).*d1(:),'all');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{3};
+    val = val{1};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -276,7 +282,7 @@ targ = [2; 2];
 dens = @(x,y) y.*exp(-(x.^2+y.^2)/(10));
 truev =  -0.089213311677999 + 0.116604914243712i; % integral2(@(x,y) dens(x,y).*gradlapxonly(targ,x,y,rts,ejs),-15,15,-15,15,'AbsTol',0,'RelTol',10E-12)
 
-hs = [2 1 0.5 0.2 0.1 0.05 0.025];
+hs = [1 0.5 0.2 0.1 0.05];
 errs0 = hs*0;
 errs1 = hs*0; 
 
@@ -292,12 +298,13 @@ for ii = 1:numel(hs)
     dint = sum(val(:).*d1(:),'all');
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{3};
-    val = val(:,:,2);
-    d1 = dens(X,Y);
-    dint = sum(val(:).*d1(:),'all');
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{3};
+    val = val{2};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
@@ -346,10 +353,12 @@ for ii = 1:numel(hs)
     dint = sum(val.'.*d1(:));
     errs0(ii) = abs(dint - truev);
 
+    ind = find((X(:) == targ(1)).*(Y(:) == targ(2)));
     [inds, corrs] = get_correct(h,1);
-    kern = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
-    val = kern{4};
-    dint = sum(val.'.*d1(:));
+    corrs = get_sparse_corr(size(X),inds,corrs);
+    val = corrs{4};
+    dint2 = val*d1(:);
+    dint = dint + h*h*dint2(ind);
     errs1(ii) = abs(dint - truev);
 
 end
