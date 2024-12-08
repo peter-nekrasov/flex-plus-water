@@ -10,8 +10,8 @@ clear
 close all
 addpath(genpath('..'))
 
-L = 2000;
-h = 50;
+L = 4000;
+h = 25;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;

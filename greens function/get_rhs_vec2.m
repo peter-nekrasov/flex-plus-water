@@ -30,5 +30,4 @@ rhs = -(2*ax.*gradlapx + 2*ay.*gradlapy + (axx+ayy).*(hessxx+hessyy)+...
     - (gbar - g0*abar/a0).*phi;
 rhs_vec = rhs(:);
 
-
 end

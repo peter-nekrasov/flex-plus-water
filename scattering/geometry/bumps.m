@@ -1,14 +1,13 @@
-function [coefs,H] = bumps(X,Y,xmin,xmax,amp,width)
+function [coefs,H] = bumps(X,Y,xmin,xmax,amp,width,w)
 
     rng(45);
 
     E = 7*10^9;
     nu = 0.33;
-    H0 = 2;
+    H0 = 5;
     rhow = 1025;
     rhoi = 917;
     g = 9.8;
-    w = 0.5;
 
     a0 = E*H0^3/(12*(1-nu^2));
     b0 = (rhoi*H0*w^2 - rhow*g);

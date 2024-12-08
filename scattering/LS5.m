@@ -10,7 +10,7 @@ clear
 close all
 addpath(genpath('..'))
 
-L = 5000;
+L = 6000;
 h = 20;
 
 xs = -L:h:L;
@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-L,L,0.5,75); % remove gbar from coefs vector
+[coefs, H] = bumps(X,Y,-L,L,1,140,1); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -28,7 +28,7 @@ g0 = coefs{5};
 
 % Finding positive real roots
 [rts,ejs] = find_roots(b0 / a0, g0 / a0);
-k = rts((imag(rts) == 0) & (real(rts) > 0));
+k = rts((imag(rts) == 0) & (real(rts) > 0))
 ejs = ejs/a0;
 
 src = [0;0]+0*[1i;0];
@@ -42,8 +42,7 @@ phininc = reshape(kerns{1},size(X));
 phiinc = reshape(kerns{4},size(X));
 [rhs_vec] = get_rhs_vec2(coefs,kerns);
 rhsp = reshape(rhs_vec,size(X));
-
-return 
+ 
 
 figure(1);
 tiledlayout(1,5);
@@ -152,7 +151,7 @@ colorbar
 err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
 
 
-return
+
 
 %% Figure generation for Jeremy
 
@@ -163,29 +162,40 @@ t = tiledlayout('flow','TileSpacing','tight');
 X1 = X / 1000 + 5;
 Y1 = Y / 1000 + 5;
 
+
+c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
+
+
 ax1 = nexttile
-s = pcolor(X1,Y1,H*0+3);
+s = pcolor(X1,Y1,H);
 s.EdgeColor = 'None';
-colormap(ax1,gray)
+colormap(ax1,c)
 clim([min(H(:)) max(H(:))])
 colorbar
-title('H')
+title('Thickness (m)','FontWeight','normal')
 
 
 nexttile
-pc = pcolor(X1,Y1,H*0);
+pc = pcolor(X1,Y1,abs(mu));
 clim([0 max(abs(mu(:)))/3])
 pc.EdgeColor = 'none';
 colorbar
-title('|\rho|')
+title('|\mu|')
 
 nexttile([2 2]);
-pc = pcolor(X1,Y1,H*0);
-clim([0 max(abs(phi_n_tot(:)))*0.75])
+pc = pcolor(X1,Y1,abs((phi_n_tot)));
+clim([0 0.8*max(abs(phi_n_tot(:)))])
 pc.EdgeColor = 'none';
 colorbar
-title('|\phi_n|')
+title('|\phi_z|')
 
+set(gca, 'FontSize',12)
+xlabel('x (km)')
+ylabel('y (km)')
+
+fontname(gcf, 'CMU Serif')
+
+return;
 
 %% 
 
@@ -209,9 +219,14 @@ axis off
 %% 
 
 figure(7);
-pc = pcolor(X,Y,abs(phi_n_tot));
-clim([0 max(abs(phi_n_tot(:)))*0.75])
+pc = pcolor(X,Y,abs(real(phi_tot)));
+%clim([0 max(abs(phi_n_tot(:)))*0.9])
+ylim([-1500 1500])
 pc.EdgeColor = 'none';
-%title('|\phi_n|')
-axis off
+colorbar
+title('Shelf displacement |Re(\phi_z)|') 
 
+%%
+
+saveas(gcf,'pointsrc.fig','fig')
+exportgraphics(gcf,'pointsrc.pdf','ContentType','vector')
