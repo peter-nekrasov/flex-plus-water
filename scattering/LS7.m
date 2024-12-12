@@ -357,7 +357,6 @@ exportgraphics(gcf,'rollfig.pdf','ContentType','vector')
 %%
 
 f= figure(1);
-f.GraphicsSmoothing = 'on';
 tiledlayout(1,2,'TileSpacing','tight')
 
 X = load('X1.mat').X;
