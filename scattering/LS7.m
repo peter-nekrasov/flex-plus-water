@@ -1,7 +1,7 @@
 %%%%%
 %
 % Solving the adjointed Lippman-Schwinger equation for plane wave 
-% scattering of flexural-gravity waves with random gaussian thickness
+% scattering of flexural-gravity waves with rolls
 %
 %%%%%
 
