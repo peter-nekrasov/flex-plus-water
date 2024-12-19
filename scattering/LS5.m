@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 6000;
-h = 20;
+h = 10;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -148,7 +148,7 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
+%err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
 
 
 
@@ -159,8 +159,8 @@ figure(4);
 
 t = tiledlayout('flow','TileSpacing','tight'); 
 
-X1 = X / 1000 + 5;
-Y1 = Y / 1000 + 5;
+X1 = X / 1000 + 6;
+Y1 = Y / 1000 + 6;
 
 
 c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
@@ -173,21 +173,25 @@ colormap(ax1,c)
 clim([min(H(:)) max(H(:))])
 colorbar
 title('Thickness (m)','FontWeight','normal')
+axis square
 
 
 nexttile
 pc = pcolor(X1,Y1,abs(mu));
 clim([0 max(abs(mu(:)))/3])
 pc.EdgeColor = 'none';
-colorbar
+cb = colorbar;
+cb.Ruler.Exponent = 4;
 title('|\mu|')
+axis square
 
 nexttile([2 2]);
-pc = pcolor(X1,Y1,abs((phi_n_tot)));
-clim([0 0.8*max(abs(phi_n_tot(:)))])
+pc = pcolor(X1,Y1,abs((phi_tot)));
+clim([0 0.9*max(real(phi_tot(:)))])
 pc.EdgeColor = 'none';
 colorbar
-title('|\phi_z|')
+title('|\phi|')
+axis square 
 
 set(gca, 'FontSize',12)
 xlabel('x (km)')
@@ -228,5 +232,5 @@ title('Shelf displacement |Re(\phi_z)|')
 
 %%
 
-saveas(gcf,'pointsrc.fig','fig')
-exportgraphics(gcf,'pointsrc.pdf','ContentType','vector')
+saveas(gcf,'pointsrc2.fig','fig')
+exportgraphics(gcf,'pointsrc2.pdf','ContentType','vector')

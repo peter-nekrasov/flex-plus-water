@@ -1,8 +1,8 @@
 function [coefs] = bump(X,Y,amp,width)
 
-    a0 = 3; 
+    a0 = 1; 
     b0 = 5; 
-    g0 = -1; 
+    g0 = -5; 
     nu = 0.33;
 
     abar = amp*exp(-(X.^2 + Y.^2)/(2*width^2));

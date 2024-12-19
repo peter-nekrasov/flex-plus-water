@@ -51,7 +51,7 @@ end
 % hold on
 
 K1 = errs1;
-loglog(hs,K1,'o-','DisplayName','K_1, K_2')
+loglog(hs,K1,'o-','DisplayName','$K_1, K_2$')
 hold on
 
 
@@ -113,7 +113,7 @@ end
 
 
 K6 = errs1;
-loglog(hs,K6,'o-','DisplayName','K_3, K_4, K_5')
+loglog(hs,K6,'o-','DisplayName','$K_3, K_4, K_5$')
 hold on
 
 
@@ -171,7 +171,7 @@ end
 
 
 K4 = errs1;
-loglog(hs,K4,'o-','DisplayName','K_6')
+loglog(hs,K4,'o-','DisplayName','$K_6$')
 hold on
 
 
@@ -229,7 +229,7 @@ end
 K7 = errs1;
 
 figure(1);
-loglog(hs,K7,'o-','DisplayName','K_7')
+loglog(hs,K7,'o-','DisplayName','$K_7$')
 hold on
 
 
@@ -403,16 +403,16 @@ end
 
 
 K8 = errs1;
-loglog(hs,K8,'o-','DisplayName','K_8')
+loglog(hs,K8,'o-','DisplayName','$K_8$')
 hold on
 
 %%
 
 hs = [0.5 0.2 0.1 0.05 0.025 0.025/2 0.025/4];
 
-loglog(hs,10*hs.^6,'k--','DisplayName','h^6')
+loglog(hs,10*hs.^6,'k--','DisplayName','$h^6$')
 
-legend('Location','eastoutside')
+legend('Interpreter','latex','Location','eastoutside')
 
 ylabel('Relative error')
 xlabel('h')

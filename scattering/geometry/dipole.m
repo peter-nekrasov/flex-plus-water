@@ -1,4 +1,4 @@
-function [coefs,H] = dipole(X,Y,amp,width)
+function [coefs,H] = dipole(X,Y,amp,width,w)
 
     E = 7*10^9;
     nu = 0.33;
@@ -6,7 +6,6 @@ function [coefs,H] = dipole(X,Y,amp,width)
     rhow = 1025;
     rhoi = 917;
     g = 9.8;
-    w = 1;
 
     a0 = E*H0^3/(12*(1-nu^2));
     b0 = (rhoi*H0*w^2 - rhow*g);

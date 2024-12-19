@@ -1,24 +1,31 @@
-function [coefs,H] = get_coefs_from_height(H,Hx,Hy,Hxx,Hxy,Hyy,w)
+function [coefs,H] = bump3(X,Y,amp,width,w)
 
-    rng(45);
-
-    E = 7*10^9;
+    E = 1;
     nu = 0.33;
-    H0 = H(1,1);
-    rhow = 1025;
-    rhoi = 917;
+    H0 = 5;
+    rhow = 1;
+    rhoi = 1;
     g = 9.8;
 
     a0 = E*H0^3/(12*(1-nu^2));
     b0 = (rhoi*H0*w^2 - rhow*g);
     g0 = -w^2*rhow;
     gbar = 0;
+    Hbar = amp*exp(-(X.^2 + Y.^2)/(2*width^2));
+    H = H0 + Hbar;
 
     alpha = E*H.^3/(12*(1-nu^2));
     beta = (rhoi*H*w^2 - rhow*g);
 
     abar = alpha - a0;
     bbar = beta - b0;
+
+    Hx = -X.*Hbar/width^2;
+    Hy = -Y.*Hbar/width^2;
+
+    Hxx = - Hbar/width^2 - X.*Hx/width^2;
+    Hxy = - X.*Hy/width^2;
+    Hyy = - Hbar/width^2 - Y.*Hy/width^2;
 
     ax = 3*E*H.^2.*Hx/(12*(1-nu^2));
     ay = 3*E*H.^2.*Hy/(12*(1-nu^2));
@@ -27,7 +34,6 @@ function [coefs,H] = get_coefs_from_height(H,Hx,Hy,Hxx,Hxy,Hyy,w)
     axy = 6*E*H.*Hx.*Hy/(12*(1-nu^2)) + 3*E*H.^2.*Hxy/(12*(1-nu^2));
     ayy = 6*E*H.*Hy.^2/(12*(1-nu^2)) + 3*E*H.^2.*Hyy/(12*(1-nu^2));
 
-
-    coefs = {a0,abar,b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu}; 
+    coefs = {a0/E,abar/E,b0/E,bbar/E,g0/E,gbar/E,ax/E,ay/E,axx/E,axy/E,ayy/E,nu}; 
 
 end

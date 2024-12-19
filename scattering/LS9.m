@@ -1,7 +1,7 @@
 %%%%%
 %
 % Solving the adjointed Lippman-Schwinger equation for plane wave 
-% scattering of flexural-gravity waves with a system of ridges
+% scattering of flexural-gravity waves with a system of channels
 %
 %
 %%%%%
@@ -25,63 +25,64 @@ xl = -2*L:h:2*L-2*h;
 % [XLeval,YLeval] = meshgrid(xleval);
 
 load('cracks.mat');
-nc = 20000;
-fout = (fout(1:h:end,1:h:end))/nc + H0;
-foutx = (foutx(1:h:end,1:h:end))/nc;
-fouty = (fouty(1:h:end,1:h:end))/nc;
-foutxx = (foutxx(1:h:end,1:h:end))/nc;
-foutxy = (foutxy(1:h:end,1:h:end))/nc;
-foutyy = (foutyy(1:h:end,1:h:end))/nc;
+nc = -.995;
+foutx = nc*(foutx(1:h:end,1:h:end))/max(fout(:));
+fouty = nc*(fouty(1:h:end,1:h:end))/max(fout(:));
+foutxx = nc*(foutxx(1:h:end,1:h:end))/max(fout(:));
+foutxy = nc*(foutxy(1:h:end,1:h:end))/max(fout(:));
+foutyy = nc*(foutyy(1:h:end,1:h:end))/max(fout(:));
+fout = nc*(fout(1:h:end,1:h:end)-min(fout(:)))/max(fout(:))+H0;
 
 
-% figure(1);
-% tiledlayout(2,3);
-% 
-% nexttile
-% s = pcolor(X,Y,fout);
-% s.EdgeColor = 'None';
-% colorbar
-% title('H')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,foutx);
-% s.EdgeColor = 'None';
-% colorbar
-% title('\alpha')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,fouty);
-% s.EdgeColor = 'None';
-% colorbar
-% title('\beta')
-% drawnow
-% 
-% 
-% nexttile
-% s = pcolor(X,Y,foutxx);
-% s.EdgeColor = 'None';
-% colorbar
-% title('rhs')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,foutxy);
-% s.EdgeColor = 'None';
-% colorbar
-% title('rhs')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,foutyy);
-% s.EdgeColor = 'None';
-% colorbar
-% title('rhs')
-% drawnow
+
+figure(1);
+tiledlayout(2,3);
+
+nexttile
+s = pcolor(X,Y,fout);
+s.EdgeColor = 'None';
+colorbar
+title('H')
+drawnow
+
+nexttile
+s = pcolor(X,Y,foutx);
+s.EdgeColor = 'None';
+colorbar
+title('\alpha')
+drawnow
+
+nexttile
+s = pcolor(X,Y,fouty);
+s.EdgeColor = 'None';
+colorbar
+title('\beta')
+drawnow
 
 
-[coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,5); % remove gbar from coefs vector
+nexttile
+s = pcolor(X,Y,foutxx);
+s.EdgeColor = 'None';
+colorbar
+title('rhs')
+drawnow
+
+nexttile
+s = pcolor(X,Y,foutxy);
+s.EdgeColor = 'None';
+colorbar
+title('rhs')
+drawnow
+
+nexttile
+s = pcolor(X,Y,foutyy);
+s.EdgeColor = 'None';
+colorbar
+title('rhs')
+drawnow
+
+
+[coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,2); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -189,7 +190,7 @@ nexttile
 pc = pcolor(X,Y,real(phi_tot));
 pc.EdgeColor = 'none';
 title('Re(\phi)')
-clim([-1.5 1.5])
+clim([-2.5 2.5])
 colorbar
 
 nexttile
@@ -308,8 +309,3 @@ ylim([-1500 1500])
 pc.EdgeColor = 'none';
 colorbar
 title('Shelf displacement |Re(\phi_z)|') 
-
-%%
-
-saveas(gcf,'ridges5.fig','fig')
-exportgraphics(gcf,'ridges5.pdf','ContentType','vector')

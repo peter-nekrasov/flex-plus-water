@@ -1,7 +1,7 @@
 %%%%%
 %
 % Solving the adjointed Lippman-Schwinger equation for plane wave 
-% scattering of flexural-gravity waves with random gaussian thickness
+% scattering of flexural-gravity waves with rolls
 %
 %%%%%
 
@@ -9,7 +9,7 @@ clear
 close all
 addpath(genpath('..'))
 
-h = 20;
+h = 100;
 
 x1 = -2E3;
 x2 = 6E3;
@@ -36,14 +36,14 @@ g0 = coefs{5};
 k = rts((imag(rts) == 0) & (real(rts) > 0));
 ejs = ejs/a0;
 
-% RHS (Incident field)
+% RHS (Incident field
 % k1 = k*cos(0);
 % k2 = k*sin(0);
 % phiinc = exp(1i*k1*X+1i*k2*Y);
 % phininc = k*exp(1i*k1*X+1i*k2*Y);
 % [rhs_vec, rhsp] = get_rhs_vec(coefs,k1,k2,phiinc);
 
-src = [-x1/2;0]+1i*[3000;0];
+src = [-x1/2;0]+1i*[0;0];
 targ = [X(:).'; Y(:).'];
 
 % RHS (Incident field)

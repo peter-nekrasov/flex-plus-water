@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 50;
-h = 0.5;
+h = 0.125/2;
 
 xs = -L:h:L;
 xl = -2*L:h:2*L;
@@ -79,7 +79,7 @@ evalkerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-12,200);
+mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,40,1e-14,300);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -124,6 +124,11 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,2,2)
+% err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,2,2);
 
 
+[Xerr,Yerr] = meshgrid(-L/2:5:L/2);
+err = get_fin_diff_err3(X,Y,mu,phi_n_tot,phi_tot,h,coefs,Xerr(:),Yerr(:));
+
+max(err)
+mean(err)
