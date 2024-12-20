@@ -11,7 +11,6 @@ function [coefs,H] = pit(X,Y,amp,width,w)
     b0 = (rhoi*H0*w^2 - rhow*g);
     g0 = -w^2*rhow;
     gbar = 0;
-    Hbar = amp*exp(-(X.^2 + Y.^2)/(2*width^2));
     
     s = 0.0002;
     H = H0+amp/2+amp/2*erf(s*(-X.^2 - Y.^2 + width^2));

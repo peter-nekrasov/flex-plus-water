@@ -25,7 +25,7 @@ xl = -2*L:h:2*L-2*h;
 % [XLeval,YLeval] = meshgrid(xleval);
 
 load('cracks.mat');
-nc = -.995;
+nc = -.9;
 foutx = nc*(foutx(1:h:end,1:h:end))/max(fout(:));
 fouty = nc*(fouty(1:h:end,1:h:end))/max(fout(:));
 foutxx = nc*(foutxx(1:h:end,1:h:end))/max(fout(:));

@@ -19,7 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = pit(X,Y,-0.992,100,1); % remove gbar from coefs vector
+[coefs, H] = pit(X,Y,-0.9,100,1); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
