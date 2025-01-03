@@ -1,4 +1,4 @@
-h = 0.25;
+h = 0.5;
 L = 70;
 
 xs = -L/2:h:L/2;
@@ -7,7 +7,7 @@ xl = -L:h:L;
 ys = -L/2:h:L/2;
 yl = -L:h:L;
 
-[~,~,coefs,Hs] = get_Y(-35,35,-5,65,h,-0.995,200);
+[~,~,coefs,Hs] = get_Y(-35,35,-5,65,h,-0.98,200);
 
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
@@ -47,40 +47,6 @@ kerns = gen_fft_kerns(kerns,sz,ind);
 
 evalkerns = {kerns{1}, kerns{4}};
 
-% rhs_vec = zeros(size(rs,2),1);
-% ind = 3281;
-% rhs_vec(ind) = 1;
-% vout = fast_apply_fft(rhs_vec,kerns,coefs);
-% % Solve with GMRES
-% start = tic;
-% %mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-12,200);
-% 
-% %%
-% n = size(rs,2);
-% [xmat] = kernbyindex(1:n,ind,rs,h,scorr,rts,ejs,coefs);
-% 
-% %%
-% Afun = @(i,j) kernbyindex(i,j,rs,h,scorr,rts,ejs,coefs);
-% rank_or_tol = 1E-8;
-% pxyfun = [];
-% opts = [];
-% opts.verb = true;
-% occ = 500;
-% F = rskelf(Afun,rs,occ,rank_or_tol,pxyfun,opts)
-% 
-% %%
-% % RHS (Incident field)
-% k1 = k*cos(pi/3);
-% k2 = k*sin(pi/3);
-% phiinc = exp(1i*k1*X+1i*k2*Y);
-% [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
-% 
-% %%
-% sol = rskelf_sv(F,rhs_vec);
-
-%%
-% mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,100,1e-9,200);
-
 %%
 rprop = rts(abs(imag(rts))<1E-12);
 nwave = (1.5*L/4)*rprop;
@@ -99,7 +65,7 @@ pxfun = @(x,slf,nbr,l,ctr) proxyfun(slf,nbr,l,ctr,x,h,rts,ejs,coefs,proxy,pw,t1,
 
 %%
 Afun = @(i,j) kernbyindex(i,j,rs,h,scorr,rts,ejs,coefs);
-rank_or_tol = 1E-8;
+rank_or_tol = 1E-1;
 opts = [];
 opts.verb = true;
 occ = 500;
@@ -108,6 +74,9 @@ F2 = rskelf(Afun,rs,occ,rank_or_tol,pxfun,opts)
 %%
 sol2 = rskelf_sv(F2,rhs_vec);
 
+mu = gmres(@(mu) fast_apply_fft_w_preconditioner(mu,kerns,coefs,F2),sol2,150,1e-8,1000);
+
+
 %%
 
 %mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,100,1e-9,200);
@@ -115,19 +84,18 @@ sol2 = rskelf_sv(F2,rhs_vec);
 load gong.mat
 sound(y)
 
-return
 
 %%
 
-%mu = reshape(mu,size(X));
+mu = reshape(mu,size(X));
 sol2 = reshape(sol2,size(X));
 
 figure(1);
 tiledlayout(1,2)
-% nexttile
-% pl1 = pcolor(X,Y,abs(mu));
-% pl1.EdgeColor = 'none';
-% colorbar
+nexttile
+pl1 = pcolor(X,Y,abs(mu));
+pl1.EdgeColor = 'none';
+colorbar
 
 nexttile
 pl2 = pcolor(X,Y,abs(sol2));

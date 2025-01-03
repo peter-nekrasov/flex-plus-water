@@ -19,7 +19,7 @@ xl = -L:h:L;
 ys = -L/2:h:L/2;
 yl = -L:h:L;
 
-[~,~,coefs,Hs] = get_Y(-35,35,-5,65,h,-0.84,200);
+[~,~,coefs,Hs] = get_Y(-35,35,-5,65,h,-0.1,200);
 
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
@@ -141,7 +141,7 @@ ekerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,40,1e-8,1000);
+mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,100,1e-9,200);
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -158,6 +158,9 @@ phininc = k*exp(1i*k1*X+1i*k2*Y);
 phi_tot = phi + phiinc;
 phi_n_tot = phi_n + phininc;
 
+load gong.mat
+sound(y)
+
 %%
 
 
@@ -171,27 +174,27 @@ figure(3);
 tiledlayout(2,2)
 
 nexttile
-pc = pcolor(X,Y,real(phi_tot));
+pc = pcolor(X,Y,real(phi_tot.'));
 pc.EdgeColor = 'none';
 title('Re(\phi)')
 colorbar
 
 nexttile
-pc = pcolor(X,Y,abs(phi_tot));
+pc = pcolor(X,Y,abs(phi_tot.'));
 pc.EdgeColor = 'none';
 title('|\phi|')
 colorbar
 
 
 nexttile
-pc = pcolor(X,Y,real(phi_n_tot));
+pc = pcolor(X,Y,real(phi_n_tot.'));
 pc.EdgeColor = 'none';
 title('real(\phi_n)')
-%clim([-2 2])
+clim([-4 4])
 colorbar
 
 nexttile
-pc = pcolor(X,Y,abs(phi_n_tot));
+pc = pcolor(X,Y,abs(phi_n_tot.'));
 pc.EdgeColor = 'none';
 title('|\phi_n|')
 colorbar
@@ -205,16 +208,8 @@ return
 %% Figure generation for Jeremy
 
 f = figure(4);
-f.Units = 'points';
-f.InnerPosition = [600 500 600 400];
 
-t = tiledlayout(1,2,'TileSpacing','tight'); 
-
-X1 = X / 1000 + 5;
-Y1 = Y / 1000 + 5;
-
-
-c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
+t = tiledlayout(1,3,'TileSpacing','tight'); 
 
 
 % ax1 = nexttile;
@@ -227,38 +222,36 @@ c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
 
 
 nexttile
-pc = pcolor((X+L)/1000,(Y+L)/1000,abs(mu));
-clim([0 5*max(abs(mu(:)))/6])
+pc = pcolor(X,Y,real(H.'));
 pc.EdgeColor = 'none';
-xlabel('x (km)')
-xlim([0 1.5])
-ylim([0 1.5])
+title('H')
 colorbar
-title('|\mu|')
-ylabel('y (km)')
-set(gca, 'FontSize',12)
 axis square
 
-
+nexttile
+pc = pcolor(X,Y,real(phi_n_tot.'));
+pc.EdgeColor = 'none';
+title('re(\phi_n)')
+clim([-4 4])
+colorbar
+axis square
 
 
 nexttile
-pc = pcolor((X+L)/1000,(Y+L)/1000,abs((phi_tot)));
-%clim([0 0.8*max(abs(phi_n_tot(:)))])
+pc = pcolor(X,Y,abs(phi_n_tot.'));
 pc.EdgeColor = 'none';
-xlim([0 1.5])
-ylim([0 1.5])
+title('|\phi_n|')
 colorbar
-title('|\phi|')
 axis square
 
+
+
 %annotation('arrow',[0.85 0.8],[0.75 0.68])
-annotation('arrow',[0.9 0.85],[0.75 0.68])
+%annotation('arrow',[0.9 0.85],[0.75 0.68])
 %annotation('arrow',[0.9 0.85],[0.68 0.61])
 
 
 set(gca, 'FontSize',12)
-xlabel('x (km)')
 
 fontname(gcf, 'CMU Serif')
 

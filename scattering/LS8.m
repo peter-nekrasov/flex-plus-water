@@ -81,7 +81,7 @@ foutyy = (foutyy(1:h:end,1:h:end))/nc;
 % drawnow
 
 
-[coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,5); % remove gbar from coefs vector
+[coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,2.9); % remove gbar from coefs vector
 E = 7E9;
 
 a0 = coefs{1}; 
@@ -215,6 +215,9 @@ colorbar
 % Calculate error with finite difference
 err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,420,-240)
 
+load gong.mat
+sound(y)
+
 
 return
 
@@ -222,9 +225,9 @@ return
 
 f = figure(4);
 f.Units = 'points';
-f.InnerPosition = [600 500 600 400];
+f.InnerPosition = [584 281 700 634];
 
-t = tiledlayout(1,2,'TileSpacing','tight'); 
+t = tiledlayout(2,2,'TileSpacing','tight'); 
 
 X1 = X / 1000 + 5;
 Y1 = Y / 1000 + 5;
@@ -233,44 +236,66 @@ Y1 = Y / 1000 + 5;
 c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
 
 
-% ax1 = nexttile;
-% s = pcolor(X1,Y1,H);
-% s.EdgeColor = 'None';
-% colormap(ax1,c)
-% clim([min(H(:)) max(H(:))])
-% colorbar
-% title('Thickness (m)','FontWeight','normal')
-
+ax1 = nexttile;
+s = pcolor((X+L)/1000,(Y+L)/1000,H,'FaceColor','interp');
+s.EdgeColor = 'None';
+colorbar
+title('Thickness (m)','FontWeight','normal')
+c1 = [0.7*ones(1,71); 0:0.01:0.7; 0:0.01:0.7  ].' / 0.7;
+c2 = [ 2:-0.01:0; 2:-0.01:0; 2*ones(1,201);].'/2;
+c = [c1; c2];
+ylabel('y (km)')
+xlim([0 1.5])
+ylim([0 1.5])
+colormap(ax1,c)
+clim([0.3 3])
+colorbar
+set(gca, 'FontSize',12)
+axis square
 
 nexttile
-pc = pcolor((X+L)/1000,(Y+L)/1000,abs(mu));
-clim([0 5*max(abs(mu(:)))/6])
+pc = pcolor((X+L)/1000,(Y+L)/1000,abs(mu),'FaceColor','interp');
+%clim([0 5*max(abs(mu(:)))/6])
 pc.EdgeColor = 'none';
-xlabel('x (km)')
 xlim([0 1.5])
 ylim([0 1.5])
 colorbar
-title('|\mu|')
-ylabel('y (km)')
+clim([0 0.85*max(abs(mu(:)))])
+title('|\mu|','FontWeight','normal')
 set(gca, 'FontSize',12)
 axis square
 
 
 
+nexttile
+pc = pcolor((X+L)/1000,(Y+ L)/1000,real((phi_n_tot)),'FaceColor','interp');
+%clim([0 0.8*max(abs(phi_n_tot(:)))])
+pc.EdgeColor = 'none';
+xlim([0 1.5])
+ylim([0 1.5])
+xlabel('x (km)')
+ylabel('y (km)')
+clim([0.9*min(real(phi_n_tot(:))) 0.9*max(real(phi_n_tot(:)))])
+colorbar
+title('\Re(\phi_z)','FontWeight','normal')
+axis square
+set(gca, 'FontSize',12)
+
+
 
 nexttile
-pc = pcolor((X+L)/1000,(Y+L)/1000,abs((phi_tot)));
+pc = pcolor((X+L)/1000,(Y+ L)/1000,abs((phi_n_tot)),'FaceColor','interp');
 %clim([0 0.8*max(abs(phi_n_tot(:)))])
 pc.EdgeColor = 'none';
 xlim([0 1.5])
 ylim([0 1.5])
 colorbar
-title('|\phi|')
+clim([0 0.9*max(abs(phi_n_tot(:)))])
+title('|\phi_z|','FontWeight','normal')
 axis square
 
-%annotation('arrow',[0.85 0.8],[0.75 0.68])
-annotation('arrow',[0.9 0.85],[0.75 0.68])
-%annotation('arrow',[0.9 0.85],[0.68 0.61])
+annotation('arrow',[0.457 0.4],[0.475 0.41])
+annotation('arrow',[0.904 0.847],[0.475 0.41])
 
 
 set(gca, 'FontSize',12)
@@ -311,5 +336,5 @@ title('Shelf displacement |Re(\phi_z)|')
 
 %%
 
-saveas(gcf,'ridges5.fig','fig')
-exportgraphics(gcf,'ridges5.pdf','ContentType','vector')
+saveas(gcf,'ridges8.fig','fig')
+exportgraphics(gcf,'ridges8.pdf','ContentType','vector')
