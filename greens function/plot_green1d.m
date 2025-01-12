@@ -1,10 +1,10 @@
 %% Plotting green's function in 1d
 %
 
-beta = 2 + 0.1i;
+beta = 2 + 0i;
 gamma = -1 ;
-h = 0.1;
-xs = 30:h:100000;
+h = 1;
+xs = 30000:h:1000000;
 
 [rts,ejs] = find_roots(beta,gamma);
 
@@ -33,7 +33,7 @@ thirdx = third(:,:,1);
 loglog(xs,abs(val))
 hold on
 
-loglog(xs,0.1*xs.^(-3))
+loglog(xs,100*xs.^(-3))
 
 legend('abs(G)','r^{-3}')
 title('G')
