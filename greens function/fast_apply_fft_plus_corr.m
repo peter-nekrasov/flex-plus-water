@@ -1,16 +1,16 @@
-function [v,Gslapy_mu] = fast_apply_fft(mu,kern_struct,V)
+function [v,Gslapy_mu] = fast_apply_fft_plus_corr(mu,kern_struct,V,corr,h)
 
-    a0 = V{1};
-    abar = V{2};
-    b0 = V{3};
-    bbar = V{4};
-    g0 = V{5};
-    gbar = V{6};
-    alphax = V{7};
-    alphay = V{8};
-    alphaxx = V{9};
-    alphaxy = V{10};
-    alphayy = V{11};
+    a0 = V{1}(:);
+    abar = V{2}(:);
+    b0 = V{3}(:);
+    bbar = V{4}(:);
+    g0 = V{5}(:);
+    gbar = V{6}(:);
+    alphax = V{7}(:);
+    alphay = V{8}(:);
+    alphaxx = V{9}(:);
+    alphaxy = V{10}(:);
+    alphayy = V{11}(:);
     nu = V{end};
     alphalap = alphaxx + alphayy;
 
@@ -26,39 +26,63 @@ function [v,Gslapy_mu] = fast_apply_fft(mu,kern_struct,V)
     Gslapx_aug_hat = Gs_gradlap(:,:,1);
     Gslapy_aug_hat = Gs_gradlap(:,:,2);
 
+    Gs_corr = corr{1};
+    Gs_hess_corr = corr{2};
+    Gs_gradlap_corr = corr{3};
+    Gphi_corr = corr{4};
+
+    Gs_xx_corr = Gs_hess_corr{1};
+    Gs_xy_corr = Gs_hess_corr{2};
+    Gs_yy_corr = Gs_hess_corr{3};
+
+    Gslapx_corr = Gs_gradlap_corr{1};
+    Gslapy_corr = Gs_gradlap_corr{2};
+
+    Gslap_corr = Gs_xx_corr + Gs_yy_corr;
     Gslap_aug_hat = Gsxx_aug_hat + Gsyy_aug_hat;
 
-    N = sqrt(length(mu));
-    
+    N = sqrt(size(mu));
+    N = N(1);
+
+    mu_small = mu;
+
     mu = reshape(mu, [N N]);
     mu_aug = [mu, zeros(N,N-1); zeros(N-1,N), zeros(N-1)];
     mu_aug_hat = fft2(mu_aug);
 
     Gs_mu_aug = ifft2(Gs_aug_hat.*mu_aug_hat);
     Gs_mu = Gs_mu_aug(1:N, 1:N);
+    Gs_mu = Gs_mu(:) + Gs_corr*mu_small*h*h;
 
     Gphi_mu_aug = ifft2(Gphi_aug_hat.*mu_aug_hat);
     Gphi_mu = Gphi_mu_aug(1:N, 1:N);
+    Gphi_mu = Gphi_mu(:) + Gphi_corr*mu_small*h*h;
 
     Gsxx_mu_aug = ifft2(Gsxx_aug_hat.*mu_aug_hat);
     Gsxx_mu = Gsxx_mu_aug(1:N, 1:N);
+    Gsxx_mu = Gsxx_mu(:) + Gs_xx_corr*mu_small*h*h;
 
     Gsxy_mu_aug = ifft2(Gsxy_aug_hat.*mu_aug_hat);
     Gsxy_mu = Gsxy_mu_aug(1:N, 1:N);
+    Gsxy_mu = Gsxy_mu(:) + Gs_xy_corr*mu_small*h*h;
 
     Gsyy_mu_aug = ifft2(Gsyy_aug_hat.*mu_aug_hat);
     Gsyy_mu = Gsyy_mu_aug(1:N, 1:N);
+    Gsyy_mu = Gsyy_mu(:) + Gs_yy_corr*mu_small*h*h;
 
     Gslap_mu_aug = ifft2(Gslap_aug_hat.*mu_aug_hat);
     Gslap_mu = Gslap_mu_aug(1:N, 1:N);
+    Gslap_mu = Gslap_mu(:) + Gslap_corr*mu_small*h*h;
 
     Gslapx_mu_aug = ifft2(Gslapx_aug_hat.*mu_aug_hat);
-    Gslapx_mu = Gslapx_mu_aug(1:N, 1:N);
+    Gslapx_mu = Gslapx_mu_aug(1:N, 1:N); 
+    Gslapx_mu = Gslapx_mu(:) + Gslapx_corr*mu_small*h*h;
 
     Gslapy_mu_aug = ifft2(Gslapy_aug_hat.*mu_aug_hat);
     Gslapy_mu = Gslapy_mu_aug(1:N, 1:N);
+    Gslapy_mu = Gslapy_mu(:) + Gslapy_corr*mu_small*h*h;
 
-    v = (a0 + abar)./a0.*mu + alphax.*Gslapx_mu + alphay.*Gslapy_mu ...
+    v = (a0 + abar)./a0.*mu_small + alphax.*Gslapx_mu + alphay.*Gslapy_mu ...
         + 0.5.*alphalap.*Gslap_mu + ...
         + 0.5*(1-nu)*(2*alphaxy.*Gsxy_mu-alphayy.*Gsxx_mu-alphaxx.*Gsyy_mu) ...
         - 0.5*(a0*bbar-abar*b0)./a0.*Gs_mu - 0.5*abar.*g0./a0.*Gphi_mu ;

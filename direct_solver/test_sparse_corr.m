@@ -35,69 +35,48 @@ ejs = ejs/a0;
 src = [0;0];
 targ = [XL(:).'; YL(:).'];
 
-% RHS (Incident field)
-k1 = k;
-k2 = 0;
-phiinc = exp(1i*k1*X+1i*k2*Y);
-[rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
+% mu = zeros(size(X));
+mu = exp(-X.^2/1000 - Y.^2/1000);
+% mu(100:101,101) = 1;
+mu = mu(:);
 
-% figure(1);
-% tiledlayout(1,4);
-% 
-% nexttile
-% s = pcolor(X,Y,H);
-% s.EdgeColor = 'None';
-% colorbar
-% title('H')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,E*(coefs{1} + coefs{2}));
-% s.EdgeColor = 'None';
-% colorbar
-% title('\alpha')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,E*(coefs{2} + coefs{3}));
-% s.EdgeColor = 'None';
-% colorbar
-% title('\beta')
-% drawnow
-% 
-% nexttile
-% s = pcolor(X,Y,real(E*rhs));
-% s.EdgeColor = 'None';
-% colorbar
-% title('rhs')
-% drawnow
-
-% Constructing integral operators
+% Constructing full fft original integral operators
 [inds,corrs] = get_correct(h,a0);
-spmat = get_sparse_corr(size(X),inds,corrs);
-
-kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h);
-
+kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h,inds,corrs);
 ind = find((XL == 0) & (YL ==0));
 sz = size(XL);
 
 kerns = gen_fft_kerns(kerns,sz,ind);
 
-evalkerns = {kerns{1}, kerns{4}};
+[v1,Gs_mu] = fast_apply_fft(mu,kerns,coefs);
 
-% Solve with GMRES
-start = tic;
-mu = gmres(@(mu) fast_apply_fft_plus_corr(mu,kerns,coefs,spmat,h),rhs_vec,[],1e-12,200);
-mu = reshape(mu, size(X));
-t1 = toc(start);
-fprintf('%5.2e s : time to solve\n',t1)
+% Constructing full fft original integral operators
+spmat = get_sparse_corr(size(X),inds,corrs);
+kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h);
+ind = find((XL == 0) & (YL ==0));
+sz = size(XL);
 
-[phi, phi_n] = sol_eval_fft(mu,evalkerns);
+kerns = gen_fft_kerns(kerns,sz,ind);
 
-phi_tot = phi + phiinc;
-phi_n_tot = phi_n + k*phiinc;
+[v2,Gs_mu2] = fast_apply_fft_plus_corr(mu,kerns,coefs,spmat,h);
 
-%%
+norm(Gs_mu(:) - Gs_mu2(:))
+
+err = abs(v1-v2)
+
+figure(1); clf;
+tiledlayout(2,2,'TileSpacing','compact');
+nexttile 
+pcolor(X,Y,imag(reshape(v1, size(X))),'EdgeColor','none')
+nexttile
+pcolor(X,Y,imag(reshape(v2, size(X))),'EdgeColor','none')
+nexttile
+pcolor(X,Y,(reshape(err,size(X))),'EdgeColor','none')
+colorbar
+nexttile
+pcolor(X,Y,(reshape(mu,size(X))),'EdgeColor','none')
+
+return
 
 figure(2);
 tiledlayout(2,3)
