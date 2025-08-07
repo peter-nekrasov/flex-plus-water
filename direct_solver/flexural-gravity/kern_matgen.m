@@ -1,4 +1,4 @@
-function A = kern_matgen(i,j,srcinfo,targinfo,spmat)
+function A = kern_matgen(i,j,srcinfo,targinfo,spmat,kernfun)
 %
 % 
 %  kern_matgen
@@ -53,6 +53,9 @@ function A = kern_matgen(i,j,srcinfo,targinfo,spmat)
      if isfield(targinfo,'g0')
         targuse.g0 = targinfo.g0;
      end
+     if isfield(targinfo,'V')
+        targuse.V = targinfo.V(i);
+     end
      if isfield(targinfo,'abar')
         targuse.abar = targinfo.abar(i);
      end
@@ -78,7 +81,7 @@ function A = kern_matgen(i,j,srcinfo,targinfo,spmat)
         targuse.nu = targinfo.nu;
      end
 
-     A1 = kern_sum(srcuse, targuse);
+     A1 = kernfun(srcuse, targuse);
      A = bsxfun(@times,A1,srcinfo.wts(j).');
 
      if nargin > 4

@@ -1,13 +1,14 @@
 %%%%%
 %
-% Solving the adjointed Lippman-Schwinger equation for plane wave 
-% scattering of flexural-gravity waves
+% Solving the adjointed Lippman-Schwinger equation for the 
+% flexural-gravity wave scattering problem
 %
+% Solved iteratively using FFT + GMRES
 %
 %%%%%
 
 L = 500;
-N = 101; % needs to be an odd number for FFT
+N = 605; % needs to be an odd number
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
@@ -26,18 +27,6 @@ g0 = coefs{5};
 
 dinds = find((abar / a0) > 1e-12 );
 [iinds,jinds] = find((abar / a0) > 1e-12 );
-
-srcinfo = []; srcinfo.r = [xxgrid(dinds) yygrid(dinds)].'; srcinfo.wts = h^2*ones(length(dinds),1);
-targinfo = []; targinfo.r = [xxgrid(dinds) yygrid(dinds)].'; 
-targinfo.a0 = a0; targinfo.b0 = b0; targinfo.g0 = g0; 
-targinfo.abar = coefs{2}(dinds);
-targinfo.bbar = coefs{4}(dinds);
-targinfo.alphax = coefs{7}(dinds);
-targinfo.alphay = coefs{8}(dinds);
-targinfo.alphaxx = coefs{9}(dinds);
-targinfo.alphaxy = coefs{10}(dinds);
-targinfo.alphayy = coefs{11}(dinds);
-targinfo.nu = coefs{12};
 
 % Finding positive real roots
 [rts,ejs] = find_roots(b0 / a0, g0 / a0);
@@ -91,17 +80,12 @@ kerns = kernmat(src,targ,@(s,t) green(s,t,rts,ejs),h);
 kerns = gen_fft_kerns(kerns,sz,ind);
 
 % Solve with GMRES
-
-igmres = 1;
-
-if igmres
 start = tic;
 sol = gmres(@(mu) fast_apply_fft_sub(mu,kerns,coefs,spmat,h,dinds,iinds,jinds,xxgrid),rhs_vec,[],1e-12,200);
 mu = zeros(size(xxgrid));
 mu(dinds) = sol;
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
-
 
 evalkerns = {kerns{1}, kerns{4}};
 evalcorrs = {spmat{1}, spmat{4}};
@@ -110,40 +94,8 @@ evalcorrs = {spmat{1}, spmat{4}};
 
 phi_tot = phi + phiinc;
 phi_n_tot = phi_n + k*phiinc;
-end
 
-% Solve with FLAM
-
-idspmat = id_plus_corr_sum(coefs,spmat,dinds,h);
-Afun = @(i,j) kern_matgen(i,j,srcinfo,targinfo,idspmat);
-
-x = srcinfo.r;
-occ = 2000;
-rank_or_tol = 1e-8;
-pxyfun = [];
-opts = [];
-
-start = tic;
-F = rskelf(Afun,x,occ,rank_or_tol,pxyfun,opts);
-t2 = toc(start);
-fprintf('%5.2e s : time to factorize inverse \n',t2)
-
-start = tic;
-sol2 = rskelf_sv(F,rhs_vec);
-t3 = toc(start);
-fprintf('%5.2e s : time to solve (skel) \n',t3)
-
-mu = zeros(size(xxgrid));
-mu(dinds) = sol2;
-
-evalkerns = {kerns{1}, kerns{4}};
-evalcorrs = {spmat{1}, spmat{4}};
-
-[phi, phi_n] = sol_eval_fft_sub(sol2,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid);
-
-phi_tot = phi + phiinc;
-phi_n_tot = phi_n + k*phiinc;
-
+%%
 
 figure(2);
 tiledlayout(2,3)

@@ -7,10 +7,12 @@
 %
 % in this case, f = - k^2 V exp(i k x)
 %
+% Solved directly using skeletonization
+%
 %%%%%
 
 L = 500;
-N = 201; % needs to be an odd number
+N = 201; 
 
 zk = 0.1;
 
@@ -24,6 +26,10 @@ V = coefs{1};
 
 dinds = find(abs(V) > 1e-12 );
 [iinds,jinds] = find(abs(V) > 1e-12 );
+
+srcinfo = []; srcinfo.r = [xxgrid(dinds) yygrid(dinds)].'; srcinfo.wts = h^2*ones(length(dinds),1);
+targinfo = []; targinfo.r = [xxgrid(dinds) yygrid(dinds)].'; 
+targinfo.V = V(dinds);
 
 % RHS (Incident field)
 k1 = zk;
@@ -51,28 +57,50 @@ drawnow
 
 % Constructing integral operators
 
-[src,targ,ind,sz] = get_fft_grid(N,L);
 [inds,corrs] = get_correct_helm(h);
 spmats = get_sparse_corr(size(xxgrid),inds,corrs);
+
+% Constructing integral operators
+
+[inds,corrs] = get_correct_helm(h);
+spmat = get_sparse_corr(size(xxgrid),inds,corrs);
+idspmat = id_plus_corr_sum_helm(zk,coefs,spmat,dinds,h);
+kernfun = @(s,t) kern_sum_helm(zk,s,t);
+Afun = @(i,j) kern_matgen(i,j,srcinfo,targinfo,idspmat,kernfun);
+
+% Solve with FLAM
+
+x = srcinfo.r;
+occ = 2000;
+rank_or_tol = 1e-8;
+pxyfun = [];
+opts = [];
+
+start = tic;
+F = rskelf(Afun,x,occ,rank_or_tol,pxyfun,opts);
+t2 = toc(start);
+fprintf('%5.2e s : time to factorize inverse \n',t2)
+
+start = tic;
+sol2 = rskelf_sv(F,rhs_vec);
+t3 = toc(start);
+fprintf('%5.2e s : time to solve (skel) \n',t3)
+
+mu = zeros(size(xxgrid));
+mu(dinds) = sol2;
+
+% Plot with FFT
+
+[src,targ,ind,sz] = get_fft_grid(N,L);
 kerns = kernmat(src,targ,@(s,t) helm2d.green_cell_helm(zk,s,t),h);
 kerns = gen_fft_kerns2(kerns,sz,ind);
 
-% Solve with GMRES
-start = tic;
-sol = gmres(@(mu) fast_apply_fft_sub_helm(mu,kerns,zk,coefs,spmats,h,dinds,iinds,jinds,xxgrid),rhs_vec,[],1e-12,200);
-mu = zeros(size(xxgrid));
-mu(dinds) = sol;
-t1 = toc(start);
-fprintf('%5.2e s : time to solve\n',t1)
-
 evalkerns = {kerns{1}};
-evalcorrs = {spmats{1}};
+evalcorrs = {spmat{1}};
 
-usca = sol_eval_fft_sub_helm(sol,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid);
+usca = sol_eval_fft_sub_helm(sol2,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid);
 
 utot = usca + uinc;
-
-%%
 
 figure(2);
 tiledlayout(1,3)
@@ -99,13 +127,3 @@ colorbar
 err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,10,10,zk)
 
 return
-
-%%
-
-figure(1);
-s = surf(xxgrid,yygrid,H);
-s.EdgeColor = 'none';
-
-figure(2);
-s = surf(xxgrid,yygrid,real(phi_n));
-s.EdgeColor = 'none';

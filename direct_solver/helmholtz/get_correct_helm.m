@@ -25,9 +25,9 @@ function [inds, corr] = get_correct_helm(h)
     
     inds{1} = i1;
     
-    c0 = 1/(4*pi); % change this back to 1/(4 pi)
+    c0 = 1/(4*pi); 
 
-    % log(|r|^2) 
+    % 1/(4*pi)*log(|r|^2) 
     
     [z0] = epstein_zeta(0+1i*10^-12,1,0,1) ;
     z0 = imag(z0)*1e12 ;
