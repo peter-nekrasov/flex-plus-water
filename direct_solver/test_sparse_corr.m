@@ -48,7 +48,7 @@ sz = size(XL);
 
 kerns = gen_fft_kerns(kerns,sz,ind);
 
-[v1,Gs_mu] = fast_apply_fft(mu,kerns,coefs);
+[v1,~] = fast_apply_fft(mu,kerns,coefs);
 
 % Constructing full fft original integral operators
 spmat = get_sparse_corr(size(X),inds,corrs);
@@ -58,11 +58,13 @@ sz = size(XL);
 
 kerns = gen_fft_kerns(kerns,sz,ind);
 
-[v2,Gs_mu2] = fast_apply_fft_plus_corr(mu,kerns,coefs,spmat,h);
+[v2,~] = fast_apply_fft_plus_corr(mu,kerns,coefs,spmat,h);
 
 norm(Gs_mu(:) - Gs_mu2(:))
 
 err = abs(v1-v2)
+
+return 
 
 figure(1); clf;
 tiledlayout(2,2,'TileSpacing','compact');
@@ -76,52 +78,4 @@ colorbar
 nexttile
 pcolor(X,Y,(reshape(mu,size(X))),'EdgeColor','none')
 
-return
 
-figure(2);
-tiledlayout(2,3)
-
-nexttile
-pc = pcolor(X,Y,real(mu));
-pc.EdgeColor = 'none';
-title('Re(\mu)')
-colorbar
-
-nexttile
-pc = pcolor(X,Y,real(phi_tot));
-pc.EdgeColor = 'none';
-title('Re(\phi)')
-colorbar
-
-nexttile
-pc = pcolor(X,Y,abs(phi_tot));
-pc.EdgeColor = 'none';
-title('|\phi|')
-colorbar
-
-nexttile
-pc = pcolor(X,Y,real(phi_n_tot));
-pc.EdgeColor = 'none';
-title('real(\phi_n)')
-colorbar
-
-nexttile
-pc = pcolor(X,Y,abs(phi_n_tot));
-pc.EdgeColor = 'none';
-title('|\phi_n|')
-colorbar
-       
-% Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,10,10)
-
-return
-
-%%
-
-figure(1);
-s = surf(X,Y,H);
-s.EdgeColor = 'none';
-
-figure(2);
-s = surf(X,Y,real(phi_n));
-s.EdgeColor = 'none';

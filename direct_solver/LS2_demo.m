@@ -11,7 +11,7 @@ close all
 addpath(genpath('..'))
 
 L = 500;
-N = 807; % needs to be an odd number
+N = 605; % needs to be an odd number
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 xl = 2*L*(-(N-1):(N-1))/(N-1);

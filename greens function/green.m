@@ -29,6 +29,8 @@ function out = green(src,targ,rts,ejs)
 %         opt = true => kernel used to evaluate phi on surface
 %
 
+eulgam = 0.5772156649015328606065120900824;
+
 [~,ns] = size(src);
 [~,nt] = size(targ);
 
@@ -62,12 +64,12 @@ for i = 1:5
     rhoj = rts(i);
     ej = ejs(i);
 
-    if (angle(rhoj) == 0) && (rhoj ~= 0)
+    if (abs(angle(rhoj)) < 1e-6) && (abs(rhoj) > 1e-6)
 
        [sk0,~,hesssk0,gradlapsk0] = struveKdiffgreen(rhoj,src,targ);
        [h0,~,hessh0,thirdh0] = helmdiffgreen(rhoj,src,targ);
 
-       h0(r == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
+       h0(r < 1e-8) = 1/(2*pi)*(1i*pi/2  - eulgam + log(2/rhoj));
 
        h0 = -4i*h0;
        % gradh0 = -4i*gradh0;
@@ -82,9 +84,9 @@ for i = 1:5
        h0xy = hessh0(:,:,2);
        h0yy = hessh0(:,:,3);
 
-       h0xx(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
-       h0xy(r == 0) = 0;
-       h0yy(r == 0) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
+       h0xx(r < 1e-8) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulgam-0.5-log(2));
+       h0xy(r < 1e-8) = 0;
+       h0yy(r < 1e-8) = rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulgam-0.5-log(2));
        
        h0xx = -4i*h0xx;
        h0xy = -4i*h0xy;
@@ -95,10 +97,10 @@ for i = 1:5
        h0xyy = thirdh0(:,:,3);
        h0yyy = thirdh0(:,:,4);
 
-       h0xxx(r == 0) = 0;
-       h0yxx(r == 0) = 0;
-       h0xyy(r == 0) = 0;
-       h0yyy(r == 0) = 0;
+       h0xxx(r < 1e-8) = 0;
+       h0yxx(r < 1e-8) = 0;
+       h0xyy(r < 1e-8) = 0;
+       h0yyy(r < 1e-8) = 0;
 
        h0xxx = -4i*h0xxx;
        h0yxx = -4i*h0yxx;

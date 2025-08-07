@@ -1,4 +1,4 @@
-function [v,Gslapy_mu] = fast_apply_fft_sub(mu,kern_struct,V,corr,h,dinds,iinds,jinds,X)
+function v = fast_apply_fft_sub(mu,kern_struct,V,corr,h,dinds,iinds,jinds,X)
 
     a0 = V{1};
     abar = V{2}(dinds);

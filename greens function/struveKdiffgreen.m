@@ -24,6 +24,8 @@ function [val,grad,hess,gradlap] = struveKdiffgreen(rhoj,src,targ)
 %
 % Note: this code has only been tested for src = [0,0]
 
+eulgam = 0.5772156649015328606065120900824;
+
 [~,ns] = size(src);
 [~,nt] = size(targ);
 
@@ -66,7 +68,7 @@ h0yxx = thirdh0(:,:,2);
 h0xyy = thirdh0(:,:,3);
 h0yyy = thirdh0(:,:,4);
 
-h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulergamma + log(2/rhoj));
+h0(zt == 0) = 1/(2*pi)*(1i*pi/2  - eulgam + log(2/rhoj));
 h0 = -4i*h0;
 
 h0x = -4i*h0x;
@@ -101,9 +103,9 @@ gradlapy = 1i*rhoj^3*dy./r.*(-cr1) + 1i*(h0yxx+h0yyy);
 gradx(r == 0) = 0;
 grady(r == 0) = 0;
 
-hessxx(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
+hessxx(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulgam-0.5-log(2));
 hessxy(r == 0) = 0;
-hessyy(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulergamma-0.5-log(2));
+hessyy(r == 0) = 1i*rhoj^2-1i*rhoj^2/2-4i*1i*rhoj^2/(4*pi)*(log(rhoj)-1i*pi/2+eulgam-0.5-log(2));
 
 gradlapx(r == 0) = 0;
 gradlapy(r == 0) = 0;
