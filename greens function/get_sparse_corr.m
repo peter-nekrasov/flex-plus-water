@@ -19,7 +19,7 @@ function C = get_sparse_corr(sz,inds,corrs)
     % ks = sub2ind(size(k1s), k1s(:), k2s(:));
     % kt = sub2ind(size(k1t), k1t(:), k2t(:));
 
-    C = cell(1,4);
+    C = cell(1,numel(corrs));
 
     nx = sz(2);
     ny = sz(1);
