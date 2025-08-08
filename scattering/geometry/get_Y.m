@@ -33,8 +33,6 @@ for ii=1:numel(nlegs)
     w = [w;quadweighs{ii}];
 end
 
-
-
 xs = xmin:h:xmax;
 ys = ymin:h:ymax;
 [XG,YG] = ndgrid(xs,ys);

@@ -12,9 +12,9 @@
 %%%%%
 
 L = 5;
-N = 101; 
+N = 401; 
 
-zk = 4;
+zk = 10;
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
@@ -55,29 +55,32 @@ colorbar
 title('rhs')
 drawnow
 
-% Constructing integral operators
+% Constructing identity + sparse corrections
 
 [inds,corrs] = get_correct_helm(h);
 spmats = get_sparse_corr(size(xxgrid),inds,corrs);
-
-% Constructing integral operators
-
 idspmat = id_plus_corr_sum_helm(zk,coefs,spmats,dinds,h);
+
+% Defining integral operators 
+
 kernfun = @(s,t) kern_sum_helm(zk,s,t);
 Afun = @(i,j) kern_matgen(i,j,srcinfo,targinfo,idspmat,kernfun);
 
 % Solve with FLAM
 
-x = srcinfo.r;
-occ = 4000;
-rank_or_tol = 1e-8;
-pxyfun = [];
-opts = [];
+quads = srcinfo.wts;
+
+pxyf = @(x,slf,nbr,l,ctr)  pxyfun_helm(x,slf,nbr,l,ctr,quads,zk,targinfo.V);
+
+rs          = srcinfo.r;
+occ         = 4000;
+rank_or_tol = 1E-8;
+opts        = [];
 
 start = tic;
-F = rskelf(Afun,x,occ,rank_or_tol,pxyfun,opts);
+F = rskelf(Afun,rs,occ,rank_or_tol,pxyf,opts);
 t2 = toc(start);
-fprintf('%5.2e s : time to factorize inverse \n',t2)
+fprintf('%5.2e s : time to factorize inverse (skel) \n',t2)
 
 start = tic;
 sol = rskelf_sv(F,rhs_vec);
@@ -100,7 +103,7 @@ usca = sol_eval_fft_sub_helm(sol,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid)
 
 utot = usca + uinc;
 
-figure(2);
+figure(2); clf
 tiledlayout(1,3)
 
 nexttile

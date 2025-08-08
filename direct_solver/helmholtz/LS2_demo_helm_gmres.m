@@ -11,17 +11,17 @@
 %
 %%%%%
 
-L = 500;
-N = 101; % needs to be an odd number
+L = 5;
+N = 201; % needs to be an odd number for FFT
 
-zk = 0.1;
+zk = 4;
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
 
 h = xs(2) - xs(1);
 
-coefs = bump2_helm(xxgrid,yygrid,-0.5,50);
+coefs = bump2_helm(xxgrid,yygrid,-0.5,0.5);
 V = coefs{1};
 
 dinds = find(abs(V) > 1e-12 );
@@ -98,16 +98,6 @@ title('|\phi|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,10,10,zk)
+err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,0.1,0.1,zk)
 
 return
-
-%%
-
-figure(1);
-s = surf(xxgrid,yygrid,H);
-s.EdgeColor = 'none';
-
-figure(2);
-s = surf(xxgrid,yygrid,real(phi_n));
-s.EdgeColor = 'none';

@@ -1,8 +1,9 @@
 function err1 = get_fin_diff_err_helm(X,Y,utot,h,coefs,xloc,yloc,zk)
+% finite difference test for helmholtz equation
+% checks error of utot at the closest point to (xloc,yloc)
 
     [~,ind] = min((X(:) - xloc(:)).^2 + (Y(:) - yloc(:)).^2);
     [ii, jj] = ind2sub(size(X),ind);
-    % disp(phi(ii,jj))
     
     % d2 - partial_{xx} (8th order)
     d2 = zeros(9, 1);
@@ -26,6 +27,8 @@ function err1 = get_fin_diff_err_helm(X,Y,utot,h,coefs,xloc,yloc,zk)
     % Residual error of total solution 
     usub = utot(ii-4:ii+4,jj-4:jj+4);
 
-    err1 = abs(sum(lap.*usub,'all') + zk^2*(1 + V(ii,jj))*utot(ii,jj)) ;
+    term1 = sum(lap.*usub,'all');
+    term2 = zk^2*(1 + V(ii,jj))*utot(ii,jj);
+    err1 = abs(term1+term2) / max(abs([term1,term2])) ;
     
 end
