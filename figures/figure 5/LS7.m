@@ -7,11 +7,11 @@
 
 h = 20;
 
-x1 = -4E3;
-x2 = 10E3;
+x1 = -1E3;
+x2 = 5E3;
 
-y1 = -7E3;
-y2 = 7E3;
+y1 = -3E3;
+y2 = 3E3;
 
 xs = x1:h:x2;
 ys = y1:h:y2;
@@ -21,15 +21,29 @@ yl = 2*y1:h:2*y2;
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
 
-freqs = 0.01:0.01:4;
+srcinfo = []; srcinfo.r = [x1;0];
+targinfo = []; targinfo.r = [X(:) Y(:)].';
+
+freqs = 0.0025:0.0025:4;
 ks = freqs*0;
 Rs = freqs*0;
 Ts = freqs*0;
 
+mus = zeros(length(freqs), length(X(:)));
+phis = zeros(length(freqs), length(X(:)));
+phizs = zeros(length(freqs), length(X(:)));
+flags = zeros(length(freqs));
+relreses = zeros(length(freqs));
+iters = zeros(length(freqs),2);
+resvecs = cell(length(freqs));
 
-for ii = 1:numel(freqs)
+mu_pre = zeros(length(X(:)),1);
+
+for ii = 1:length(freqs)
 
     w = freqs(ii);
+
+    fprintf('Frequency: %.4f ', w);
 
     % if w > 0.5
     %     h = 12.5;
@@ -46,16 +60,12 @@ for ii = 1:numel(freqs)
     k = rts((imag(rts) == 0) & (real(rts) > 0));
     ks(ii) = k;
     ejs = ejs/a0;
-
-    disp(w)
-    disp(k)
     
     % RHS (Incident field)
-    k1 = k*cos(0);
-    k2 = k*sin(0);
-    phiinc = exp(1i*k1*X+1i*k2*Y);
-    phininc = k*exp(1i*k1*X+1i*k2*Y);
-    [rhs_vec, rhsp] = get_rhs_vec(coefs,k1,k2,phiinc);
+    kerns = green(srcinfo.r,targinfo.r,rts,ejs);
+    phizinc = reshape(kerns{1},size(X));
+    phiinc = reshape(kerns{4},size(X));
+    [rhs_vec] = get_rhs_vec2(coefs,kerns);
     
     % Constructing integral operators
     src = [xl(ceil(end/2)); yl(ceil(end/2))];
@@ -72,37 +82,51 @@ for ii = 1:numel(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-6,500);
+    [mu, flag, relres, iter, resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-6,500,[],[],mu_pre);
+
+    mu_pre = mu;
+    if flag 
+        fprintf('GMRES failed with relative residual %d \n', relres);
+    else 
+        fprintf('GMRES succeeded. \n');    
+    end
+
     mu = reshape(mu, size(X));
     
-    [phi, phi_n] = sol_eval_fft(mu,evalkerns);
+    [phi, phi_z] = sol_eval_fft(mu,evalkerns);
+    phi = reshape(phi,size(X));
+    phi_z = reshape(phi_z,size(X));
 
-    
     phi_tot = phi + phiinc;
-    phi_n_tot = phi_n + phininc;
+    phi_z_tot = phi_z + phizinc;
 
-    figure(1);
+    mus(ii,:) = mu(:);
+    phis(ii,:) = phi_tot(:);
+    phizs(ii,:) = phi_z_tot(:);
+    flags(ii) = flag;
+    relreses(ii) = relres;
+    resvecs{ii} = resvec;
+
+    f = figure(1);
+    set(f,'Position',[1 1200 1332 300])
+    t = tiledlayout(1,3);
+    nexttile
     pc = pcolor(X,Y,real(phi_tot));
     pc.EdgeColor = 'none';
     title('Re(\phi)')
     colorbar
-    axis equal
-    drawnow
 
-    figure(2);
-    pc = pcolor(X,Y,abs(phi_tot));
+    nexttile
+    pc = pcolor(X,Y,real(phi_z_tot));
     pc.EdgeColor = 'none';
-    title('|\phi|')
+    title('Re(\partial_z\phi)')
     colorbar
-    axis equal
-    drawnow
 
-    figure(3);
-    pc = pcolor(X,Y,abs(phi));
+    nexttile
+    pc = pcolor(X,Y,real(mu));
     pc.EdgeColor = 'none';
-    title('|\phi^s|')
+    title('Re(\mu)')
     colorbar
-    axis equal
     drawnow
     
     Tind = find((X == 4500) & (Y == 0));
@@ -115,15 +139,9 @@ end
 
 %%
 
-tiledlayout(1,3)
-nexttile
-plot(freqs,Rs,freqs,Ts)
+figure(2); clf
+plot(freqs(1:ii-1),imag(phis(1:ii-1,2000)))
 
-% nexttile
-% plot(ks,Rs,ks,Ts)
-% 
-% nexttile
-% plot(ks,Rs.^2 + Ts.^2)
 
 return 
 %% Figure generation for Jeremy
@@ -190,7 +208,7 @@ title('|\rho|')
 
 nexttile([2 2]);
 pc = pcolor(X1,Y1,H*0);
-clim([0 max(abs(phi_n_tot(:)))*0.75])
+clim([0 max(abs(phi_z_tot(:)))*0.75])
 pc.EdgeColor = 'none';
 colorbar
 title('|\phi_n|')
@@ -218,8 +236,8 @@ axis off
 %% 
 
 figure(7);
-pc = pcolor(X,Y,abs(phi_n_tot));
-clim([0 max(abs(phi_n_tot(:)))*0.75])
+pc = pcolor(X,Y,abs(phi_z_tot));
+clim([0 max(abs(phi_z_tot(:)))*0.75])
 pc.EdgeColor = 'none';
 %title('|\phi_n|')
 axis off
