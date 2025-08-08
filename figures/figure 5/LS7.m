@@ -5,10 +5,6 @@
 %
 %%%%%
 
-clear 
-close all
-addpath(genpath('..'))
-
 h = 20;
 
 x1 = -4E3;
@@ -25,7 +21,7 @@ yl = 2*y1:h:2*y2;
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
 
-freqs = 0.609:0.01:4;
+freqs = 0.01:0.01:4;
 ks = freqs*0;
 Rs = freqs*0;
 Ts = freqs*0;
@@ -38,8 +34,6 @@ for ii = 1:numel(freqs)
     % if w > 0.5
     %     h = 12.5;
     % end
-
-    disp(w)
     
     [coefs, H] = rolls(X,Y,0,40E2,-25E2,25E2,0.75,333.3,w); % remove gbar from coefs vector
 
@@ -52,6 +46,9 @@ for ii = 1:numel(freqs)
     k = rts((imag(rts) == 0) & (real(rts) > 0));
     ks(ii) = k;
     ejs = ejs/a0;
+
+    disp(w)
+    disp(k)
     
     % RHS (Incident field)
     k1 = k*cos(0);
@@ -75,7 +72,7 @@ for ii = 1:numel(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-9,500);
+    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-6,500);
     mu = reshape(mu, size(X));
     
     [phi, phi_n] = sol_eval_fft(mu,evalkerns);
