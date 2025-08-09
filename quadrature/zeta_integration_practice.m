@@ -1042,6 +1042,51 @@ title('zeta correction for r^2 log(|r|)')
 
 rmpath('zetafunc/')
 
+%% also we do r^4 log(|r|)
+
+addpath('zetafunc/')
+
+kern = @(x,y) (x.^2 + y.^2).^2.*log(sqrt(x.^2 + y.^2)); % kernel function
+dens = @(x,y) cos(y).*sin(x+1).*exp(-25*((x).^2 + (y).^2).^4 ); % test density 
+
+trueint = integral2(@(x,y) dens(x,y).*kern(x,y),-1,1,-1,1,"AbsTol",0,"RelTol",1e-16);
+
+% Trapezoid rule 
+
+hs = 1./(2.^(0:8));
+errs0 = hs*0;
+
+for ii = 1:numel(hs)
+
+    h = hs(ii);
+
+    [X,Y] = meshgrid(-40:h:40);
+    kernmat = kern(X,Y)*h^2;
+
+    ind = find((X == 0) & (Y==0));
+    [zi,zj] = ind2sub(size(X),ind);
+
+    kernmat(ind) = 0;
+    errs0(ii) = abs(sum(kernmat.*dens(X,Y),'all') - trueint)/abs(trueint);
+
+end
+
+figure(2)
+
+loglog(hs,errs0,'-o')
+hold on
+
+loglog(hs,0.5*hs.^6,'--')
+hold on
+
+
+xlim([min(hs) max(hs)])
+
+legend('1 pt correction','h^6','Location','southeast')
+title('zeta correction for r^4 log(|r|)')
+
+
+
 %% Now it's time to integrate |r|^3
 
 addpath('zetafunc/')

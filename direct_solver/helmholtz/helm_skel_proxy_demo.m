@@ -7,12 +7,12 @@
 %
 % in this case, f = - k^2 V exp(i k x)
 %
-% Solved directly using skeletonization
+% Solved directly using skeletonization with proxy surfaces
 %
 %%%%%
 
 L = 5;
-N = 401; 
+N = 251; 
 
 zk = 10;
 
@@ -26,6 +26,8 @@ V = coefs{1};
 
 dinds = find(abs(V) > 1e-12 );
 [iinds,jinds] = find(abs(V) > 1e-12 );
+
+fprintf('Number of points: %d \n',size(dinds,1))
 
 srcinfo = []; srcinfo.r = [xxgrid(dinds) yygrid(dinds)].'; srcinfo.wts = h^2*ones(length(dinds),1);
 targinfo = []; targinfo.r = [xxgrid(dinds) yygrid(dinds)].'; 
@@ -57,7 +59,7 @@ drawnow
 
 % Constructing identity + sparse corrections
 
-[inds,corrs] = get_correct_helm(h);
+[inds,corrs] = get_correct_helm(h,zk);
 spmats = get_sparse_corr(size(xxgrid),inds,corrs);
 idspmat = id_plus_corr_sum_helm(zk,coefs,spmats,dinds,h);
 
@@ -125,6 +127,8 @@ title('|\phi|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,0.1,0.1,zk)
+err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,0.1,0.1,zk);
+
+fprintf('Finite difference error: %.4e \n',err)
 
 return

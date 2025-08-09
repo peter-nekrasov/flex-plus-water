@@ -12,10 +12,15 @@
 %%%%%
 
 L = 5;
-N = 201; % needs to be an odd number for FFT
+Ns = 1 + 50:50:700; % needs to be an odd number for FFT
 
 zk = 4;
 
+errs = zeros(length(Ns),1);
+
+for ii = 1:length(Ns)
+
+N = Ns(ii);
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
 
@@ -33,23 +38,6 @@ k2 = 0;
 uinc = exp(1i*k1*xxgrid+1i*k2*yygrid);
 [rhs_vec, rhs] = get_rhs_vec_helm(coefs,zk,uinc);
 rhs_vec = rhs_vec(dinds);
-
-figure(1); clf
-tiledlayout(1,2);
-
-nexttile
-s = pcolor(xxgrid,yygrid,V);
-s.EdgeColor = 'None';
-colorbar
-title('V')
-drawnow
-
-nexttile
-s = pcolor(xxgrid,yygrid,real(rhs));
-s.EdgeColor = 'None';
-colorbar
-title('rhs')
-drawnow
 
 % Constructing integral operators
 
@@ -74,30 +62,15 @@ usca = sol_eval_fft_sub_helm(sol,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid)
 
 utot = usca + uinc;
 
+errs(ii) = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,0.1,0.1,zk);
+
+end
+
 %%
 
 figure(2);
-tiledlayout(1,3)
-
-nexttile
-pc = pcolor(xxgrid,yygrid,real(mu));
-pc.EdgeColor = 'none';
-title('Re(\mu)')
-colorbar
-
-nexttile
-pc = pcolor(xxgrid,yygrid,real(utot));
-pc.EdgeColor = 'none';
-title('Re(\phi)')
-colorbar
-
-nexttile
-pc = pcolor(xxgrid,yygrid,abs(utot));
-pc.EdgeColor = 'none';
-title('|\phi|')
-colorbar
-       
-% Calculate error with finite difference
-err = get_fin_diff_err_helm(xxgrid,yygrid,utot,h,coefs,0.1,0.1,zk)
-
-return
+plot(log10(Ns),log10(errs),'x-');
+hold on
+plot(log10(Ns),log10(1e9*Ns.^(-8)))
+xlabel('N')
+legend('error','N^{-8}')

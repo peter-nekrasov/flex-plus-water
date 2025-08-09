@@ -12,7 +12,7 @@
 %%%%%
 
 L = 5;
-N = 101; 
+N = 201; 
 
 zk = 4;
 
@@ -57,7 +57,7 @@ drawnow
 
 % Constructing integral operators
 
-[inds,corrs] = get_correct_helm(h);
+[inds,corrs] = get_correct_helm(h,zk);
 spmats = get_sparse_corr(size(xxgrid),inds,corrs);
 
 % Constructing integral operators
