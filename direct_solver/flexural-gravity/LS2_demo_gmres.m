@@ -8,7 +8,7 @@
 %%%%%
 
 L = 500;
-N = 605; % needs to be an odd number
+N = 405; % needs to be an odd number
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
@@ -38,7 +38,8 @@ k1 = k;
 k2 = 0;
 phiinc = exp(1i*k1*xxgrid+1i*k2*yygrid);
 [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
-rhs_vec = rhs_vec(dinds);
+rhs_vec = rhs_vec(dinds) / k;
+rhs = rhs / k;
 
 figure(1);
 tiledlayout(1,4);
@@ -51,21 +52,21 @@ title('H')
 drawnow
 
 nexttile
-s = pcolor(xxgrid,yygrid,E*(coefs{1} + coefs{2}));
+s = pcolor(xxgrid,yygrid,(coefs{1} + coefs{2}));
 s.EdgeColor = 'None';
 colorbar
 title('\alpha')
 drawnow
 
 nexttile
-s = pcolor(xxgrid,yygrid,E*(coefs{2} + coefs{3}));
+s = pcolor(xxgrid,yygrid,(coefs{3} + coefs{4}));
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
 drawnow
 
 nexttile
-s = pcolor(xxgrid,yygrid,real(E*rhs));
+s = pcolor(xxgrid,yygrid,real(rhs));
 s.EdgeColor = 'None';
 colorbar
 title('rhs')
@@ -92,8 +93,8 @@ evalcorrs = {spmat{1}, spmat{4}};
 
 [phi, phi_n] = sol_eval_fft_sub(sol,evalkerns,evalcorrs,h,dinds,iinds,jinds,xxgrid);
 
-phi_tot = phi + phiinc;
-phi_n_tot = phi_n + k*phiinc;
+phi_tot = phi + phiinc/k;
+phi_n_tot = phi_n + phiinc;
 
 %%
 
@@ -137,10 +138,17 @@ return
 
 %%
 
-figure(1);
-s = surf(xxgrid,yygrid,H);
-s.EdgeColor = 'none';
-
 figure(2);
-s = surf(xxgrid,yygrid,real(phi_n));
-s.EdgeColor = 'none';
+tiledlayout(1,2)
+
+nexttile
+pc = pcolor(xxgrid,yygrid,real(phi_n));
+pc.EdgeColor = 'none';
+title('real(\phi_n)')
+colorbar
+
+nexttile
+pc = pcolor(xxgrid,yygrid,real(phi));
+pc.EdgeColor = 'none';
+title('|\phi_n|')
+colorbar

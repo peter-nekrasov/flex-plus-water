@@ -16,7 +16,7 @@
 zk = 10;
 
 L = 5;
-N = 401; 
+N = 101; 
 
 xs = L*(-floor(N/2):floor(N/2))/floor(N/2);
 [xxgrid,yygrid] = meshgrid(xs);
@@ -55,30 +55,28 @@ figure(1); clf
 tiledlayout(1,3);
 
 nexttile
-s = pcolor(xxgrid,yygrid,V);
+s = pcolor(xxgrid,yygrid,V);shading interp;
 s.EdgeColor = 'None';
 colorbar
 title('V')
 drawnow
 
 nexttile
-s = pcolor(xxgrid,yygrid,real(uinc));
+s = pcolor(xxgrid,yygrid,real(uinc));shading interp;
 s.EdgeColor = 'None';
 colorbar
 title('u^{inc}')
 drawnow
 
 nexttile
-s = pcolor(xxgrid,yygrid,real(rhs));
-s.EdgeColor = 'None';
+s = pcolor(xxgrid,yygrid,real(rhs)); shading interp;
 colorbar
 title('rhs')
 drawnow
  
-
 % Constructing identity + sparse corrections
 
-[inds,corrs] = get_correct_helm(h);
+[inds,corrs] = get_correct_helm(h,zk);
 spmats = get_sparse_corr(size(xxgrid),inds,corrs);
 idspmat = id_plus_corr_sum_helm(zk,coefs,spmats,dinds,h);
 
