@@ -63,6 +63,7 @@ function v = fast_apply_fft(mu,kern_struct,V)
         + 0.5.*alphalap.*Gslap_mu + ...
         + 0.5*(1-nu)*(2*alphaxy.*Gsxy_mu-alphayy.*Gsxx_mu-alphaxx.*Gsyy_mu) ...
         - 0.5*(a0*bbar-abar*b0)./a0.*Gs_mu - 0.5*abar.*g0./a0.*Gphi_mu ;
+    v = v * a0 ./ (a0 + abar);
     v = v(:);
 
 end

@@ -24,7 +24,7 @@ yl = 2*y1:h:2*y2;
 srcinfo = []; srcinfo.r = [x1;0];
 targinfo = []; targinfo.r = [X(:) Y(:)].';
 
-freqs = 0.0025:0.0025:4;
+freqs = 0.4:0.0025:4;
 ks = freqs*0;
 Rs = freqs*0;
 Ts = freqs*0;
@@ -39,7 +39,7 @@ resvecs = cell(length(freqs));
 
 mu_pre = zeros(length(X(:)),1);
 
-for ii = 1:length(freqs)
+for ii = 1:1
 
     w = freqs(ii);
 
@@ -52,6 +52,7 @@ for ii = 1:length(freqs)
     [coefs, H] = rolls(X,Y,0,40E2,-25E2,25E2,0.75,333.3,w); % remove gbar from coefs vector
 
     a0 = coefs{1}; 
+    abar = coefs{2};
     b0 = coefs{3}; 
     g0 = coefs{5}; 
     
@@ -66,6 +67,7 @@ for ii = 1:length(freqs)
     phizinc = reshape(kerns{1},size(X));
     phiinc = reshape(kerns{4},size(X));
     [rhs_vec] = get_rhs_vec2(coefs,kerns);
+    rhs_vec = rhs_vec *  a0 ./ (a0 + abar(:));
     
     % Constructing integral operators
     src = [xl(ceil(end/2)); yl(ceil(end/2))];
@@ -82,7 +84,9 @@ for ii = 1:length(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    [mu, flag, relres, iter, resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-6,500,[],[],mu_pre);
+    tic
+    [mu, flag, relres, iter, resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-6,2000,[],[],mu_pre);
+    toc;
 
     mu_pre = mu;
     if flag 
@@ -111,21 +115,21 @@ for ii = 1:length(freqs)
     set(f,'Position',[1 1200 1332 300])
     t = tiledlayout(1,3);
     nexttile
-    pc = pcolor(X,Y,real(phi_tot));
+    pc = pcolor(X,Y,imag(phi_tot));
     pc.EdgeColor = 'none';
-    title('Re(\phi)')
+    title('\Im(\phi)')
     colorbar
 
     nexttile
-    pc = pcolor(X,Y,real(phi_z_tot));
+    pc = pcolor(X,Y,imag(phi_z_tot));
     pc.EdgeColor = 'none';
-    title('Re(\partial_z\phi)')
+    title('\Im(\partial_z\phi)')
     colorbar
 
     nexttile
-    pc = pcolor(X,Y,real(mu));
+    pc = pcolor(X,Y,imag(mu));
     pc.EdgeColor = 'none';
-    title('Re(\mu)')
+    title('\Im(\mu)')
     colorbar
     drawnow
     
