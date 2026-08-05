@@ -115,6 +115,8 @@ for ii = 1:numel(freqs)
     Ts(ii) = abs(phi_tot(Tind));
     Rs(ii) = abs(phi(Rind));
 
+    save("iters.mat","Ts","Rs","freqs","ks","iters")
+
 end
 
 %%
