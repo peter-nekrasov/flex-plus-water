@@ -28,6 +28,6 @@ function [coefs,H] = get_coefs_from_height(H,Hx,Hy,Hxx,Hxy,Hyy,w)
     ayy = 6*E*H.*Hy.^2/(12*(1-nu^2)) + 3*E*H.^2.*Hyy/(12*(1-nu^2));
 
 
-    coefs = {a0,abar,b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu}; 
+    coefs = {a0/E,abar/E,b0/E,bbar/E,g0/E,gbar/E,ax/E,ay/E,axx/E,axy/E,ayy/E,nu}; 
 
 end

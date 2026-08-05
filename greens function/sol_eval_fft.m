@@ -13,7 +13,7 @@ function [phi, phi_n] = sol_eval_fft(mu,evalkerns)
     phi = phi_aug(1:n,1:n);
     phi_n = phi_n_aug(1:n,1:n);
 
-    phi = phi/2;
+    phi = phi;
     phi_n = phi_n/2;
 
 end

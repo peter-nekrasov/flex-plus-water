@@ -25,6 +25,7 @@ freqs = 0.01:0.01:4;
 ks = freqs*0;
 Rs = freqs*0;
 Ts = freqs*0;
+iters = freqs*0;
 
 
 for ii = 1:numel(freqs)
@@ -72,7 +73,10 @@ for ii = 1:numel(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-6,500);
+
+    [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-6,2000);
+    iters(ii) = iter(2);
+    iter(2)
     mu = reshape(mu, size(X));
     
     [phi, phi_n] = sol_eval_fft(mu,evalkerns);

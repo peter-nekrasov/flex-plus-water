@@ -5,9 +5,9 @@
 %
 %%%%%
 
-clear 
-close all
-addpath(genpath('..'))
+% clear 
+% close all
+% addpath(genpath('..'))
 
 h = 20;
 
@@ -75,7 +75,8 @@ for ii = 1:numel(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-9,500);
+    [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
+    iter
     mu = reshape(mu, size(X));
     
     [phi, phi_n] = sol_eval_fft(mu,evalkerns);

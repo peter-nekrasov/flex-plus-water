@@ -92,6 +92,6 @@ function err = get_fin_diff_err(X,Y,mu,phi_n,phi,h,coefs,xloc,yloc)
     seventh = 2*(1-nu)*alphaxy(ii,jj).*sum(hessxy.*phi_n_sub,'all');
     bterm = -beta(ii,jj).*phi_n(ii,jj);
     gterm = g0.*phi(ii,jj);
-    err = abs(first + second + third + fourth + fifth + sixth + seventh + bterm + gterm) / max(abs([first second third fourth fifth sixth seventh bterm gterm]));
+    err = abs(first + second + third + fourth + fifth + sixth + seventh + bterm + gterm) / max(abs([phi(:); phi_n(:)]));
 
 end

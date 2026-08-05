@@ -5,9 +5,9 @@
 %
 %%%%%
 
-clear 
-close all
-addpath(genpath('..'))
+% clear 
+% close all
+% addpath(genpath('..'))
 
 L = 56;
 hs = 4*(1/2).^(0:7);
@@ -55,22 +55,19 @@ for ii = 1:numel(hs)
     phiinc = exp(1i*k1*X+1i*k2*Y);
     [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
     
-    figure(1);
-    tiledlayout(1,3);
-    
+    figure(1); clf
+    tiledlayout(1,3)
     nexttile
     s = pcolor(X,Y,coefs{1} + coefs{2});
     s.EdgeColor = 'None';
     colorbar
     title('\alpha')
-    drawnow
     
     nexttile
     s = pcolor(X,Y,coefs{2} + coefs{3});
     s.EdgeColor = 'None';
     colorbar
     title('\beta')
-    drawnow
     
     nexttile
     s = pcolor(X,Y,real(rhs));
@@ -93,7 +90,8 @@ for ii = 1:numel(hs)
         
     % Solve with GMRES
     start = tic;
-    mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,10,1e-15,200);
+    [mu,flag,relres,iter,resvec] =  gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,10,1e-12,200);
+    iter
     mu = reshape(mu, size(X));
     t1 = toc(start);
     fprintf('%5.2e s : time to solve\n',t1)
@@ -183,7 +181,7 @@ for ii = 1:numel(hs)
 
 
 
-    figure(2);
+    figure(2); clf
     tiledlayout(2,2)
     
     nexttile
@@ -254,8 +252,6 @@ end
  
 figure(4);
 
-
-nexttile
 loglog(hs,errsinf,'o-','DisplayName','$\ell^\infty$ - finite difference')
 hold on
 

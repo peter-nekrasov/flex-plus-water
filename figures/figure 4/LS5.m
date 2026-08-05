@@ -6,9 +6,9 @@
 %
 %%%%%
 
-clear 
-close all
-addpath(genpath('..'))
+% clear 
+% close all
+% addpath(genpath('..'))
 
 L = 6000;
 h = 10;
@@ -42,7 +42,7 @@ phininc = reshape(kerns{1},size(X));
 phiinc = reshape(kerns{4},size(X));
 [rhs_vec] = get_rhs_vec2(coefs,kerns);
 rhsp = reshape(rhs_vec,size(X));
- 
+
 
 figure(1);
 tiledlayout(1,5);
@@ -55,14 +55,14 @@ title('H')
 drawnow
 
 nexttile
-s = pcolor(X,Y,E*(coefs{1} + coefs{2}));
+s = pcolor(X,Y,(coefs{1} + coefs{2}));
 s.EdgeColor = 'None';
 colorbar
 title('\alpha')
 drawnow
 
 nexttile
-s = pcolor(X,Y,E*(coefs{2} + coefs{3}));
+s = pcolor(X,Y,(coefs{2} + coefs{3}));
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
@@ -76,7 +76,7 @@ title('Real(\phi^{inc}_{n})')
 drawnow
 
 nexttile
-s = pcolor(X,Y,real(E*rhsp));
+s = pcolor(X,Y,real(rhsp));
 s.EdgeColor = 'None';
 colorbar
 title('rhs')
@@ -100,7 +100,8 @@ evalkerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-12,200);
+[mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
+iter
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -148,8 +149,7 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-%err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs)
-
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,1000,1000)
 
 
 
@@ -157,7 +157,7 @@ colorbar
 
 figure(4);
 
-t = tiledlayout('flow','TileSpacing','tight'); 
+t = tiledlayout('flow','TileSpacing','tight','Padding','compact'); 
 
 X1 = X / 1000 + 6;
 Y1 = Y / 1000 + 6;
@@ -177,12 +177,13 @@ axis square
 
 
 nexttile
-pc = pcolor(X1,Y1,abs(mu));
-clim([0 max(abs(mu(:)))/3])
+pc = pcolor(X1,Y1,E*abs(mu));
+clim([0 E*max(abs(mu(:)))/3])
 pc.EdgeColor = 'none';
+colorbar
 cb = colorbar;
 cb.Ruler.Exponent = 4;
-title('|\mu|')
+title('|\mu|','FontWeight','normal')
 axis square
 
 nexttile([2 2]);
@@ -190,7 +191,7 @@ pc = pcolor(X1,Y1,abs((phi_tot)));
 clim([0 0.9*max(real(phi_tot(:)))])
 pc.EdgeColor = 'none';
 colorbar
-title('|\phi|')
+title('|\phi|','FontWeight','normal')
 axis square 
 
 set(gca, 'FontSize',12)
@@ -198,6 +199,8 @@ xlabel('x (km)')
 ylabel('y (km)')
 
 fontname(gcf, 'CMU Serif')
+
+% exportgraphics(figure(4),'pointsrc3.pdf','Resolution',500)
 
 return;
 

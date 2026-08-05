@@ -170,7 +170,7 @@ function [inds, corrs] = get_correct(h,a0)
     tau = tau*h^5;
     c0 = 1/4/4/gamma(1+3/2)^2/a0; 
 
-    phicor = c0*tau;
+    phicor = c0*tau/2;
 
 
     valcor = valcor / h^2;

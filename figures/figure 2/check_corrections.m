@@ -1,6 +1,6 @@
 %% Checking corrections for \partial_x (\Delta G) 
 
-addpath(genpath('..'))
+% addpath(genpath('..'))
 
 gamma = -1;
 beta = 3;
@@ -50,6 +50,7 @@ end
 % loglog(hs,0.0005*hs.^6,'--')
 % hold on
 
+figure(1); clf
 K1 = errs1;
 loglog(hs,K1,'o-','DisplayName','$K_1, K_2$')
 hold on
@@ -60,7 +61,7 @@ hold on
 
 %% Checking corrections for G_{xx} 
 
-addpath(genpath('..'))
+% addpath(genpath('..'))
 
 gamma = -1;
 beta = 3;
@@ -119,7 +120,7 @@ hold on
 
 %% Checking corrections for G_{xy} 
 
-addpath(genpath('..'))
+% addpath(genpath('..'))
 
 gamma = -1;
 beta = 3;
@@ -177,7 +178,7 @@ hold on
 
 %% Checking corrections for G 
 
-addpath(genpath('..'))
+% addpath(genpath('..'))
 
 gamma = -1;
 beta = 3;
@@ -352,7 +353,6 @@ hold on
 
 %%  Checking corrections for phi 
 
-addpath(genpath('..'))
 
 gamma = -1;
 beta = 3;
@@ -362,7 +362,7 @@ targ = [2; 2];
 dens = @(x,y) 10*exp(-(x.^2+y.^2)/(5));
 greenfac = @(x,y) phivalonly(targ,x,y,rts,ejs);
 %truev = -0.062850332948632 + 0.069122770940408i; %  integral2(@(x,y) dens(x,y).*greenfac(x,y),-50,50,-50,50,"AbsTol",0,"RelTol",10E-14);
-truev = -2.361687377424415 - 0.503053288734189i; % integral2(@(x,y) dens(x,y).*greenfac(x,y),-30,30,-30,30,"AbsTol",10E-18,"RelTol",10E-18)
+truev =  -1.180843688712207 - 0.251526644367094i; % integral2(@(x,y) dens(x,y).*greenfac(x,y),-30,30,-30,30,"AbsTol",10E-18,"RelTol",10E-18)
 
 hs = [2 1 0.5 0.2 0.1 0.05 0.025];
 errs0 = hs*0;
@@ -426,6 +426,6 @@ fontname(gcf, 'CMU Serif')
 
 %%
 
-saveas(gcf,'intconv.fig','fig')
-exportgraphics(gcf,'intconv.pdf','ContentType','vector')
+% saveas(gcf,'intconv.fig','fig')
+% exportgraphics(gcf,'intconv.pdf','ContentType','vector')
 

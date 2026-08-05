@@ -6,9 +6,9 @@
 %
 %%%%%
 
-clear 
-close all
-addpath(genpath('..'))
+% clear 
+% close all
+% addpath(genpath('..'))
 
 L = 750;
 h = 1;
@@ -82,7 +82,7 @@ foutyy = (foutyy(1:h:end,1:h:end))/nc;
 
 
 [coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,2.9); % remove gbar from coefs vector
-E = 7E9;
+E = 7E9; 
 
 a0 = coefs{1}; 
 b0 = coefs{3}; 
@@ -156,7 +156,8 @@ ekerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,20,1e-14,300);
+[mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000); 
+iter
 mu = reshape(mu, size(X));
 t1 = toc(start);
 fprintf('%5.2e s : time to solve\n',t1)
@@ -213,7 +214,8 @@ title('|\phi_n|')
 colorbar
        
 % Calculate error with finite difference
-err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,420,-240)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,109,314)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,58,-202)
 
 load gong.mat
 sound(y)
@@ -254,13 +256,13 @@ set(gca, 'FontSize',12)
 axis square
 
 nexttile
-pc = pcolor((X+L)/1000,(Y+L)/1000,abs(mu),'FaceColor','interp');
+pc = pcolor((X+L)/1000,(Y+L)/1000,E*abs(mu),'FaceColor','interp');
 %clim([0 5*max(abs(mu(:)))/6])
 pc.EdgeColor = 'none';
 xlim([0 1.5])
 ylim([0 1.5])
 colorbar
-clim([0 0.85*max(abs(mu(:)))])
+clim([0 0.85*E*max(abs(mu(:)))])
 title('|\mu|','FontWeight','normal')
 set(gca, 'FontSize',12)
 axis square
