@@ -21,14 +21,14 @@ yl = 2*y1:h:2*y2;
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
 
-freqs = 0.01:0.01:4;
+freqs = 0.005:0.01:4;
 ks = freqs*0;
 Rs = freqs*0;
 Ts = freqs*0;
 iters = freqs*0;
 
 
-for ii = 1:numel(freqs)
+for ii = 1:numel(freqs) %numel(freqs):-1:1
 
     w = freqs(ii);
 
@@ -115,7 +115,7 @@ for ii = 1:numel(freqs)
     Ts(ii) = abs(phi_tot(Tind));
     Rs(ii) = abs(phi(Rind));
 
-    save("iters.mat","Ts","Rs","freqs","ks","iters")
+    save("iters2.mat","Ts","Rs","freqs","ks","iters")
 
 end
 
@@ -293,30 +293,30 @@ annotation('arrow',[0.14 0.18],[0.84 0.84])
 set(gca, 'FontSize',11)
 
 
-Rs1 = load("Rs1.mat").Rs(1:651);
-Rs2 = load("Rs2.mat").Rs(1:25);
-Rs3 = load("Rs3.mat").Rs;
-Rs4 = load("Rs4.mat").Rs;
-
-Ts1 = load("Ts1.mat").Ts(1:651);
-Ts2 = load("Ts2.mat").Ts(1:25);
-Ts3 = load("Ts3.mat").Ts;
-Ts4 = load("Ts4.mat").Ts;
-
-freqs1 = load("freqs1.mat").freqs(1:651);
-freqs2 = load("freqs2.mat").freqs(1:25);
-freqs3 = load("freqs3.mat").freqs;
-freqs4 = load("freqs4.mat").freqs;
-
-ks1 = load("ks1.mat").ks(1:651);
-ks2 = load("ks2.mat").ks(1:25);
-ks3 = load("ks3.mat").ks;
-ks4 = load("ks4.mat").ks;
-
-Rs = [Rs1 Rs2 Rs3 Rs4];
-Ts = [Ts1 Ts2 Ts3 Ts4];
-freqs = [freqs1 freqs2 freqs3 freqs4];
-ks = [ks1 ks2 ks3 ks4];
+% Rs1 = load("Rs1.mat").Rs(1:651);
+% Rs2 = load("Rs2.mat").Rs(1:25);
+% Rs3 = load("Rs3.mat").Rs;
+% Rs4 = load("Rs4.mat").Rs;
+% 
+% Ts1 = load("Ts1.mat").Ts(1:651);
+% Ts2 = load("Ts2.mat").Ts(1:25);
+% Ts3 = load("Ts3.mat").Ts;
+% Ts4 = load("Ts4.mat").Ts;
+% 
+% freqs1 = load("freqs1.mat").freqs(1:651);
+% freqs2 = load("freqs2.mat").freqs(1:25);
+% freqs3 = load("freqs3.mat").freqs;
+% freqs4 = load("freqs4.mat").freqs;
+% 
+% ks1 = load("ks1.mat").ks(1:651);
+% ks2 = load("ks2.mat").ks(1:25);
+% ks3 = load("ks3.mat").ks;
+% ks4 = load("ks4.mat").ks;
+% 
+% Rs = [Rs1 Rs2 Rs3 Rs4];
+% Ts = [Ts1 Ts2 Ts3 Ts4];
+% freqs = [freqs1 freqs2 freqs3 freqs4];
+% ks = [ks1 ks2 ks3 ks4];
 
 nexttile
 p = plot(ks,Rs,ks,Ts,'LineWidth',1)
