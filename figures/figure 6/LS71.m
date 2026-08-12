@@ -25,21 +25,18 @@ yl = 2*y1:h:2*y2;
 [X,Y] = meshgrid(xs,ys);
 [XL,YL] = meshgrid(xl,yl);
 
-freqs = 0.609:0.01:4;
-ks = freqs*0;
-Rs = freqs*0;
-Ts = freqs*0;
-
+freqs = [0.61;0.725];
+ks = zeros(2,1);
+iters = zeros(2,1);
+phi_n_tots = zeros([size(X),2]);
 
 for ii = 1:numel(freqs)
 
-    w = freqs(ii);
+    w = freqs(ii)
 
     % if w > 0.5
     %     h = 12.5;
     % end
-
-    disp(w)
     
     [coefs, H] = rolls(X,Y,0,40E2,-25E2,25E2,0.75,333.3,w); % remove gbar from coefs vector
 
@@ -49,7 +46,7 @@ for ii = 1:numel(freqs)
     
     % Finding positive real roots
     [rts,ejs] = find_roots(b0 / a0, g0 / a0);
-    k = rts((imag(rts) == 0) & (real(rts) > 0));
+    k = rts((imag(rts) == 0) & (real(rts) > 0))
     ks(ii) = k;
     ejs = ejs/a0;
     
@@ -75,8 +72,9 @@ for ii = 1:numel(freqs)
     evalkerns = {kerns{1}, kerns{4}};
     
     % Solve with GMRES
-    [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
+    [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-6,2000);
     iter
+    iters(ii) = iter(2);
     mu = reshape(mu, size(X));
     
     [phi, phi_n] = sol_eval_fft(mu,evalkerns);
@@ -84,50 +82,50 @@ for ii = 1:numel(freqs)
     
     phi_tot = phi + phiinc;
     phi_n_tot = phi_n + phininc;
-
-    figure(1);
-    pc = pcolor(X,Y,real(phi_tot));
-    pc.EdgeColor = 'none';
-    title('Re(\phi)')
-    colorbar
-    axis equal
-    drawnow
-
-    figure(2);
-    pc = pcolor(X,Y,abs(phi_tot));
-    pc.EdgeColor = 'none';
-    title('|\phi|')
-    colorbar
-    axis equal
-    drawnow
-
-    figure(3);
-    pc = pcolor(X,Y,abs(phi));
-    pc.EdgeColor = 'none';
-    title('|\phi^s|')
-    colorbar
-    axis equal
-    drawnow
-    
-    Tind = find((X == 4500) & (Y == 0));
-    Rind = find((X == (-500)) & (Y == 0));
-
-    Ts(ii) = abs(phi_tot(Tind));
-    Rs(ii) = abs(phi(Rind));
+    phi_n_tots(:,:,ii) = phi_n_tot;
 
 end
 
 %%
 
-tiledlayout(1,3)
-nexttile
-plot(freqs,Rs,freqs,Ts)
+f= figure(1); 
+tiledlayout(1,2,'TileSpacing','tight','Padding','tight')
+f.Position = [70 303 726 371];
 
-% nexttile
-% plot(ks,Rs,ks,Ts)
-% 
-% nexttile
-% plot(ks,Rs.^2 + Ts.^2)
+phi1 = phi_n_tots(:,:,1);
+phi2 = phi_n_tots(:,:,2);
+
+nexttile
+pc = pcolor(X/1000,Y/1000,abs(phi1));
+ylim([-6 6])
+pc.EdgeColor = 'none';
+pc.FaceColor = 'interp';
+title('k = 0.0235','FontWeight','normal')
+clim([0 max(abs(phi2(:)))])
+drawnow
+set(gca, 'FontSize',12)
+xlabel('x (km)')
+ylabel('y (km)')
+axis square
+
+nexttile
+pc = pcolor(X/1000,Y/1000,abs(phi2));
+ylim([-6 6])
+pc.EdgeColor = 'none';
+pc.FaceColor = 'interp';
+title('k = 0.0265','FontWeight','normal')
+colorbar
+clim([0 max(abs(phi2(:)))])
+drawnow
+set(gca, 'FontSize',12)
+xlabel('x (km)')
+fontname(gcf, 'CMU Serif')
+axis square
+
+%% 
+% saveas(gcf,'rollfig3.fig','fig')
+% exportgraphics(gcf,'rollfig3.pdf','ContentType','image','Resolution',600)
+
 
 return 
 %% Figure generation for Jeremy
@@ -357,39 +355,3 @@ exportgraphics(gcf,'rollfig.pdf','ContentType','vector')
 
 %%
 
-f= figure(1);
-tiledlayout(1,2,'TileSpacing','tight')
-
-X = load('X1.mat').X;
-Y = load('Y1.mat').Y;
-phi1 = load('phi_n_tot2.mat').phi_n_tot;
-phi2 = load('phi_n_tot1.mat').phi_n_tot;
-
-nexttile
-pc = pcolor(X/1000,Y/1000,abs(phi1));
-ylim([-6 6])
-pc.EdgeColor = 'none';
-title('k = 0.0235','FontWeight','normal')
-clim([0 max(abs(phi2(:)))])
-drawnow
-set(gca, 'FontSize',12)
-xlabel('x (km)')
-ylabel('y (km)')
-axis square
-
-nexttile
-pc = pcolor(X/1000,Y/1000,abs(phi2));
-ylim([-6 6])
-pc.EdgeColor = 'none';
-title('k = 0.0265','FontWeight','normal')
-colorbar
-clim([0 max(abs(phi2(:)))])
-drawnow
-set(gca, 'FontSize',12)
-xlabel('x (km)')
-fontname(gcf, 'CMU Serif')
-axis square
-
-%% 
-saveas(gcf,'rollfig2.fig','fig')
-exportgraphics(gcf,'rollfig3.pdf','ContentType','vector')

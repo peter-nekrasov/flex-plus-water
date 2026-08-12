@@ -49,6 +49,7 @@ k2 = k*sin(2*pi/3);
 phiinc = exp(1i*k1*X+1i*k2*Y);
 [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
 
+figure(1); clf
 nexttile
 s = pcolor(X,Y,H);
 s.EdgeColor = 'None';
@@ -90,6 +91,7 @@ kerns = gen_fft_kerns(kerns,sz,ind);
 evalkerns = {kerns{1}, kerns{4}};
 
 % mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-7,1000);
+% [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-5,500);
 [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
 iter
 mu = reshape(mu, size(X));
@@ -103,8 +105,8 @@ phininc = k*exp(1i*k1*X+1i*k2*Y);
 phi_tot = phi + phiinc;
 phi_n_tot = phi_n + phininc;
 
-load gong.mat
-sound(y)
+% load gong.mat
+% sound(y)
 
 
 %%
