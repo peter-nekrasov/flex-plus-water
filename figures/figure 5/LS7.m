@@ -135,8 +135,8 @@ plot(freqs,Rs,freqs,Ts)
 %%
 
 f = figure(1); 
-tiledlayout(2,1,"TileSpacing","compact",'Padding','compact')
-f.Position = [42 178 613 721];
+tiledlayout(2,1,"TileSpacing","tight",'Padding','none')
+f.Position = [42 178 613 680];
 
 % nexttile
 % C = imread('/Users/peter/Downloads/Ward_Hunt_Island,_Ice_Shelf_02.jpg');
@@ -182,16 +182,12 @@ hold on
 scatter(4.5,0,50,'filled')
 xlabel('x (km)')
 ylabel('y (km)')
-annotation('arrow',[0.14 0.18],[0.69 0.69])
-annotation('arrow',[0.14 0.18],[0.74 0.74])
-annotation('arrow',[0.14 0.18],[0.64 0.64])
-annotation('arrow',[0.14 0.18],[0.79 0.79])
-annotation('arrow',[0.14 0.18],[0.84 0.84])
-
+hold on
+quiver(-0.8*ones(6,1),-2.5:1:2.5,0.5*ones(6,1),zeros(6,1),'k','AutoScale','off','LineWidth',1)
 
 %quiver([-0.9 -0.9 -0.9 -0.9 -0.9],[-2 -1 0 1 2],[0.2 0.2 0.2 0.2 0.2],[0 0 0 0 0],'off',"Color","black","ShowArrowHead","on",LineWidth=3)
 
-set(gca, 'FontSize',11)
+set(gca, 'FontSize',12)
 
 
 % Rs1 = load("Rs1.mat").Rs(1:651);
@@ -235,7 +231,7 @@ plot((0:0.01:1.2)*0+0.0265,0:0.01:1.2,'k--','LineWidth',1)
 
 legend([p(1) p(2)],{'Reflected','Transmitted'},'Location','east')
 
-set(gca, 'FontSize',11)
+set(gca, 'FontSize',12)
 
 fontname(gcf, 'CMU Serif')
 

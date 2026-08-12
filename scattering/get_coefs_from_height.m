@@ -1,6 +1,5 @@
-function [coefs,H] = get_coefs_from_height(H,Hx,Hy,Hxx,Hxy,Hyy,w)
+function [coefs,H,E] = get_coefs_from_height(H,Hx,Hy,Hxx,Hxy,Hyy,w)
 
-    rng(45);
 
     E = 7*10^9;
     nu = 0.33;

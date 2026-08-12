@@ -81,8 +81,7 @@ foutyy = (foutyy(1:h:end,1:h:end))/nc;
 % drawnow
 
 
-[coefs, H] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,2.9); % remove gbar from coefs vector
-E = 7E9; 
+[coefs, H, E] = get_coefs_from_height(fout,foutx,fouty,foutxx,foutxy,foutyy,2.9); % remove gbar from coefs vector
 
 a0 = coefs{1}; 
 b0 = coefs{3}; 
@@ -95,8 +94,9 @@ ejs = ejs/a0;
 
 
 % RHS (Incident field)
-k1 = k*cos(-3*pi/4);
-k2 = k*sin(-3*pi/4);
+theta = -3*pi/4;
+k1 = k*cos(theta);
+k2 = k*sin(theta);
 phiinc = exp(1i*k1*X+1i*k2*Y);
 phininc = k*exp(1i*k1*X+1i*k2*Y);
 [rhs_vec, rhsp] = get_rhs_vec(coefs,k1,k2,phiinc);
@@ -174,73 +174,29 @@ phininc = k*exp(1i*k1*X+1i*k2*Y);
 phi_tot = phi + phiinc;
 phi_n_tot = phi_n + phininc;
 
-%%
-
-
-figure(2);
-pc = pcolor(X,Y,abs(mu));
-pc.EdgeColor = 'none';
-title('Abs(\mu)')
-colorbar
-
-figure(3);
-tiledlayout(2,2)
-
-nexttile
-pc = pcolor(X,Y,real(phi_tot));
-pc.EdgeColor = 'none';
-title('Re(\phi)')
-clim([-1.5 1.5])
-colorbar
-
-nexttile
-pc = pcolor(X,Y,abs(phi_tot));
-pc.EdgeColor = 'none';
-title('|\phi|')
-colorbar
-
-
-nexttile
-pc = pcolor(X,Y,real(phi_n_tot));
-pc.EdgeColor = 'none';
-title('real(\phi_n)')
-%clim([-2 2])
-colorbar
-
-nexttile
-pc = pcolor(X,Y,abs(phi_n_tot));
-pc.EdgeColor = 'none';
-title('|\phi_n|')
-colorbar
        
 % Calculate error with finite difference
 err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,109,314)
 err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,58,-202)
 
-load gong.mat
-sound(y)
+% load gong.mat
+% sound(y)
 
-
-return
 
 %% Figure generation for Jeremy
 
-f = figure(4);
-f.Units = 'points';
-f.InnerPosition = [584 281 700 634];
-
-t = tiledlayout(2,2,'TileSpacing','tight'); 
+f = figure(4); clf
+t = tiledlayout(2,2,'TileSpacing','tight','Padding','none'); 
+f.Position = [1 1 848 739];
 
 X1 = X / 1000 + 5;
 Y1 = Y / 1000 + 5;
 
-
 c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
 
-
 ax1 = nexttile;
-s = pcolor((X+L)/1000,(Y+L)/1000,H,'FaceColor','interp');
-s.EdgeColor = 'None';
+s = pcolor((X+L)/1000,(Y+L)/1000,H,'FaceColor','interp'); hold on;
+s.EdgeColor = 'none'; s.FaceColor = 'interp';
 colorbar
 title('Thickness (m)','FontWeight','normal')
 c1 = [0.7*ones(1,71); 0:0.01:0.7; 0:0.01:0.7  ].' / 0.7;
@@ -251,59 +207,60 @@ xlim([0 1.5])
 ylim([0 1.5])
 colormap(ax1,c)
 clim([0.3 3])
+quiver(1.4,1.4,0.3*cos(theta),0.3*sin(theta),'k','LineWidth',1.2,'MaxHeadSize',1)
 colorbar
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 axis square
 
 nexttile
 pc = pcolor((X+L)/1000,(Y+L)/1000,E*abs(mu),'FaceColor','interp');
 %clim([0 5*max(abs(mu(:)))/6])
-pc.EdgeColor = 'none';
+pc.EdgeColor = 'none'; pc.FaceColor = 'interp';
 xlim([0 1.5])
 ylim([0 1.5])
 colorbar
 clim([0 0.85*E*max(abs(mu(:)))])
-title('|\mu|','FontWeight','normal')
-set(gca, 'FontSize',12)
+title('$|\mu|$','FontWeight','normal','Interpreter','latex')
+set(gca, 'FontSize',14)
 axis square
-
-
 
 nexttile
 pc = pcolor((X+L)/1000,(Y+ L)/1000,real((phi_n_tot)),'FaceColor','interp');
+hold on;
 %clim([0 0.8*max(abs(phi_n_tot(:)))])
-pc.EdgeColor = 'none';
+pc.EdgeColor = 'none'; pc.FaceColor = 'interp';
 xlim([0 1.5])
 ylim([0 1.5])
 xlabel('x (km)')
 ylabel('y (km)')
 clim([0.9*min(real(phi_n_tot(:))) 0.9*max(real(phi_n_tot(:)))])
 colorbar
-title('\Re(\phi_z)','FontWeight','normal')
+title('$\Re(\phi_z)$','FontWeight','normal','Interpreter','latex')
 axis square
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 
 
 
 nexttile
 pc = pcolor((X+L)/1000,(Y+ L)/1000,abs((phi_n_tot)),'FaceColor','interp');
+hold on;
 %clim([0 0.8*max(abs(phi_n_tot(:)))])
-pc.EdgeColor = 'none';
+pc.EdgeColor = 'none'; pc.FaceColor = 'interp';
 xlim([0 1.5])
 ylim([0 1.5])
 colorbar
 clim([0 0.9*max(abs(phi_n_tot(:)))])
-title('|\phi_z|','FontWeight','normal')
+title('$|\phi_z|$','FontWeight','normal','Interpreter','latex')
 axis square
 
-annotation('arrow',[0.457 0.4],[0.475 0.41])
-annotation('arrow',[0.904 0.847],[0.475 0.41])
-
-
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 xlabel('x (km)')
 
 fontname(gcf, 'CMU Serif')
+
+
+saveas(gcf,'ridges8.fig','fig')
+exportgraphics(gcf,'ridges8.pdf','ContentType','image','Resolution',450)
 
 return;
 
@@ -337,6 +294,3 @@ colorbar
 title('Shelf displacement |Re(\phi_z)|') 
 
 %%
-
-saveas(gcf,'ridges8.fig','fig')
-exportgraphics(gcf,'ridges8.pdf','ContentType','vector')

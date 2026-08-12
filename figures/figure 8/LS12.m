@@ -14,8 +14,9 @@ xl = -L:h:L;
 ys = -L/2:h:L/2;
 yl = -L:h:L;
 
-[~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.66,2.9);
-% [~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.65,3);
+% [~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.66,2.9);
+% [~,~,coefs,Hs,E] = spiral(-L/2,L/2,-L/2,L/2,h,-0.65,3);
+[~,~,coefs,Hs,E] = spiral(-L/2,L/2,-L/2,L/2,h,-0.65,2.9);
 %[~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.67,4.8);
 % [~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.6,5.5);
 %[~,~,coefs,Hs] = spiral(-L/2,L/2,-L/2,L/2,h,-0.75,100);
@@ -42,10 +43,9 @@ src = [0;0];
 targ = [XL(:).'; YL(:).'];
 
 % RHS (Incident field)
-k1 = k*cos(2*pi/3);
-k2 = k*sin(2*pi/3);
-k1 = k*cos(2*pi/3);
-k2 = k*sin(2*pi/3);
+theta = 2*pi/3;
+k1 = k*cos(theta);
+k2 = k*sin(theta);
 phiinc = exp(1i*k1*X+1i*k2*Y);
 [rhs_vec, rhs] = get_rhs_vec(coefs,k1,k2,phiinc);
 
@@ -58,14 +58,14 @@ title('H')
 drawnow
 
 nexttile
-s = pcolor(X,Y,(coefs{1} + coefs{2}));
+s = pcolor(X,Y,E*(coefs{1} + coefs{2}));
 s.EdgeColor = 'None';
 colorbar
 title('\alpha')
 drawnow
 
 nexttile
-s = pcolor(X,Y,(coefs{2} + coefs{3}));
+s = pcolor(X,Y,E*(coefs{2} + coefs{3}));
 s.EdgeColor = 'None';
 colorbar
 title('\beta')
@@ -73,7 +73,7 @@ drawnow
 
 
 nexttile
-s = pcolor(X,Y,real(rhs));
+s = pcolor(X,Y,E*real(rhs));
 s.EdgeColor = 'None';
 colorbar
 title('rhs')
@@ -93,6 +93,7 @@ evalkerns = {kerns{1}, kerns{4}};
 % mu = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-7,1000);
 % [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,30,1e-5,500);
 [mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
+flag
 iter
 mu = reshape(mu, size(X));
 
@@ -108,18 +109,20 @@ phi_n_tot = phi_n + phininc;
 % load gong.mat
 % sound(y)
 
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,625.6,221)
+err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,-499.8,-78.2)
 
-%%
 
-f = figure(2);
-f.Units = 'points';
-f.InnerPosition = [584 281 700 634];
 
-figure(2);
-tiledlayout(2,2,'TileSpacing','tight')
+%% Figure generation for Jeremy
+
+f = figure(4); clf
+t = tiledlayout(2,2,'TileSpacing','tight','Padding','none'); 
+f.Position = [1 1 848 739];
+
 ax1 = nexttile;
-pl1 = pcolor(X/1000+0.67,Y/1000+0.67,H,'FaceColor','interp');
-pl1.EdgeColor = 'none';
+pl1 = pcolor(X/1000+0.67,Y/1000+0.67,H,'FaceColor','interp'); hold on;
+pl1.EdgeColor = 'none'; pl1.FaceColor = 'interp';
 title('Thickness (m)','FontWeight','normal')
 c1 = [0.7*ones(1,71); 0:0.01:0.7; 0:0.01:0.7  ].' / 0.7;
 c2 = [ 2:-0.01:0; 2:-0.01:0; 2*ones(1,201);].'/2;
@@ -128,31 +131,30 @@ xlim([0 1.5])
 ylim([0 1.5])
 ylabel('y (km)')
 clim([0.3 3])
+quiver(1.4,0.1,0.3*cos(theta),0.3*sin(theta),'k','LineWidth',1.2,'MaxHeadSize',1)
 colormap(ax1,c)
 colorbar
 axis square
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 
 
 nexttile
-pl2 = pcolor(X/1000+0.67,Y/1000+0.67,abs(mu),'FaceColor','interp');
-pl2.EdgeColor = 'none';
-title('|\mu|','FontWeight','normal')
+pl2 = pcolor(X/1000+0.67,Y/1000+0.67,abs(mu)*E,'FaceColor','interp');
+pl2.EdgeColor = 'none'; 
+title('$|\mu|$','FontWeight','normal','Interpreter','latex')
 colorbar
 xlim([0 1.5])
 ylim([0 1.5])
 %clim([-3 3])
 axis square
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 
-annotation('arrow',[0.905 0.855],[0.111 0.2])
-annotation('arrow',[0.905-0.442 0.855-0.442],[0.111 0.2])
 
 
 nexttile
 pl2 = pcolor(X/1000+0.67,Y/1000+0.67,real(phi_n_tot),'FaceColor','interp');
 pl2.EdgeColor = 'none';
-title('\Re(\phi_z)','FontWeight','normal')
+title('$\Re(\phi_z)$','FontWeight','normal','Interpreter','latex')
 colorbar
 xlim([0 1.5])
 ylim([0 1.5])
@@ -160,14 +162,14 @@ ylabel('y (km)')
 xlabel('x (km)')
 clim([0.7*min(real(phi_n_tot(:))) 0.7*max(real(phi_n_tot(:)))])
 axis square
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 xlabel('x (km)')
 
 
 nexttile
 pl2 = pcolor(X/1000+0.67,Y/1000+0.67,abs(phi_n_tot),'FaceColor','interp');
 pl2.EdgeColor = 'none';
-title('|\phi_z|','FontWeight','normal')
+title('$|\phi_z|$','FontWeight','normal','Interpreter','latex')
 colorbar
 xlim([0 1.5])
 ylim([0 1.5])
@@ -175,10 +177,13 @@ xlabel('x (km)')
 %clim([-3 3])
 clim([0 0.9*max(abs(phi_n_tot(:)))])
 axis square
-set(gca, 'FontSize',12)
+set(gca, 'FontSize',14)
 xlabel('x (km)')
 
 fontname(gcf, 'CMU Serif')
+
+saveas(gcf,'spiral15.fig','fig')
+exportgraphics(gcf,'spiral15.pdf','ContentType','image','Resolution',450)
 
 return
 
@@ -257,5 +262,3 @@ return
 
 %%
 
-saveas(gcf,'spiral15.fig','fig')
-exportgraphics(gcf,'spiral15.pdf','ContentType','vector','Resolution',6000)

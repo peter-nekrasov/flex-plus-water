@@ -1,4 +1,4 @@
-function [X,Y,coefs,Hs] = spiral(xmin,xmax,ymin,ymax,h,amp,freq)
+function [X,Y,coefs,Hs,E] = spiral(xmin,xmax,ymin,ymax,h,amp,freq)
 
 H0 = 1;
 nu = 0.33;
@@ -100,7 +100,7 @@ axx = 6*E*H.*Hx.^2/(12*(1-nu^2)) + 3*E*H.^2.*Hxx/(12*(1-nu^2));
 axy = 6*E*H.*Hx.*Hy/(12*(1-nu^2)) + 3*E*H.^2.*Hxy/(12*(1-nu^2));
 ayy = 6*E*H.*Hy.^2/(12*(1-nu^2)) + 3*E*H.^2.*Hyy/(12*(1-nu^2));
 
-coefs = {a0,abar,b0,bbar,g0,gbar,ax,ay,axx,axy,ayy,nu}; 
+coefs = {a0/E,abar/E,b0/E,bbar/E,g0/E,gbar/E,ax/E,ay/E,axx/E,axy/E,ayy/E,nu}; 
 Hs = {H,Hx,Hy,Hxx,Hxy,Hyy};
 
 [X,Y] = meshgrid(xs,ys);
