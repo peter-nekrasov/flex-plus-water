@@ -257,16 +257,20 @@ exportgraphics(gcf,'rollfig.pdf','ContentType','image','Resolution',600)
 %%
 
 figure(2); clf
-plot(log10(ks),log10(iters),'Linewidth',1); hold on
+plot((ks),(iters),'Linewidth',1.5); hold on
 % plot(ks,45+2e9*ks.^4,'k--')
 xlabel('k (m^{-1})')
-xlim([-2.3 -1.3])
-ylim([1.5 3.2])
+% xlim([-2.3 -1.3])
+% ylim([1.5 3.2])
 % ylim([0,max(iters)*1.1])
 ylabel('# of iterations')
 hold on
-plot(log10(ks),6+2.6*log10(ks),'k--')
+% plot(log10(ks),6+2.6*log10(ks),'k--')
 set(gca, 'FontSize',11)
+plot((1:1200)*0+0.0235,1:1200,'k--','LineWidth',1)
+hold on
+plot((1:1200)*0+0.0265,1:1200,'k--','LineWidth',1)
+xlim([min(ks),max(ks)])
 
 fontname(gcf, 'CMU Serif')
 

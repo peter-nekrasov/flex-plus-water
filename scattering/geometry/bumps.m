@@ -1,4 +1,4 @@
-function [coefs,H] = bumps(X,Y,xmin,xmax,amp,width,w)
+function [coefs,H,E] = bumps(X,Y,xmin,xmax,amp,width,w)
 
     rng(45);
 

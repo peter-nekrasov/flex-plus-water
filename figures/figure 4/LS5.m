@@ -1,7 +1,7 @@
 %%%%%
 %
-% Solving the adjointed Lippman-Schwinger equation for plane wave 
-% scattering of flexural-gravity waves with random gaussian thickness
+% Solving the adjoint Lippman-Schwinger equation for
+% flexural-gravity waves with random gaussian thickness
 %
 %
 %%%%%
@@ -19,8 +19,7 @@ xl = -2*L:h:2*L;
 [X,Y] = meshgrid(xs);
 [XL,YL] = meshgrid(xl);
 
-[coefs, H] = bumps(X,Y,-L,L,1,140,1); % remove gbar from coefs vector
-E = 7E9;
+[coefs, H, E] = bumps(X,Y,-L,L,1,140,1); % remove gbar from coefs vector
 
 a0 = coefs{1}; 
 b0 = coefs{3}; 
@@ -38,9 +37,12 @@ targ = [X(:).'; Y(:).'];
 kerns = green(src,targ,rts,ejs);
 cnst = max(kerns{1}(:));
 kerns = cellfun(@(x) x/cnst,kerns,'UniformOutput',false);
-phininc = reshape(kerns{1},size(X));
-phiinc = reshape(kerns{4},size(X));
-[rhs_vec] = get_rhs_vec2(coefs,kerns);
+phininc = X*0;
+phiinc = X*0;
+% phininc = reshape(kerns{1},size(X));
+% phiinc = reshape(kerns{4},size(X));
+% [rhs_vec] = get_rhs_vec2(coefs,kerns);
+rhs_vec = exp( - ( (targ(1,:) - src(1,:)).^2 + (targ(2,:) - src(2,:)).^2 ) / (2*50^2)).' / E;
 rhsp = reshape(rhs_vec,size(X));
 
 
@@ -83,7 +85,6 @@ title('rhs')
 drawnow
 
 
-
 % Constructing integral operators
 src = [0; 0];
 targ = [XL(:).'; YL(:).'];
@@ -100,7 +101,7 @@ evalkerns = {kerns{1}, kerns{4}};
 
 % Solve with GMRES
 start = tic;
-[mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,2000);
+[mu,flag,relres,iter,resvec] = gmres(@(mu) fast_apply_fft(mu,kerns,coefs),rhs_vec,[],1e-8,4000);
 iter
 mu = reshape(mu, size(X));
 t1 = toc(start);
@@ -115,7 +116,7 @@ phi_n_tot = phi_n + phininc;
 
 
 figure(2);
-pc = pcolor(X,Y,abs(mu));
+pc = pcolor(X,Y,E*abs(mu));
 pc.EdgeColor = 'none';
 title('Abs(\mu)')
 colorbar
@@ -155,9 +156,9 @@ err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,1000,1000)
 
 %% Figure generation for Jeremy
 
-figure(4);
-
+f = figure(4);
 t = tiledlayout('flow','TileSpacing','tight','Padding','compact'); 
+f.Position = [1 1 593 802];
 
 X1 = X / 1000 + 6;
 Y1 = Y / 1000 + 6;
@@ -182,13 +183,13 @@ clim([0 E*max(abs(mu(:)))/3])
 pc.EdgeColor = 'none';
 colorbar
 cb = colorbar;
-cb.Ruler.Exponent = 4;
+% cb.Ruler.Exponent = 4;
 title('|\mu|','FontWeight','normal')
 axis square
 
 nexttile([2 2]);
 pc = pcolor(X1,Y1,abs((phi_tot)));
-clim([0 0.9*max(real(phi_tot(:)))])
+clim([0 0.5*max(abs(phi_tot(:)))])
 pc.EdgeColor = 'none';
 colorbar
 title('|\phi|','FontWeight','normal')
@@ -200,7 +201,7 @@ ylabel('y (km)')
 
 fontname(gcf, 'CMU Serif')
 
-% exportgraphics(figure(4),'pointsrc3.pdf','Resolution',500)
+% exportgraphics(figure(4),'pointsrc4.pdf','Resolution',500)
 
 return;
 
