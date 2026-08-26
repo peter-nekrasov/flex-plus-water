@@ -202,7 +202,7 @@ title('Thickness (m)','FontWeight','normal')
 c1 = [0.7*ones(1,71); 0:0.01:0.7; 0:0.01:0.7  ].' / 0.7;
 c2 = [ 2:-0.01:0; 2:-0.01:0; 2*ones(1,201);].'/2;
 c = [c1; c2];
-ylabel('y (km)')
+ylabel('$y$ (km)','Interpreter','latex')
 xlim([0 1.5])
 ylim([0 1.5])
 colormap(ax1,c)
@@ -231,8 +231,8 @@ hold on;
 pc.EdgeColor = 'none'; pc.FaceColor = 'interp';
 xlim([0 1.5])
 ylim([0 1.5])
-xlabel('x (km)')
-ylabel('y (km)')
+xlabel('$x$ (km)','Interpreter','latex')
+ylabel('$y$ (km)','Interpreter','latex')
 clim([0.9*min(real(phi_n_tot(:))) 0.9*max(real(phi_n_tot(:)))])
 colorbar
 title('$\Re(\phi_z)$','FontWeight','normal','Interpreter','latex')
@@ -254,7 +254,7 @@ title('$|\phi_z|$','FontWeight','normal','Interpreter','latex')
 axis square
 
 set(gca, 'FontSize',14)
-xlabel('x (km)')
+xlabel('$x$ (km)','Interpreter','latex')
 
 fontname(gcf, 'CMU Serif')
 

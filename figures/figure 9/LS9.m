@@ -129,7 +129,7 @@ c2 = [ 2:-0.01:0; 2:-0.01:0; 2*ones(1,201);].'/2;
 c = [c1; c2];
 xlim([0 1.5])
 ylim([0 1.5])
-ylabel('y (km)')
+ylabel('$y$ (km)','Interpreter','latex')
 clim([0.3 3])
 quiver(1.4,0.1,0.3*cos(theta),0.3*sin(theta),'k','LineWidth',1.2,'MaxHeadSize',1)
 colormap(ax1,c)
@@ -158,12 +158,12 @@ title('$\Re(\phi_z)$','FontWeight','normal','Interpreter','latex')
 colorbar
 xlim([0 1.5])
 ylim([0 1.5])
-ylabel('y (km)')
-xlabel('x (km)')
+ylabel('$y$ (km)','Interpreter','latex')
+xlabel('$x$ (km)','Interpreter','latex')
 clim([0.7*min(real(phi_n_tot(:))) 0.7*max(real(phi_n_tot(:)))])
 axis square
 set(gca, 'FontSize',14)
-xlabel('x (km)')
+xlabel('$x$ (km)','Interpreter','latex')
 
 
 nexttile
@@ -173,12 +173,12 @@ title('$|\phi_z|$','FontWeight','normal','Interpreter','latex')
 colorbar
 xlim([0 1.5])
 ylim([0 1.5])
-xlabel('x (km)')
+xlabel('$x$ (km)','Interpreter','latex')
 %clim([-3 3])
 clim([0 0.9*max(abs(phi_n_tot(:)))])
 axis square
 set(gca, 'FontSize',14)
-xlabel('x (km)')
+xlabel('$x$ (km)','Interpreter','latex')
 
 fontname(gcf, 'CMU Serif')
 

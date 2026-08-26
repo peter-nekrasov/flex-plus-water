@@ -196,12 +196,12 @@ title('|\phi|','FontWeight','normal')
 axis square 
 
 set(gca, 'FontSize',12)
-xlabel('x (km)')
-ylabel('y (km)')
+xlabel('$x$ (km)','Interpreter','latex')
+ylabel('$y$ (km)','Interpreter','latex')
 
 fontname(gcf, 'CMU Serif')
 
-% exportgraphics(figure(4),'pointsrc4.pdf','Resolution',500)
+exportgraphics(figure(4),'pointsrc4.pdf','Resolution',500)
 
 return;
 

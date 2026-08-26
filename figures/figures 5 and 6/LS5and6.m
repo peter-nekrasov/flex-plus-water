@@ -180,8 +180,8 @@ hold on
 scatter(-0.5,0,50,'filled')
 hold on
 scatter(4.5,0,50,'filled')
-xlabel('x (km)')
-ylabel('y (km)')
+xlabel('$x$ (km)','Interpreter','latex')
+ylabel('$y$ (km)','Interpreter','latex')
 hold on
 quiver(-0.8*ones(6,1),-2.5:1:2.5,0.5*ones(6,1),zeros(6,1),'k','AutoScale','off','LineWidth',1)
 
@@ -219,7 +219,7 @@ nexttile
 p = plot(ks,Rs,ks,Ts,'LineWidth',1);
 
 %legend('Reflected','Transmitted','Location','best')
-xlabel('k (m^{-1})')
+xlabel('$k$ (m$^{-1}$)','Interpreter','latex')
 xlim([min(ks) max(ks)])
 ylabel('|\phi|')
 hold on
@@ -252,14 +252,15 @@ fontname(gcf, 'CMU Serif')
 
 %% 
 saveas(gcf,'rollfig.fig','fig')
-exportgraphics(gcf,'rollfig.pdf','ContentType','image','Resolution',600)
+exportgraphics(gcf,'rollfig.pdf','Resolution',600)
 
 %%
 
-figure(2); clf
+f = figure(2); clf
+f.Position = [1 1 600 340];
 plot((ks),(iters),'Linewidth',1.5); hold on
 % plot(ks,45+2e9*ks.^4,'k--')
-xlabel('k (m^{-1})')
+xlabel('$k$ (m$^{-1}$)','Interpreter','latex')
 % xlim([-2.3 -1.3])
 % ylim([1.5 3.2])
 % ylim([0,max(iters)*1.1])

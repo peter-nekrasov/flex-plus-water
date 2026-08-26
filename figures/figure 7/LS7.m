@@ -29,6 +29,7 @@ freqs = [0.61;0.725];
 ks = zeros(2,1);
 iters = zeros(2,1);
 phi_n_tots = zeros([size(X),2]);
+mus = zeros([size(X),2]);
 
 for ii = 1:numel(freqs)
 
@@ -83,12 +84,15 @@ for ii = 1:numel(freqs)
     phi_tot = phi + phiinc;
     phi_n_tot = phi_n + phininc;
     phi_n_tots(:,:,ii) = phi_n_tot;
+    mus(:,:,ii) = mu;
+
+    err = get_fin_diff_err(X,Y,mu,phi_n_tot,phi_tot,h,coefs,1760,1000)
 
 end
 
 %%
 
-f= figure(1); 
+f= figure(1); clf 
 tiledlayout(1,2,'TileSpacing','tight','Padding','tight')
 f.Position = [70 303 726 371];
 
@@ -100,12 +104,12 @@ pc = pcolor(X/1000,Y/1000,abs(phi1));
 ylim([-6 6])
 pc.EdgeColor = 'none';
 pc.FaceColor = 'interp';
-title('k = 0.0235','FontWeight','normal')
+title('$k = 0.0235$ m$^{-1}$','FontWeight','normal','Interpreter','latex')
 clim([0 max(abs(phi2(:)))])
 drawnow
 set(gca, 'FontSize',12)
-xlabel('x (km)')
-ylabel('y (km)')
+xlabel('$x$ (km)','Interpreter','latex')
+ylabel('$y$ (km)','Interpreter','latex')
 axis square
 
 nexttile
@@ -113,18 +117,18 @@ pc = pcolor(X/1000,Y/1000,abs(phi2));
 ylim([-6 6])
 pc.EdgeColor = 'none';
 pc.FaceColor = 'interp';
-title('k = 0.0265','FontWeight','normal')
+title('$k = 0.0265$ m$^{-1}$','FontWeight','normal','Interpreter','latex')
 colorbar
 clim([0 max(abs(phi2(:)))])
 drawnow
 set(gca, 'FontSize',12)
-xlabel('x (km)')
+xlabel('$x$ (km)','Interpreter','latex')
 fontname(gcf, 'CMU Serif')
 axis square
 
 %% 
-% saveas(gcf,'rollfig3.fig','fig')
-% exportgraphics(gcf,'rollfig3.pdf','ContentType','image','Resolution',600)
+saveas(gcf,'rollfig3.fig','fig')
+exportgraphics(gcf,'rollfig3.pdf','ContentType','image','Resolution',400)
 
 
 return 
@@ -226,132 +230,38 @@ pc.EdgeColor = 'none';
 %title('|\phi_n|')
 axis off
 
-
-
 %%
 
-figure(1);
+f= figure(1); 
+tiledlayout(1,2,'TileSpacing','tight','Padding','tight')
+f.Position = [70 303 726 371];
 
-tiledlayout(2,1,"TileSpacing","tight")
-
-% nexttile
-% C = imread('/Users/peter/Downloads/Ward_Hunt_Island,_Ice_Shelf_02.jpg');
-% image(C)
-% axis off
-
-
-h = 10;
-
-x1 = -1E3;
-x2 = 5E3;
-
-y1 = -3E3;
-y2 = 3E3; 
-
-xs = x1:h:x2;
-ys = y1:h:y2;
-xl = 2*x1:h:2*x2;
-yl = 2*y1:h:2*y2;
-[~,n] = size(xs);
-[X,Y] = meshgrid(xs,ys);
-[XL,YL] = meshgrid(xl,yl);
-[coefs, H] = rolls(X,Y,0,40E2,-25E2,25E2,0.75,333.3,1); % remove gbar from coefs vector
-
-
-c = [0.95:-0.01:0.3 ; 0.95:-0.01:0.3; 0.95:-0.01:0.3 ].';
-
+mu1 = mus(:,:,1);
+mu2 = mus(:,:,2);
 
 nexttile
-s = pcolor(X/1000,Y/1000,H);
-s.EdgeColor = 'none';
-%xlim([0.4 5])
-%ylim([-2 2])
-title('Thickness (m)','FontWeight','normal')
-colormap(c);
-colorbar
-hold on
-%plot((-3:0.01:3)*0,-3:0.01:3,'k--','LineWidth',1)
-%hold on
-scatter(-0.5,0,50,'filled')
-hold on
-scatter(4.5,0,50,'filled')
+pc = pcolor(X/1000,Y/1000,abs(mu1));
+ylim([-6 6])
+pc.EdgeColor = 'none';
+pc.FaceColor = 'interp';
+title('k = 0.0235','FontWeight','normal')
+% clim([0 max(abs(mu2(:)))])
+drawnow
+set(gca, 'FontSize',12)
 xlabel('x (km)')
 ylabel('y (km)')
-annotation('arrow',[0.14 0.18],[0.69 0.69])
-annotation('arrow',[0.14 0.18],[0.74 0.74])
-annotation('arrow',[0.14 0.18],[0.64 0.64])
-annotation('arrow',[0.14 0.18],[0.79 0.79])
-annotation('arrow',[0.14 0.18],[0.84 0.84])
-
-
-%quiver([-0.9 -0.9 -0.9 -0.9 -0.9],[-2 -1 0 1 2],[0.2 0.2 0.2 0.2 0.2],[0 0 0 0 0],'off',"Color","black","ShowArrowHead","on",LineWidth=3)
-
-set(gca, 'FontSize',11)
-
-
-Rs1 = load("Rs1.mat").Rs(1:651);
-Rs2 = load("Rs2.mat").Rs(1:25);
-Rs3 = load("Rs3.mat").Rs;
-Rs4 = load("Rs4.mat").Rs;
-
-Ts1 = load("Ts1.mat").Ts(1:651);
-Ts2 = load("Ts2.mat").Ts(1:25);
-Ts3 = load("Ts3.mat").Ts;
-Ts4 = load("Ts4.mat").Ts;
-
-freqs1 = load("freqs1.mat").freqs(1:651);
-freqs2 = load("freqs2.mat").freqs(1:25);
-freqs3 = load("freqs3.mat").freqs;
-freqs4 = load("freqs4.mat").freqs;
-
-ks1 = load("ks1.mat").ks(1:651);
-ks2 = load("ks2.mat").ks(1:25);
-ks3 = load("ks3.mat").ks;
-ks4 = load("ks4.mat").ks;
-
-Rs = [Rs1 Rs2 Rs3 Rs4];
-Ts = [Ts1 Ts2 Ts3 Ts4];
-freqs = [freqs1 freqs2 freqs3 freqs4];
-ks = [ks1 ks2 ks3 ks4];
+axis square
 
 nexttile
-p = plot(ks,Rs,ks,Ts,'LineWidth',1)
-
-%legend('Reflected','Transmitted','Location','best')
-xlabel('k (m^{-1})')
-xlim([min(ks) max(ks)])
-ylabel('|\phi|')
-hold on
-
-plot((0:0.01:1.2)*0+0.0235,0:0.01:1.2,'k--','LineWidth',0.7)
-hold on
-
-plot((0:0.01:1.2)*0+0.0265,0:0.01:1.2,'k--','LineWidth',0.7)
-
-legend([p(1) p(2)],{'Reflected','Transmitted'},'Location','east')
-
-set(gca, 'FontSize',11)
-
+pc = pcolor(X/1000,Y/1000,abs(mu2));
+ylim([-6 6])
+pc.EdgeColor = 'none';
+pc.FaceColor = 'interp';
+title('k = 0.0265','FontWeight','normal')
+colorbar
+% clim([0 max(abs(mu2(:)))])
+drawnow
+set(gca, 'FontSize',12)
+xlabel('x (km)')
 fontname(gcf, 'CMU Serif')
-
-
-
-% nexttile
-% pc = pcolor(X/1000,Y/1000,abs(phi_n_tot));
-% ylim([-6 6])
-% pc.EdgeColor = 'none';
-% %title('|\phi_n|')
-% colorbar
-% colormap(gca,"default")
-% drawnow
-% set(gca, 'FontSize',12)
-
-
-fontname(gcf, 'CMU Serif')
-
-%% 
-saveas(gcf,'rollfig.fig','fig')
-exportgraphics(gcf,'rollfig.pdf','ContentType','vector')
-
-%%
-
+axis square

@@ -244,33 +244,34 @@ for ii = 1:numel(hs)
     err = get_fin_diff_err3(Xsmall,Ysmall,mu_interp,phi_n_tot_interp,phi_tot_interp,hsmall,coefs,Xerr(:),Yerr(:));
     
     errsinf(ii) = max(err)
-    errs2(ii) = mean(err)
+    errs2(ii) = norm(err)
 
 end
 
 %% Plotting
  
-figure(4);
+f = figure(4); clf
+f.Position = [1 1 634 386];
 
-loglog(hs,errsinf,'o-','DisplayName','$\ell^\infty$ - finite difference')
+loglog(hs,errsinf,'o-','DisplayName','$\ell^\infty$ - finite difference','LineWidth',0.8)
 hold on
 
-loglog(hs,errs2,'o-','DisplayName','$\ell^2$ - finite difference')
+loglog(hs,errs2,'o-','DisplayName','$\ell^2$ - finite difference','LineWidth',0.8)
 hold on
 
-loglog(hs,errconvinf,'o-','DisplayName','$L^\infty$ - self convergence')
+loglog(hs,errconvinf,'o-','DisplayName','$L^\infty$ - self convergence','LineWidth',0.8)
 hold on
 
-loglog(hs,errconv2,'o-','DisplayName','$L^2$ - self convergence')
+loglog(hs,errconv2,'o-','DisplayName','$L^2$ - self convergence','LineWidth',0.8)
 hold on
 
-loglog(hs(3:end-2),0.01*hs(3:end-2).^6,'k--','DisplayName','$h^6$')
+loglog(hs(3:end-2),0.1*hs(3:end-2).^6,'k--','DisplayName','$h^6$','LineWidth',0.8)
 hold on
 
 
 xlim([0.5*min(hs), 2*max(hs)])
 ylim([0.1*min(errconv2) 10*max(errs2(1:end-1))])
-xlabel('h')
+xlabel('$h$','Interpreter','latex')
 ylabel('Relative error')
 legend('Interpreter','latex','Location','eastoutside')
 
